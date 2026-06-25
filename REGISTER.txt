@@ -1,0 +1,42 @@
+REGISTER
+
+Enter the Build Challenge
+Takes 2 minutes. We review every registration before sending a submission link.
+
+Full name*
+Your name
+Email*
+you@example.com
+GitHub profile, portfolio, or past project URL*
+https://
+What AI marketing problem would you tackle, and why?*
+0/250 words (50 more needed)
+50-250 words. Tell us what you'd build and why it matters.
+Are you a US resident?*
+
+Yes
+
+No
+You're not a US resident. Tell us why you should be considered anyway.*
+US-based applicants are strongly preferred. If you can make a compelling case for consideration despite not being US-based, this is where you do it.
+
+Why are you the exception?
+How did you hear about this contest?
+PLEASE SHARE — WE'D LOVE TO GIVE THEM CREDIT
+Optional
+ACKNOWLEDGMENTS
+
+Read each. Check each. These are the rules of the contest.
+
+
+I am available for full-time work (40+ hrs/week, East Coast time overlap).
+
+I understand that winning this contest earns me a guaranteed finalist interview, not a guaranteed job offer. The $5,000 prize is paid when I accept a full-time employment offer with It's Today Media. If no offer is extended, the $5,000 converts to the $250 finalist honorarium.
+
+I understand that I retain ownership of the code and tool I build for this contest. It's Today Media makes no claim to my intellectual property unless I accept a full-time role and sign a standard employment IP assignment.
+
+I understand that I am responsible for any taxes owed on prize money or honorarium received. I will provide a W-9 if selected as a finalist or winner.
+
+I am a United States resident OR I believe I am uniquely qualified for this role and deserve consideration despite not being a US resident. I understand US-based applicants are strongly preferred.
+
+I have read the contest rules and agree to be bound by them.
