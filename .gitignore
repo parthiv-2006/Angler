@@ -1,0 +1,21 @@
+# deps
+/node_modules
+
+# Next.js build
+/.next/
+/out/
+
+# env — NEVER commit secrets
+.env.local
+.env*.local
+
+# Vercel
+/.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
