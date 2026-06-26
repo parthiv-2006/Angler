@@ -156,6 +156,31 @@ DEMO_MODE=true                   # serve cached verticals instantly; still allow
 
 ---
 
+## AI Memory System
+
+The `memory/` folder is the living state of this project. The static design docs (ARCHITECTURE.md, CONTEXT.md, etc.) describe *what* to build and *why*; the memory docs describe *what has been built*, what problems were hit, and where things stand right now.
+
+### Read on every session start
+
+Before writing any code, read these two files:
+1. [`memory/PROGRESS.md`](memory/PROGRESS.md) — where we are in the 9-day build plan
+2. [`memory/GOTCHAS.md`](memory/GOTCHAS.md) — traps already discovered, so you don't re-hit them
+
+### When the user says "update memory"
+
+Update all four files to reflect the current session's state:
+
+| File | What to update |
+|------|----------------|
+| [`memory/PROGRESS.md`](memory/PROGRESS.md) | Check off completed items ✅, mark in-progress items 🔄, note any blockers under the relevant module |
+| [`memory/GOTCHAS.md`](memory/GOTCHAS.md) | Append any new bugs, API surprises, or non-obvious behaviors encountered this session |
+| [`memory/DECISIONS.md`](memory/DECISIONS.md) | Append any implementation decisions made (even small ones) that a future AI session should understand — include *why*, not just *what* |
+| [`memory/LOG.md`](memory/LOG.md) | Prepend a new entry: today's date, what was accomplished, current branch state, what's next |
+
+Keep entries concise. A future AI session needs enough to act, not a novel.
+
+---
+
 ## Engineering Rules (non-negotiable)
 
 1. **Commit like a senior engineer.** Write code in small, atomic batches — one concern per
