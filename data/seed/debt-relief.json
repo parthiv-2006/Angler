@@ -1,0 +1,192 @@
+{
+  "vertical": {
+    "slug": "debt-relief",
+    "display_name": "Debt Relief",
+    "is_seed": true
+  },
+  "ads": [
+    {
+      "id": "seed_dr_001",
+      "source": "apify_meta",
+      "advertiser": "NationalDebtRelief",
+      "coverUrl": "",
+      "copy": "If you owe more than $10,000 in credit card debt, the government has a program that could cut it in half. Takes 2 minutes to see if you qualify.",
+      "firstSeen": "2026-01-10",
+      "lastSeen": "2026-06-22",
+      "runDays": 163,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_002",
+      "source": "apify_meta",
+      "advertiser": "ClearPoint Credit",
+      "coverUrl": "",
+      "copy": "Credit card companies don't want you to know this. A little-known federal provision lets you settle debt for as low as 25 cents on the dollar.",
+      "firstSeen": "2026-01-20",
+      "lastSeen": "2026-06-21",
+      "runDays": 152,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_003",
+      "source": "tiktok_creative_center",
+      "advertiser": "FreedomDebt",
+      "coverUrl": "",
+      "copy": "I had $47,000 in debt. My monthly minimums were $1,100. Here's how I got out in 27 months without bankruptcy.",
+      "firstSeen": "2026-01-28",
+      "lastSeen": "2026-06-20",
+      "runDays": 143,
+      "rawMetrics": { "ctr_rank": "high" }
+    },
+    {
+      "id": "seed_dr_004",
+      "source": "apify_meta",
+      "advertiser": "Accredited Debt Relief",
+      "coverUrl": "",
+      "copy": "STOP making minimum payments. You could be debt-free in 24-48 months. Free consultation — no obligation.",
+      "firstSeen": "2026-02-05",
+      "lastSeen": "2026-06-22",
+      "runDays": 137,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_005",
+      "source": "tiktok_creative_center",
+      "advertiser": "TurboDebt",
+      "coverUrl": "",
+      "copy": "My credit score was 512. I thought I was stuck forever. This one call changed everything. [Real customer story]",
+      "firstSeen": "2026-02-12",
+      "lastSeen": "2026-06-21",
+      "runDays": 129,
+      "rawMetrics": { "ctr_rank": "high" }
+    },
+    {
+      "id": "seed_dr_006",
+      "source": "apify_meta",
+      "advertiser": "DebtHammer",
+      "coverUrl": "",
+      "copy": "Warning: If you're paying multiple credit cards, you may qualify for a program that combines them into one $0 interest payment.",
+      "firstSeen": "2026-02-20",
+      "lastSeen": "2026-06-20",
+      "runDays": 120,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_007",
+      "source": "tiktok_creative_center",
+      "advertiser": "NewEra Debt",
+      "coverUrl": "",
+      "copy": "The credit card companies are legally required to do this if you ask — but they'll never bring it up themselves.",
+      "firstSeen": "2026-03-01",
+      "lastSeen": "2026-06-22",
+      "runDays": 113,
+      "rawMetrics": { "ctr_rank": "medium_high" }
+    },
+    {
+      "id": "seed_dr_008",
+      "source": "apify_meta",
+      "advertiser": "PacificDebt",
+      "coverUrl": "",
+      "copy": "She was $83,000 in debt after a divorce. Two years later: zero balances, 690 credit score. Her strategy ↓",
+      "firstSeen": "2026-03-08",
+      "lastSeen": "2026-06-21",
+      "runDays": 105,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_009",
+      "source": "apify_meta",
+      "advertiser": "Americor",
+      "coverUrl": "",
+      "copy": "Are you drowning in credit card interest? See if you qualify to reduce your debt by up to 50% — takes 90 seconds.",
+      "firstSeen": "2026-03-15",
+      "lastSeen": "2026-06-22",
+      "runDays": 99,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_010",
+      "source": "tiktok_creative_center",
+      "advertiser": "DebtCom",
+      "coverUrl": "",
+      "copy": "The average American carries $6,500 in credit card debt at 22% APR. That's $1,400/year in interest alone — going nowhere.",
+      "firstSeen": "2026-03-22",
+      "lastSeen": "2026-06-21",
+      "runDays": 91,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_dr_011",
+      "source": "apify_meta",
+      "advertiser": "Beyond Finance",
+      "coverUrl": "",
+      "copy": "We negotiated $34,000 down to $11,200 for this client. He paid it off in 18 months. Free eligibility check below.",
+      "firstSeen": "2026-04-01",
+      "lastSeen": "2026-06-20",
+      "runDays": 80,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_012",
+      "source": "tiktok_creative_center",
+      "advertiser": "CreditAssociates",
+      "coverUrl": "",
+      "copy": "I'm a bankruptcy attorney and I'm telling you — most people filing for bankruptcy don't need to. There's a better option.",
+      "firstSeen": "2026-04-08",
+      "lastSeen": "2026-06-22",
+      "runDays": 75,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_dr_013",
+      "source": "apify_meta",
+      "advertiser": "SimplePath Financial",
+      "coverUrl": "",
+      "copy": "Laid off. Maxed out. I made one phone call and my debt was resolved. Real story, real numbers inside.",
+      "firstSeen": "2026-04-15",
+      "lastSeen": "2026-06-21",
+      "runDays": 67,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_014",
+      "source": "apify_meta",
+      "advertiser": "ReliefMap",
+      "coverUrl": "",
+      "copy": "3 signs your credit card debt is about to become unmanageable — and what to do before it does.",
+      "firstSeen": "2026-04-22",
+      "lastSeen": "2026-06-22",
+      "runDays": 61,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_dr_015",
+      "source": "tiktok_creative_center",
+      "advertiser": "DebtBlue",
+      "coverUrl": "",
+      "copy": "Not bankruptcy. Not a loan. A program that legally reduces what you owe. See if you qualify in 2 minutes.",
+      "firstSeen": "2026-05-01",
+      "lastSeen": "2026-06-22",
+      "runDays": 52,
+      "rawMetrics": { "ctr_rank": "low_medium" }
+    }
+  ],
+  "dna": [
+    { "adId": "seed_dr_001", "dna": { "hookType": "callout", "angle": "greed", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Check Eligibility", "targetPersona": "Adults with $10k+ credit card debt feeling trapped by minimum payments", "oneLineSummary": "Government framing + specific threshold ($10k) + speed (2 min) drives qualified clicks from people who feel stuck" } },
+    { "adId": "seed_dr_002", "dna": { "hookType": "callout", "angle": "fear", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Learn More", "targetPersona": "Indebted adults who feel the system is rigged against them", "oneLineSummary": "Insider secret frame ('don't want you to know') + specific settlement ratio creates conspiratorial trust and urgency" } },
+    { "adId": "seed_dr_003", "dna": { "hookType": "bold_claim", "angle": "social_proof", "format": "ugc", "offerFraming": "social_proof", "ctaStyle": "See How", "targetPersona": "People overwhelmed by a specific large debt number who want a realistic path", "oneLineSummary": "Specific numbers ($47k, $1100/mo, 27 months) make the story credible and the timeline feel achievable" } },
+    { "adId": "seed_dr_004", "dna": { "hookType": "callout", "angle": "fear", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Free Consultation", "targetPersona": "Minimum-payment payers who don't realize the trap they're in", "oneLineSummary": "STOP command creates pattern interrupt; 24-48 month timeline feels fast; free consultation removes all risk" } },
+    { "adId": "seed_dr_005", "dna": { "hookType": "problem_agitation", "angle": "social_proof", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "Hear Her Story", "targetPersona": "People with damaged credit who feel shame and believe they can't recover", "oneLineSummary": "Credit score specificity (512) signals to the most-hopeless segment; 'one call' implies effortless transformation" } },
+    { "adId": "seed_dr_006", "dna": { "hookType": "callout", "angle": "greed", "format": "static", "offerFraming": "social_proof", "ctaStyle": "See If I Qualify", "targetPersona": "Multi-card jugglers who are stressed about tracking payments", "oneLineSummary": "Consolidation angle targets multi-card overwhelm; $0 interest is the greed hook that justifies the click" } },
+    { "adId": "seed_dr_007", "dna": { "hookType": "callout", "angle": "fear", "format": "ugc", "offerFraming": "social_proof", "ctaStyle": "Find Out More", "targetPersona": "People who feel powerless against credit card companies", "oneLineSummary": "Legal entitlement frame ('required to') repositions the audience as having power they didn't know about" } },
+    { "adId": "seed_dr_008", "dna": { "hookType": "bold_claim", "angle": "social_proof", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "Read Her Story", "targetPersona": "Divorced or financially devastated adults starting over", "oneLineSummary": "Divorce context targets a specific life event that correlates with debt; dual outcome (zero debt + credit score) doubles proof" } },
+    { "adId": "seed_dr_009", "dna": { "hookType": "question", "angle": "fear", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Check in 90 Seconds", "targetPersona": "Adults worried about interest eating their income", "oneLineSummary": "Drowning metaphor + speed (90 sec) + 50% reduction target creates qualified urgency with minimal commitment ask" } },
+    { "adId": "seed_dr_010", "dna": { "hookType": "bold_claim", "angle": "fear", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Calculate My Savings", "targetPersona": "Data-oriented adults who respond to facts and numbers", "oneLineSummary": "Macro stat ($1,400/yr in interest) makes the waste concrete and personal — reframes debt as an active cost, not just a number" } },
+    { "adId": "seed_dr_011", "dna": { "hookType": "bold_claim", "angle": "social_proof", "format": "founder", "offerFraming": "social_proof", "ctaStyle": "Free Eligibility Check", "targetPersona": "People who need to see a specific before/after case to believe it", "oneLineSummary": "Specific negotiated numbers ($34k to $11.2k in 18 mo) function as a proof receipt that makes the outcome feel real" } },
+    { "adId": "seed_dr_012", "dna": { "hookType": "callout", "angle": "fear", "format": "founder", "offerFraming": "risk_reversal", "ctaStyle": "See the Better Option", "targetPersona": "People considering or afraid of bankruptcy who want an alternative", "oneLineSummary": "Attorney authority frame positioned as contrarian — 'I'm telling you NOT to do what you'd hire me for' maximizes trust" } },
+    { "adId": "seed_dr_013", "dna": { "hookType": "problem_agitation", "angle": "social_proof", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "Read the Story", "targetPersona": "Unemployed or recently laid-off adults with mounting debt", "oneLineSummary": "Dual crisis framing (laid off + maxed out) targets compounding-stress moment when people are most likely to act" } },
+    { "adId": "seed_dr_014", "dna": { "hookType": "callout", "angle": "fear", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Read the Warning Signs", "targetPersona": "Adults with growing debt who are in denial or not yet panicked", "oneLineSummary": "Warning-signs format catches people upstream of crisis — pre-suasion play that positions the brand as the authority before the sale" } },
+    { "adId": "seed_dr_015", "dna": { "hookType": "callout", "angle": "novelty", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Check Eligibility", "targetPersona": "People who have ruled out bankruptcy and loans but don't know what's left", "oneLineSummary": "Negative definition ('not X, not Y') isolates the unique category and answers the objection before it's raised" } }
+  ],
+  "winnerSummary": "Debt relief ads with the longest run durations share three patterns: (1) **Specific numbers everywhere** — exact debt amounts ($47k, $83k), settlement ratios (25 cents on the dollar, 50% reduction), and timelines (27 months, 90 seconds to qualify). Vague promises don't run long; specificity does. (2) **Fear + relief in one breath** — the best-performing hooks agitate the fear (drowning in interest, stuck on minimums) then immediately imply effortless escape (one phone call, 2-minute check). The tension-release cycle drives clicks. (3) **Legal and authority framing** dominates over personal testimonials — 'government program', 'legally required', 'bankruptcy attorney says' all outperform pure UGC in this vertical because trust is the primary objection. The winning angle gap is **proactive pre-crisis targeting** (the 'warning signs' format) rather than waiting for the audience to be in full panic mode."
+}

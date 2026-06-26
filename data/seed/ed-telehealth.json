@@ -1,0 +1,192 @@
+{
+  "vertical": {
+    "slug": "ed-telehealth",
+    "display_name": "ED Telehealth",
+    "is_seed": true
+  },
+  "ads": [
+    {
+      "id": "seed_ed_001",
+      "source": "apify_meta",
+      "advertiser": "Hims",
+      "coverUrl": "",
+      "copy": "ED affects 52% of men over 40. It's not age. It's not you. It's a fixable medical condition — and you can treat it without leaving your house.",
+      "firstSeen": "2026-01-08",
+      "lastSeen": "2026-06-22",
+      "runDays": 165,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_002",
+      "source": "apify_meta",
+      "advertiser": "Roman",
+      "coverUrl": "",
+      "copy": "No appointment. No waiting room. No awkward conversation with your doctor. ED treatment, prescribed online and delivered in 2 days.",
+      "firstSeen": "2026-01-15",
+      "lastSeen": "2026-06-21",
+      "runDays": 157,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_003",
+      "source": "apify_meta",
+      "advertiser": "BlueChew",
+      "coverUrl": "",
+      "copy": "The $70 pill your urologist prescribed you? The exact same medication, online, for $3. Men are making the switch quietly.",
+      "firstSeen": "2026-01-22",
+      "lastSeen": "2026-06-20",
+      "runDays": 149,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_004",
+      "source": "tiktok_creative_center",
+      "advertiser": "Keeps",
+      "coverUrl": "",
+      "copy": "I'm a urologist. The thing I wish men would stop being embarrassed about: ED is vascular, not psychological. It's treatable in 30 minutes.",
+      "firstSeen": "2026-02-01",
+      "lastSeen": "2026-06-22",
+      "runDays": 141,
+      "rawMetrics": { "ctr_rank": "high" }
+    },
+    {
+      "id": "seed_ed_005",
+      "source": "apify_meta",
+      "advertiser": "Rex MD",
+      "coverUrl": "",
+      "copy": "My wife thought I had lost interest in her. I hadn't. I was too embarrassed to say anything. Then I found this.",
+      "firstSeen": "2026-02-10",
+      "lastSeen": "2026-06-21",
+      "runDays": 131,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_006",
+      "source": "apify_meta",
+      "advertiser": "Hims",
+      "coverUrl": "",
+      "copy": "First month free. Real doctors. Real prescriptions. If it doesn't work, you pay nothing. What's the downside?",
+      "firstSeen": "2026-02-18",
+      "lastSeen": "2026-06-22",
+      "runDays": 124,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_007",
+      "source": "tiktok_creative_center",
+      "advertiser": "eDrugstore",
+      "coverUrl": "",
+      "copy": "ED is one of the earliest signs of cardiovascular disease. If you have it, this isn't just about sex — get checked.",
+      "firstSeen": "2026-02-25",
+      "lastSeen": "2026-06-21",
+      "runDays": 116,
+      "rawMetrics": { "ctr_rank": "medium_high" }
+    },
+    {
+      "id": "seed_ed_008",
+      "source": "apify_meta",
+      "advertiser": "Numan",
+      "coverUrl": "",
+      "copy": "57% of men with ED never seek treatment. Of those who do, 94% report significant improvement. The math isn't complicated.",
+      "firstSeen": "2026-03-05",
+      "lastSeen": "2026-06-20",
+      "runDays": 107,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_009",
+      "source": "tiktok_creative_center",
+      "advertiser": "Giddy",
+      "coverUrl": "",
+      "copy": "Your testosterone at 45 is not what it was at 25. That's not failure — that's biology. Here's what actually works.",
+      "firstSeen": "2026-03-12",
+      "lastSeen": "2026-06-22",
+      "runDays": 102,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_ed_010",
+      "source": "apify_meta",
+      "advertiser": "Roman",
+      "coverUrl": "",
+      "copy": "The conversation you've been putting off for 2 years takes 5 minutes online. $0 consultation. Prescription ships same day.",
+      "firstSeen": "2026-03-20",
+      "lastSeen": "2026-06-21",
+      "runDays": 93,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_011",
+      "source": "tiktok_creative_center",
+      "advertiser": "BlueChew",
+      "coverUrl": "",
+      "copy": "I used to avoid intimacy because I was scared of what would happen. Not anymore. [Real user — not an actor]",
+      "firstSeen": "2026-03-28",
+      "lastSeen": "2026-06-22",
+      "runDays": 86,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_ed_012",
+      "source": "apify_meta",
+      "advertiser": "Maximus",
+      "coverUrl": "",
+      "copy": "Sildenafil. Tadalafil. The same active ingredients as Viagra and Cialis. One-tenth the cost. Delivered to your door.",
+      "firstSeen": "2026-04-04",
+      "lastSeen": "2026-06-21",
+      "runDays": 78,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_013",
+      "source": "apify_meta",
+      "advertiser": "Alpha Medical",
+      "coverUrl": "",
+      "copy": "3 questions to find out if low testosterone — not ED — is actually your issue. (Most men get the diagnosis wrong.)",
+      "firstSeen": "2026-04-12",
+      "lastSeen": "2026-06-22",
+      "runDays": 71,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_ed_014",
+      "source": "tiktok_creative_center",
+      "advertiser": "Ro",
+      "coverUrl": "",
+      "copy": "She doesn't know you searched this. She doesn't need to. Handle it quietly — we ship in discreet packaging.",
+      "firstSeen": "2026-04-20",
+      "lastSeen": "2026-06-21",
+      "runDays": 62,
+      "rawMetrics": { "ctr_rank": "low_medium" }
+    },
+    {
+      "id": "seed_ed_015",
+      "source": "apify_meta",
+      "advertiser": "LifeMD",
+      "coverUrl": "",
+      "copy": "10 years ago this required an in-office visit, blood tests, and a $200 copay. Now it's a 4-minute form. Progress.",
+      "firstSeen": "2026-04-28",
+      "lastSeen": "2026-06-22",
+      "runDays": 55,
+      "rawMetrics": {}
+    }
+  ],
+  "dna": [
+    { "adId": "seed_ed_001", "dna": { "hookType": "bold_claim", "angle": "fear", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Get Treated Now", "targetPersona": "Men 40+ experiencing ED who attribute it to aging or personal failure", "oneLineSummary": "Reframes ED as medical (not personal) using prevalence stats — removes shame and makes treatment feel rational, not desperate" } },
+    { "adId": "seed_ed_002", "dna": { "hookType": "callout", "angle": "novelty", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Start Treatment", "targetPersona": "Men who avoid doctors due to embarrassment or time constraints", "oneLineSummary": "Triple negative ('no appointment, no waiting room, no awkward talk') dismantles every friction point in one hook" } },
+    { "adId": "seed_ed_003", "dna": { "hookType": "bold_claim", "angle": "greed", "format": "static", "offerFraming": "social_proof", "ctaStyle": "See Pricing", "targetPersona": "Men already taking ED medication who are cost-conscious", "oneLineSummary": "Price comparison ($70 vs $3) with 'same medication' legitimacy claim is the sharpest greed hook in the vertical" } },
+    { "adId": "seed_ed_004", "dna": { "hookType": "callout", "angle": "fear", "format": "founder", "offerFraming": "social_proof", "ctaStyle": "Learn More", "targetPersona": "Men who assume ED is psychological and feel personal shame", "oneLineSummary": "Urologist authority + 'vascular not psychological' reframe removes the shame layer that prevents most men from seeking help" } },
+    { "adId": "seed_ed_005", "dna": { "hookType": "problem_agitation", "angle": "fear", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "Read His Story", "targetPersona": "Men in relationships where ED has created emotional distance", "oneLineSummary": "Relationship damage narrative targets the relationship cost of ED (not just sexual), which has broader emotional pull" } },
+    { "adId": "seed_ed_006", "dna": { "hookType": "question", "angle": "greed", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Claim Free Month", "targetPersona": "Men considering treatment but stalling due to risk or cost", "oneLineSummary": "Risk reversal question ('what's the downside?') rhetoricaly eliminates every objection — the question IS the close" } },
+    { "adId": "seed_ed_007", "dna": { "hookType": "callout", "angle": "fear", "format": "founder", "offerFraming": "social_proof", "ctaStyle": "Get Checked", "targetPersona": "Health-conscious men who respond to medical urgency framing", "oneLineSummary": "Cardiovascular angle reframes ED as a health warning — expands urgency beyond sexual performance to longevity" } },
+    { "adId": "seed_ed_008", "dna": { "hookType": "bold_claim", "angle": "social_proof", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Join the 43%", "targetPersona": "Analytical men who respond to data over emotion", "oneLineSummary": "Double-stat format (57% don't seek help / 94% improve) creates a simple risk-reward calculation that feels logical" } },
+    { "adId": "seed_ed_009", "dna": { "hookType": "callout", "angle": "fear", "format": "ugc", "offerFraming": "social_proof", "ctaStyle": "See What Works", "targetPersona": "Men who attribute ED to aging and feel powerless about it", "oneLineSummary": "Testosterone angle gives men a named cause (biology, not failure) and immediately pairs it with a solution" } },
+    { "adId": "seed_ed_010", "dna": { "hookType": "problem_agitation", "angle": "fear", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Start for $0", "targetPersona": "Men who have been procrastinating on addressing ED for over a year", "oneLineSummary": "'2 years' time reference mirrors the actual procrastination cycle of the target; 5-minute contrast makes acting feel trivial" } },
+    { "adId": "seed_ed_011", "dna": { "hookType": "problem_agitation", "angle": "social_proof", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "See Reviews", "targetPersona": "Men who have been avoiding intimacy rather than addressing the problem", "oneLineSummary": "Avoidance behavior naming ('I avoided intimacy') mirrors the exact internal experience most men have — maximum relatability" } },
+    { "adId": "seed_ed_012", "dna": { "hookType": "bold_claim", "angle": "greed", "format": "static", "offerFraming": "social_proof", "ctaStyle": "See Plans", "targetPersona": "Men who know what sildenafil/tadalafil is and want the cheapest access", "oneLineSummary": "Ingredient-level transparency (naming generic and brand) targets informed buyers; 'one-tenth the cost' is the close" } },
+    { "adId": "seed_ed_013", "dna": { "hookType": "question", "angle": "curiosity", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Take the Quiz", "targetPersona": "Men who have tried ED treatment and not seen full results", "oneLineSummary": "Misdiagnosis angle ('most get it wrong') creates curiosity and positions the brand as smarter than the competition" } },
+    { "adId": "seed_ed_014", "dna": { "hookType": "pattern_interrupt", "angle": "fear", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Handle It Quietly", "targetPersona": "Men who prioritize secrecy and feel shame about seeking help", "oneLineSummary": "Direct acknowledgment of the covert intent ('she doesn't know you searched this') is radically honest — removes all pretense" } },
+    { "adId": "seed_ed_015", "dna": { "hookType": "bold_claim", "angle": "novelty", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Try It Now", "targetPersona": "Men who remember how difficult this used to be and are surprised telehealth exists", "oneLineSummary": "Before/after category evolution ('10 years ago vs now') makes telemedicine feel like obvious progress rather than a risk" } }
+  ],
+  "winnerSummary": "ED telehealth ads running 50+ days cluster around five proven patterns: (1) **Shame removal as the primary job** — the highest-longevity ads don't lead with efficacy, they lead with 'this is medical, not personal' or 'handle it privately.' The shame barrier is the real conversion blocker. (2) **Friction elimination in the hook** — 'no appointment, no waiting room, no awkward conversation' / '5-minute form' / 'delivered discreetly' address every step of the embarrassment chain. (3) **Price anchoring against brand-name drugs** — '$3 vs $70 same medication' is a uniquely high-performing angle because the audience already knows they want sildenafil/tadalafil; cost is the barrier. (4) **Medical authority** (urologist, real prescription, cardiologist) consistently outperforms lifestyle/aspirational framing — this audience is skeptical and educated about being sold to. (5) **Underused gap**: relationship cost angle (wife thought I lost interest) runs far fewer ads than product/price angles despite its emotional power. Brands running relationship-narrative ads tend to have longer run durations."
+}

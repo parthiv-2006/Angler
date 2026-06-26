@@ -1,0 +1,357 @@
+{
+  "vertical": {
+    "slug": "weight-loss-supplement",
+    "display_name": "Weight-Loss Supplement",
+    "is_seed": true
+  },
+  "ads": [
+    {
+      "id": "seed_wls_001",
+      "source": "tiktok_creative_center",
+      "advertiser": "TrimLife",
+      "coverUrl": "",
+      "copy": "I lost 34 lbs in 90 days WITHOUT changing what I eat. This little-known morning ritual is going viral and doctors hate it.",
+      "firstSeen": "2026-01-15",
+      "lastSeen": "2026-06-20",
+      "runDays": 156,
+      "rawMetrics": { "ctr_rank": "high", "engagement": "top_10_percent" }
+    },
+    {
+      "id": "seed_wls_002",
+      "source": "tiktok_creative_center",
+      "advertiser": "MetaboFire",
+      "coverUrl": "",
+      "copy": "POV: You finally stopped blaming yourself and realized it was your metabolism all along. [Before/After]",
+      "firstSeen": "2026-02-01",
+      "lastSeen": "2026-06-22",
+      "runDays": 141,
+      "rawMetrics": { "ctr_rank": "high", "engagement": "top_20_percent" }
+    },
+    {
+      "id": "seed_wls_003",
+      "source": "tiktok_creative_center",
+      "advertiser": "SlimCore Labs",
+      "coverUrl": "",
+      "copy": "My doctor told me to stop losing weight so fast. Here's the only supplement I take every morning.",
+      "firstSeen": "2026-02-14",
+      "lastSeen": "2026-06-21",
+      "runDays": 127,
+      "rawMetrics": { "ctr_rank": "medium_high", "engagement": "top_30_percent" }
+    },
+    {
+      "id": "seed_wls_004",
+      "source": "apify_meta",
+      "advertiser": "FitForm",
+      "coverUrl": "",
+      "copy": "Why are women over 40 suddenly losing weight so fast? Scientists discovered it's NOT diet or exercise…",
+      "firstSeen": "2026-02-20",
+      "lastSeen": "2026-06-20",
+      "runDays": 120,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_005",
+      "source": "apify_meta",
+      "advertiser": "PureBurn",
+      "coverUrl": "",
+      "copy": "I tried keto, IF, and Ozempic. Nothing worked until I fixed THIS one thing first. (Free quiz inside)",
+      "firstSeen": "2026-03-01",
+      "lastSeen": "2026-06-22",
+      "runDays": 113,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_006",
+      "source": "tiktok_creative_center",
+      "advertiser": "LeanPath",
+      "coverUrl": "",
+      "copy": "Stop doing cardio. Stop counting calories. A Johns Hopkins researcher reveals the REAL reason you can't lose weight.",
+      "firstSeen": "2026-03-10",
+      "lastSeen": "2026-06-21",
+      "runDays": 103,
+      "rawMetrics": { "ctr_rank": "medium_high" }
+    },
+    {
+      "id": "seed_wls_007",
+      "source": "tiktok_creative_center",
+      "advertiser": "ZeroGravity Nutrition",
+      "coverUrl": "",
+      "copy": "Walmart moms are buying this out — it outsells Ozempic 3:1 at our warehouse. Free trial while supplies last.",
+      "firstSeen": "2026-03-20",
+      "lastSeen": "2026-06-22",
+      "runDays": 94,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_wls_008",
+      "source": "apify_meta",
+      "advertiser": "VivaSlim",
+      "coverUrl": "",
+      "copy": "She was 247 lbs. Her husband said it was genetic. She proved him wrong in 3 months.",
+      "firstSeen": "2026-03-25",
+      "lastSeen": "2026-06-20",
+      "runDays": 87,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_009",
+      "source": "tiktok_creative_center",
+      "advertiser": "Alpine Ice Hack",
+      "coverUrl": "",
+      "copy": "This ancient alpine ice hack dissolves fat while you sleep. 214,000 people tried it. Here's what happened.",
+      "firstSeen": "2026-04-01",
+      "lastSeen": "2026-06-21",
+      "runDays": 81,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_wls_010",
+      "source": "apify_meta",
+      "advertiser": "GlucoBalance",
+      "coverUrl": "",
+      "copy": "Blood sugar is the hidden weight-loss switch nobody's talking about. Take our 60-second quiz.",
+      "firstSeen": "2026-04-05",
+      "lastSeen": "2026-06-22",
+      "runDays": 78,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_011",
+      "source": "tiktok_creative_center",
+      "advertiser": "NightFire",
+      "coverUrl": "",
+      "copy": "What if losing weight was about adding ONE thing, not removing everything you love?",
+      "firstSeen": "2026-04-10",
+      "lastSeen": "2026-06-21",
+      "runDays": 72,
+      "rawMetrics": { "ctr_rank": "medium" }
+    },
+    {
+      "id": "seed_wls_012",
+      "source": "apify_meta",
+      "advertiser": "BurnXT",
+      "coverUrl": "",
+      "copy": "3 things I stopped doing that finally got me to my goal weight. Number 2 will surprise you.",
+      "firstSeen": "2026-04-15",
+      "lastSeen": "2026-06-20",
+      "runDays": 66,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_013",
+      "source": "tiktok_creative_center",
+      "advertiser": "MetaboFlex",
+      "coverUrl": "",
+      "copy": "Real customer: 'I've been on this for 6 weeks and my jeans from 2019 fit again.' No exercise required.",
+      "firstSeen": "2026-04-20",
+      "lastSeen": "2026-06-22",
+      "runDays": 63,
+      "rawMetrics": { "ctr_rank": "low_medium" }
+    },
+    {
+      "id": "seed_wls_014",
+      "source": "apify_meta",
+      "advertiser": "OxySurge",
+      "coverUrl": "",
+      "copy": "WARNING: If you have 20+ lbs to lose, this message is for you. Risk-free 60-day trial.",
+      "firstSeen": "2026-04-22",
+      "lastSeen": "2026-06-21",
+      "runDays": 60,
+      "rawMetrics": {}
+    },
+    {
+      "id": "seed_wls_015",
+      "source": "tiktok_creative_center",
+      "advertiser": "SlimShot",
+      "coverUrl": "",
+      "copy": "My nutritionist friend told me this off the record. She can't recommend it officially but it's all she uses.",
+      "firstSeen": "2026-04-28",
+      "lastSeen": "2026-06-22",
+      "runDays": 55,
+      "rawMetrics": { "ctr_rank": "low_medium" }
+    }
+  ],
+  "dna": [
+    {
+      "adId": "seed_wls_001",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "curiosity",
+        "format": "ugc",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Women 30-55 who have tried dieting and failed, frustrated with slow results",
+        "oneLineSummary": "Curiosity hook hiding the solution (morning ritual) converts because it implies effortless transformation"
+      }
+    },
+    {
+      "adId": "seed_wls_002",
+      "dna": {
+        "hookType": "pattern_interrupt",
+        "angle": "social_proof",
+        "format": "ugc",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "Women who blame themselves for weight gain and feel guilt",
+        "oneLineSummary": "Reframes failure as external (metabolism) — removes personal blame and positions product as the real fix"
+      }
+    },
+    {
+      "adId": "seed_wls_003",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Get Started",
+        "targetPersona": "Health-conscious adults who trust medical authority",
+        "oneLineSummary": "Doctor-authority social proof combined with speed-of-results creates urgency and credibility"
+      }
+    },
+    {
+      "adId": "seed_wls_004",
+      "dna": {
+        "hookType": "question",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Women over 40 frustrated with age-related weight gain",
+        "oneLineSummary": "Age-specific curiosity gap ('suddenly losing weight') targets a defined persona and implies a secret"
+      }
+    },
+    {
+      "adId": "seed_wls_005",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "curiosity",
+        "format": "ugc",
+        "offerFraming": "free_trial",
+        "ctaStyle": "Take Free Quiz",
+        "targetPersona": "Desperate dieters who have tried multiple mainstream solutions including medication",
+        "oneLineSummary": "Stacks failed solutions (keto, IF, Ozempic) as credibility before revealing the 'root cause' — maximizes relatability"
+      }
+    },
+    {
+      "adId": "seed_wls_006",
+      "dna": {
+        "hookType": "callout",
+        "angle": "fear",
+        "format": "founder",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Watch Now",
+        "targetPersona": "People who exercise and diet but don't see results — feel the system is broken",
+        "oneLineSummary": "Challenges conventional wisdom (stop cardio/calories) and uses expert authority to reframe the problem"
+      }
+    },
+    {
+      "adId": "seed_wls_007",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "static",
+        "offerFraming": "scarcity",
+        "ctaStyle": "Claim Free Trial",
+        "targetPersona": "Mainstream budget-conscious shoppers who trust mass market validation",
+        "oneLineSummary": "Mass social proof (outsells Ozempic) + scarcity (while supplies last) creates urgency for value-seekers"
+      }
+    },
+    {
+      "adId": "seed_wls_008",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "See Her Story",
+        "targetPersona": "Women who feel judged by partners or family about their weight",
+        "oneLineSummary": "Emotional narrative (husband doubted her) adds conflict and triumph arc that drives identification"
+      }
+    },
+    {
+      "adId": "seed_wls_009",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Wellness-curious adults open to alternative/natural solutions",
+        "oneLineSummary": "'Ancient' + specific number social proof (214k) + passive result (while you sleep) = maximum curiosity loop"
+      }
+    },
+    {
+      "adId": "seed_wls_010",
+      "dna": {
+        "hookType": "question",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "free_trial",
+        "ctaStyle": "Take 60-Second Quiz",
+        "targetPersona": "People with metabolic issues who want a data-driven approach",
+        "oneLineSummary": "Reframes weight loss as a blood sugar problem (root cause pivot) and uses quiz to personalize and pre-qualify"
+      }
+    },
+    {
+      "adId": "seed_wls_011",
+      "dna": {
+        "hookType": "question",
+        "angle": "novelty",
+        "format": "ugc",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Try It Free",
+        "targetPersona": "Exhausted dieters who are tired of restriction and deprivation",
+        "oneLineSummary": "Reframes the category from subtraction to addition — taps relief and permission"
+      }
+    },
+    {
+      "adId": "seed_wls_012",
+      "dna": {
+        "hookType": "callout",
+        "angle": "curiosity",
+        "format": "ugc",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Watch Video",
+        "targetPersona": "People who consume self-improvement content and lists",
+        "oneLineSummary": "Listicle format with teaser ('number 2 will surprise you') drives click-through via classic curiosity gap"
+      }
+    },
+    {
+      "adId": "seed_wls_013",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "Women trying to return to a previous body — nostalgic for how they used to look",
+        "oneLineSummary": "Specific time anchor (6 weeks) + nostalgic proof point (jeans from 2019) makes transformation feel attainable"
+      }
+    },
+    {
+      "adId": "seed_wls_014",
+      "dna": {
+        "hookType": "callout",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Start Free Trial",
+        "targetPersona": "Adults with significant weight to lose who feel urgency about health",
+        "oneLineSummary": "WARNING callout with specific threshold (20+ lbs) creates targeted urgency; risk reversal removes friction"
+      }
+    },
+    {
+      "adId": "seed_wls_015",
+      "dna": {
+        "hookType": "pattern_interrupt",
+        "angle": "curiosity",
+        "format": "ugc",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Get Access",
+        "targetPersona": "Trust-skeptical adults who respond to 'insider' or 'off the record' framing",
+        "oneLineSummary": "Insider secret frame ('can't recommend officially') creates forbidden-knowledge appeal and implied authority"
+      }
+    }
+  ],
+  "winnerSummary": "Weight-loss supplement ads winning right now rely on three core patterns: (1) **Curiosity-gap hooks** that tease a non-obvious mechanism ('morning ritual', 'alpine ice hack', 'blood sugar switch') — the mechanism itself is less important than the mystery; (2) **Authority + social proof stacking** — doctors, scientists, and large user counts (214k, outsells Ozempic) used together remove skepticism faster than either alone; (3) **Persona-specific pain reframes** — the highest-longevity ads don't sell weight loss, they sell relief from a specific form of failure (self-blame, partner judgment, past diet exhaustion). UGC and testimonial formats dominate over static for run duration, suggesting authentic voice outperforms polish in this vertical."
+}
