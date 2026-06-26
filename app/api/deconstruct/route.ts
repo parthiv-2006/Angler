@@ -12,6 +12,7 @@ const adInputSchema = z.object({
 
 const requestSchema = z.object({
   ads: z.array(adInputSchema).min(1).max(30),
+  vertical: z.string().optional(), // slug used to hit seed DNA cache
 });
 
 export async function POST(req: NextRequest) {
@@ -22,7 +23,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
   }
 
-  const { ads } = parsed.data;
+  const { ads, vertical = "" } = parsed.data;
+  const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const provider = getProvider();
 
   try {
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
       ads.map(async (ad) => {
         const dna = await getOrAnalyzeDNA(
           ad.id,
+          slug,
           "competitor",
           () =>
             withRetry(() =>

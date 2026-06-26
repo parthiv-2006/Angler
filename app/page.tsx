@@ -3,147 +3,166 @@
 import { useState } from "react";
 import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
 
-type Step = "mine" | "deconstruct" | "score" | "generate";
-
 interface AppState {
   vertical: string;
   ads: Ad[];
+  winnerSummary: string | null;
+  fromSeed: boolean;
   dnaResults: { adId: string; dna: CreativeDNA }[];
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
-  step: Step;
   loading: boolean;
+  loadingStep: string;
   error: string | null;
 }
 
-const SEED_VERTICALS = ["weight-loss supplement", "debt relief", "ED telehealth"];
+const SEED_VERTICALS = [
+  { label: "Weight-Loss Supplement", value: "weight-loss supplement" },
+  { label: "Debt Relief", value: "debt relief" },
+  { label: "ED Telehealth", value: "ed telehealth" },
+];
+
+const INITIAL: AppState = {
+  vertical: "",
+  ads: [],
+  winnerSummary: null,
+  fromSeed: false,
+  dnaResults: [],
+  clustering: null,
+  briefs: [],
+  loading: false,
+  loadingStep: "",
+  error: null,
+};
 
 export default function Home() {
-  const [state, setState] = useState<AppState>({
-    vertical: "",
-    ads: [],
-    dnaResults: [],
-    clustering: null,
-    briefs: [],
-    step: "mine",
-    loading: false,
-    error: null,
-  });
+  const [state, setState] = useState<AppState>(INITIAL);
+
+  function setLoading(step: string) {
+    setState((s) => ({ ...s, loading: true, error: null, loadingStep: step }));
+  }
+  function setError(error: string) {
+    setState((s) => ({ ...s, loading: false, loadingStep: "", error }));
+  }
+  function stopLoading() {
+    setState((s) => ({ ...s, loading: false, loadingStep: "" }));
+  }
 
   async function handleMine() {
-    setState((s) => ({ ...s, loading: true, error: null }));
-
+    setLoading("Pulling competitor ads…");
     const res = await fetch("/api/mine", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ vertical: state.vertical }),
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      setState((s) => ({ ...s, loading: false, error: data.error }));
-      return;
-    }
-
-    setState((s) => ({ ...s, ads: data.ads, step: "deconstruct", loading: false }));
+    if (!res.ok) { setError(data.error); return; }
+    setState((s) => ({
+      ...s,
+      ads: data.ads,
+      winnerSummary: data.winnerSummary,
+      fromSeed: data.fromSeed,
+      dnaResults: [],
+      clustering: null,
+      briefs: [],
+      loading: false,
+      loadingStep: "",
+      error: null,
+    }));
   }
 
   async function handleDeconstruct() {
-    setState((s) => ({ ...s, loading: true, error: null }));
-
+    setLoading("Extracting creative DNA…");
     const res = await fetch("/api/deconstruct", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        vertical: state.vertical,
         ads: state.ads.slice(0, 15).map((ad) => ({
           id: ad.id,
-          coverUrl: ad.coverUrl,
-          copy: ad.copy,
+          coverUrl: ad.coverUrl || undefined,
+          copy: ad.copy || undefined,
         })),
       }),
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      setState((s) => ({ ...s, loading: false, error: data.error }));
-      return;
-    }
-
-    setState((s) => ({ ...s, dnaResults: data.results, step: "score", loading: false }));
+    if (!res.ok) { setError(data.error); return; }
+    setState((s) => ({ ...s, dnaResults: data.results, clustering: null, briefs: [], loading: false, loadingStep: "" }));
   }
 
   async function handleScore() {
-    setState((s) => ({ ...s, loading: true, error: null }));
-
+    setLoading("Scoring creative diversity…");
     const res = await fetch("/api/score", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dna: state.dnaResults.map((r) => r.dna) }),
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      setState((s) => ({ ...s, loading: false, error: data.error }));
-      return;
-    }
-
-    setState((s) => ({ ...s, clustering: data.clustering, step: "generate", loading: false }));
+    if (!res.ok) { setError(data.error); return; }
+    setState((s) => ({ ...s, clustering: data.clustering, briefs: [], loading: false, loadingStep: "" }));
   }
 
   async function handleGenerate() {
     if (!state.clustering) return;
-    setState((s) => ({ ...s, loading: true, error: null }));
-
+    setLoading("Generating angle briefs…");
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         vertical: state.vertical,
-        winnerSummary: "",
+        winnerSummary: state.winnerSummary ?? "",
         marketDNA: state.dnaResults.map((r) => r.dna),
         clustering: state.clustering,
       }),
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      setState((s) => ({ ...s, loading: false, error: data.error }));
-      return;
-    }
-
-    setState((s) => ({ ...s, briefs: data.briefs, loading: false }));
+    if (!res.ok) { setError(data.error); return; }
+    setState((s) => ({ ...s, briefs: data.briefs, loading: false, loadingStep: "" }));
   }
 
-  return (
-    <main style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>Creative Strategist</h1>
-      <p style={{ color: "var(--text-muted)", marginBottom: 40 }}>
-        Find what&apos;s winning in your vertical → score your ad diversity → generate new angles.
-      </p>
+  function handleCopyBrief(brief: AngleBrief) {
+    const text = [
+      `Angle: ${brief.angleName}`,
+      `Driver: ${brief.emotionalDriver}`,
+      `Why now: ${brief.whyNow}`,
+      `Hook: ${brief.hookLine}`,
+      `Format: ${brief.formatRecommendation}`,
+      `Persona: ${brief.targetPersona}`,
+      `Meta: ${brief.variants.meta}`,
+      `TikTok: ${brief.variants.tiktok}`,
+      `Native: ${brief.variants.native}`,
+    ].join("\n");
+    void navigator.clipboard.writeText(text);
+  }
 
-      {/* Step 1 — Mine */}
-      <section style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>1. Enter a vertical</h2>
-        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+  const hasAds = state.ads.length > 0;
+  const hasDNA = state.dnaResults.length > 0;
+  const hasClustering = !!state.clustering;
+  const hasBriefs = state.briefs.length > 0;
+
+  return (
+    <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
+      {/* Header */}
+      <header style={{ marginBottom: 48 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 6 }}>
+          Creative Strategist
+        </h1>
+        <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
+          Reads what&apos;s winning in your vertical → scores your ad diversity → generates new angles.
+        </p>
+      </header>
+
+      {/* ── Step 1: Mine ───────────────────────────────────────────────────── */}
+      <section style={{ marginBottom: 40 }}>
+        <Label step="1" text="Enter a vertical or offer" />
+        <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
           {SEED_VERTICALS.map((v) => (
             <button
-              key={v}
-              onClick={() => setState((s) => ({ ...s, vertical: v }))}
-              style={{
-                padding: "4px 12px",
-                borderRadius: 9999,
-                border: "1px solid var(--border)",
-                background: "var(--surface)",
-                color: "var(--text-muted)",
-                cursor: "pointer",
-                fontSize: 13,
-              }}
+              key={v.value}
+              onClick={() => setState((s) => ({ ...s, vertical: v.value }))}
+              style={chipStyle(state.vertical === v.value)}
             >
-              {v}
+              {v.label}
             </button>
           ))}
         </div>
@@ -151,196 +170,286 @@ export default function Home() {
           <input
             value={state.vertical}
             onChange={(e) => setState((s) => ({ ...s, vertical: e.target.value }))}
-            placeholder="e.g. weight-loss supplement"
-            style={{
-              flex: 1,
-              padding: "10px 14px",
-              borderRadius: 8,
-              border: "1px solid var(--border)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: 15,
-            }}
+            onKeyDown={(e) => e.key === "Enter" && !state.loading && state.vertical && handleMine()}
+            placeholder="e.g. weight-loss supplement, debt relief, ED telehealth…"
+            style={inputStyle}
           />
           <button
             onClick={handleMine}
-            disabled={state.loading || !state.vertical}
-            style={{
-              padding: "10px 20px",
-              borderRadius: 8,
-              border: "none",
-              background: "var(--accent)",
-              color: "#fff",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
+            disabled={state.loading || !state.vertical.trim()}
+            style={primaryBtnStyle(state.loading)}
           >
-            {state.loading && state.step === "mine" ? "Searching…" : "Find Ads"}
+            {state.loading && state.loadingStep.includes("Pulling") ? "Searching…" : "Find Ads"}
           </button>
         </div>
       </section>
 
       {state.error && (
-        <p style={{ color: "#f87171", marginBottom: 24 }}>{state.error}</p>
+        <p style={{ color: "#f87171", marginBottom: 24, fontSize: 14 }}>{state.error}</p>
       )}
 
-      {/* Ads list */}
-      {state.ads.length > 0 && (
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>
-              2. Competitor ads — {state.ads.length} found
-            </h2>
+      {state.loading && (
+        <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 24 }}>
+          {state.loadingStep}
+        </p>
+      )}
+
+      {/* ── Step 2: Ads + winner summary ────────────────────────────────────── */}
+      {hasAds && (
+        <section style={{ marginBottom: 40 }}>
+          <div style={sectionHeaderStyle}>
+            <Label
+              step="2"
+              text={`${state.ads.length} competitor ads — sorted by run duration`}
+              badge={state.fromSeed ? "instant" : "live"}
+            />
             <button
               onClick={handleDeconstruct}
               disabled={state.loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                border: "none",
-                background: "var(--accent)",
-                color: "#fff",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: 13,
-              }}
+              style={secondaryBtnStyle(state.loading)}
             >
-              {state.loading && state.step === "deconstruct" ? "Analyzing…" : "Analyze DNA"}
+              {state.loading && state.loadingStep.includes("DNA") ? "Analyzing…" : "Extract DNA →"}
             </button>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {state.ads.slice(0, 10).map((ad) => (
-              <div
-                key={ad.id}
-                style={{
-                  padding: 16,
-                  borderRadius: 8,
-                  border: "1px solid var(--border)",
-                  background: "var(--surface)",
-                }}
-              >
+
+          {state.winnerSummary && (
+            <div style={calloutStyle}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>
+                WHAT&apos;S WINNING &amp; WHY
+              </p>
+              <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)" }}>
+                {state.winnerSummary}
+              </p>
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
+            {state.ads.map((ad) => (
+              <div key={ad.id} style={cardStyle}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{ad.advertiser}</span>
-                  <span style={{ color: "var(--accent)", fontSize: 13 }}>Running {ad.runDays}d</span>
+                  <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>
+                    {ad.runDays}d running · {ad.source.replace(/_/g, " ")}
+                  </span>
                 </div>
-                <p style={{ color: "var(--text-muted)", fontSize: 13 }}>{ad.copy}</p>
+                <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.5 }}>{ad.copy}</p>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* DNA results */}
-      {state.dnaResults.length > 0 && (
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>3. Creative DNA</h2>
+      {/* ── Step 3: DNA ──────────────────────────────────────────────────────── */}
+      {hasDNA && (
+        <section style={{ marginBottom: 40 }}>
+          <div style={sectionHeaderStyle}>
+            <Label step="3" text="Creative DNA extracted" />
             <button
               onClick={handleScore}
               disabled={state.loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                border: "none",
-                background: "var(--accent)",
-                color: "#fff",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: 13,
-              }}
+              style={secondaryBtnStyle(state.loading)}
             >
-              {state.loading && state.step === "score" ? "Scoring…" : "Score Diversity"}
+              {state.loading && state.loadingStep.includes("diversity") ? "Scoring…" : "Score Diversity →"}
             </button>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {state.dnaResults.map((r) => (
-              <div
-                key={r.adId}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid var(--border)",
-                  background: "var(--surface)",
-                  fontSize: 13,
-                }}
-              >
-                <span style={{ color: "var(--accent)" }}>{r.dna.angle}</span>
-                {" · "}
-                <span style={{ color: "var(--text-muted)" }}>{r.dna.format}</span>
+              <div key={r.adId} style={{ ...cardStyle, padding: "8px 12px" }}>
+                <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>{r.dna.angle}</span>
+                <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
+                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{r.dna.format}</span>
+                <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
+                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{r.dna.hookType}</span>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* Clustering */}
-      {state.clustering && (
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>
-              4. Diversity — {state.clustering.nAds} ads → {state.clustering.kConcepts} concepts
-            </h2>
+      {/* ── Step 4: Diversity score ─────────────────────────────────────────── */}
+      {hasClustering && state.clustering && (
+        <section style={{ marginBottom: 40 }}>
+          <div style={sectionHeaderStyle}>
+            <Label
+              step="4"
+              text={`${state.clustering.nAds} ads → ${state.clustering.kConcepts} distinct concepts`}
+            />
             <button
               onClick={handleGenerate}
               disabled={state.loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                border: "none",
-                background: "var(--accent)",
-                color: "#fff",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: 13,
-              }}
+              style={primaryBtnStyle(state.loading)}
             >
-              {state.loading && state.step === "generate" ? "Generating…" : "Generate Angles"}
+              {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
             </button>
           </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {state.clustering.clusters.map((cluster, i) => (
+              <div key={i} style={cardStyle}>
+                <p style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cluster.concept}</p>
+                <p style={{ color: "var(--text-muted)", fontSize: 12 }}>{cluster.reason}</p>
+                <p style={{ color: "var(--accent)", fontSize: 12, marginTop: 4 }}>
+                  {cluster.adIds.length} ad{cluster.adIds.length !== 1 ? "s" : ""} in this concept
+                </p>
+              </div>
+            ))}
+          </div>
+
           {state.clustering.gaps.length > 0 && (
-            <div style={{ padding: 16, borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface)" }}>
-              <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Angle gaps:</p>
-              <ul style={{ paddingLeft: 20, fontSize: 13, color: "var(--text-muted)" }}>
-                {state.clustering.gaps.map((g, i) => <li key={i}>{g}</li>)}
+            <div style={{ ...calloutStyle, marginTop: 16 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 8 }}>
+                ANGLE GAPS — proven market angles you&apos;re not running
+              </p>
+              <ul style={{ paddingLeft: 16, margin: 0 }}>
+                {state.clustering.gaps.map((g, i) => (
+                  <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 4 }}>{g}</li>
+                ))}
               </ul>
             </div>
           )}
         </section>
       )}
 
-      {/* Angle briefs */}
-      {state.briefs.length > 0 && (
+      {/* ── Step 5: Angle briefs ─────────────────────────────────────────────── */}
+      {hasBriefs && (
         <section>
-          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
-            5. Angle briefs — {state.briefs.length} generated
-          </h2>
+          <Label step="5" text={`${state.briefs.length} angle briefs generated`} />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {state.briefs.map((brief, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: 16,
-                  borderRadius: 8,
-                  border: "1px solid var(--border)",
-                  background: "var(--surface)",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontWeight: 600 }}>{brief.angleName}</span>
-                  <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
-                    #{brief.priority} · {brief.emotionalDriver}
-                  </span>
+            {state.briefs
+              .sort((a, b) => a.priority - b.priority)
+              .map((brief, i) => (
+                <div key={i} style={cardStyle}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                    <div>
+                      <span style={{ fontWeight: 700, fontSize: 14 }}>{brief.angleName}</span>
+                      <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 10 }}>
+                        #{brief.priority} · {brief.emotionalDriver}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleCopyBrief(brief)}
+                      style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>{brief.whyNow}</p>
+                  <p style={{ fontSize: 14, fontStyle: "italic", marginBottom: 10 }}>&ldquo;{brief.hookLine}&rdquo;</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <CopyVariant platform="Meta" copy={brief.variants.meta} />
+                    <CopyVariant platform="TikTok" copy={brief.variants.tiktok} />
+                    <CopyVariant platform="Native" copy={brief.variants.native} />
+                  </div>
+                  <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
+                    Format: {brief.formatRecommendation} · Persona: {brief.targetPersona}
+                  </p>
                 </div>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>{brief.whyNow}</p>
-                <p style={{ fontSize: 14, fontStyle: "italic", marginBottom: 8 }}>&ldquo;{brief.hookLine}&rdquo;</p>
-                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                  <span>Meta: {brief.variants.meta}</span>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </section>
       )}
     </main>
   );
 }
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function Label({ step, text, badge }: { step: string; text: string; badge?: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+      <span style={{ background: "var(--accent)", color: "#fff", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+        {step}
+      </span>
+      <span style={{ fontWeight: 600, fontSize: 15 }}>{text}</span>
+      {badge && (
+        <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 9999, background: badge === "instant" ? "#10b981" : "#6366f1", color: "#fff", fontWeight: 600 }}>
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function CopyVariant({ platform, copy }: { platform: string; copy: string }) {
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", minWidth: 44, paddingTop: 1 }}>{platform}</span>
+      <span style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.4 }}>{copy}</span>
+    </div>
+  );
+}
+
+// ── Styles ─────────────────────────────────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  flex: 1,
+  padding: "10px 14px",
+  borderRadius: 8,
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  fontSize: 14,
+  outline: "none",
+};
+
+function chipStyle(active: boolean): React.CSSProperties {
+  return {
+    padding: "5px 13px",
+    borderRadius: 9999,
+    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+    background: active ? "rgba(99,102,241,0.15)" : "var(--surface)",
+    color: active ? "var(--accent)" : "var(--text-muted)",
+    cursor: "pointer",
+    fontSize: 13,
+    fontWeight: active ? 600 : 400,
+  };
+}
+
+function primaryBtnStyle(loading: boolean): React.CSSProperties {
+  return {
+    padding: "10px 20px",
+    borderRadius: 8,
+    border: "none",
+    background: loading ? "#4338ca" : "var(--accent)",
+    color: "#fff",
+    fontWeight: 600,
+    cursor: loading ? "not-allowed" : "pointer",
+    fontSize: 14,
+    whiteSpace: "nowrap",
+  };
+}
+
+function secondaryBtnStyle(loading: boolean): React.CSSProperties {
+  return {
+    padding: "7px 14px",
+    borderRadius: 8,
+    border: "1px solid var(--accent)",
+    background: "transparent",
+    color: "var(--accent)",
+    fontWeight: 600,
+    cursor: loading ? "not-allowed" : "pointer",
+    fontSize: 13,
+    whiteSpace: "nowrap",
+  };
+}
+
+const cardStyle: React.CSSProperties = {
+  padding: 16,
+  borderRadius: 8,
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+};
+
+const calloutStyle: React.CSSProperties = {
+  padding: 16,
+  borderRadius: 8,
+  border: "1px solid rgba(99,102,241,0.3)",
+  background: "rgba(99,102,241,0.06)",
+};
+
+const sectionHeaderStyle: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 12,
+};
