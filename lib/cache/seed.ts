@@ -1,6 +1,6 @@
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
-import type { Ad, CreativeDNA } from "@/lib/types";
+import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
 
 interface SeedFile {
   vertical: {
@@ -11,15 +11,38 @@ interface SeedFile {
   ads: Ad[];
   dna: { adId: string; dna: CreativeDNA }[];
   winnerSummary: string;
+  // Pre-baked Module 4 output so the seed demo path never calls the live AI.
+  briefs?: AngleBrief[];
+}
+
+// A user's "own" ad set for the diversity scorer (Module 3). Deliberately
+// redundant so the "N ads → K concepts" collapse is visible. Clustering is
+// pre-baked so the seed demo path is instant and deterministic.
+interface SampleSetFile {
+  slug: string;
+  label: string;
+  vertical: string; // slug of the market vertical the gaps are relative to
+  ads: Ad[];
+  dna: { adId: string; dna: CreativeDNA }[];
+  clustering: ConceptClustering;
 }
 
 const SEED_DIR = join(process.cwd(), "data", "seed");
+const SAMPLE_DIR = join(SEED_DIR, "samples");
 
 function loadSeedFile(slug: string): SeedFile | null {
   const filePath = join(SEED_DIR, `${slug}.json`);
   if (!existsSync(filePath)) return null;
   return JSON.parse(readFileSync(filePath, "utf-8")) as SeedFile;
 }
+
+function loadSampleFile(slug: string): SampleSetFile | null {
+  const filePath = join(SAMPLE_DIR, `${slug}.json`);
+  if (!existsSync(filePath)) return null;
+  return JSON.parse(readFileSync(filePath, "utf-8")) as SampleSetFile;
+}
+
+// ── Vertical seeds (Modules 1, 2, 4) ────────────────────────────────────────────
 
 export function getSeedAds(slug: string): Ad[] | null {
   const seed = loadSeedFile(slug);
@@ -36,10 +59,44 @@ export function getSeedWinnerSummary(slug: string): string | null {
   return loadSeedFile(slug)?.winnerSummary ?? null;
 }
 
+export function getSeedBriefs(slug: string): AngleBrief[] | null {
+  return loadSeedFile(slug)?.briefs ?? null;
+}
+
 export function listSeedSlugs(): string[] {
   if (!existsSync(SEED_DIR)) return [];
-  const { readdirSync } = require("fs") as typeof import("fs");
   return readdirSync(SEED_DIR)
-    .filter((f: string) => f.endsWith(".json"))
-    .map((f: string) => f.replace(".json", ""));
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => f.replace(".json", ""));
+}
+
+// ── Sample ad sets (Module 3) ───────────────────────────────────────────────────
+
+export interface SampleSetSummary {
+  slug: string;
+  label: string;
+  vertical: string;
+  adCount: number;
+}
+
+export function getSampleClustering(slug: string): ConceptClustering | null {
+  return loadSampleFile(slug)?.clustering ?? null;
+}
+
+export function getSampleSet(slug: string): SampleSetFile | null {
+  return loadSampleFile(slug);
+}
+
+export function listSampleSets(): SampleSetSummary[] {
+  if (!existsSync(SAMPLE_DIR)) return [];
+  return readdirSync(SAMPLE_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => loadSampleFile(f.replace(".json", "")))
+    .filter((s): s is SampleSetFile => s !== null)
+    .map((s) => ({
+      slug: s.slug,
+      label: s.label,
+      vertical: s.vertical,
+      adCount: s.ads.length,
+    }));
 }

@@ -188,5 +188,147 @@
     { "adId": "seed_dr_014", "dna": { "hookType": "callout", "angle": "fear", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Read the Warning Signs", "targetPersona": "Adults with growing debt who are in denial or not yet panicked", "oneLineSummary": "Warning-signs format catches people upstream of crisis — pre-suasion play that positions the brand as the authority before the sale" } },
     { "adId": "seed_dr_015", "dna": { "hookType": "callout", "angle": "novelty", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Check Eligibility", "targetPersona": "People who have ruled out bankruptcy and loans but don't know what's left", "oneLineSummary": "Negative definition ('not X, not Y') isolates the unique category and answers the objection before it's raised" } }
   ],
-  "winnerSummary": "Debt relief ads with the longest run durations share three patterns: (1) **Specific numbers everywhere** — exact debt amounts ($47k, $83k), settlement ratios (25 cents on the dollar, 50% reduction), and timelines (27 months, 90 seconds to qualify). Vague promises don't run long; specificity does. (2) **Fear + relief in one breath** — the best-performing hooks agitate the fear (drowning in interest, stuck on minimums) then immediately imply effortless escape (one phone call, 2-minute check). The tension-release cycle drives clicks. (3) **Legal and authority framing** dominates over personal testimonials — 'government program', 'legally required', 'bankruptcy attorney says' all outperform pure UGC in this vertical because trust is the primary objection. The winning angle gap is **proactive pre-crisis targeting** (the 'warning signs' format) rather than waiting for the audience to be in full panic mode."
+  "winnerSummary": "Debt relief ads with the longest run durations share three patterns: (1) **Specific numbers everywhere** — exact debt amounts ($47k, $83k), settlement ratios (25 cents on the dollar, 50% reduction), and timelines (27 months, 90 seconds to qualify). Vague promises don't run long; specificity does. (2) **Fear + relief in one breath** — the best-performing hooks agitate the fear (drowning in interest, stuck on minimums) then immediately imply effortless escape (one phone call, 2-minute check). The tension-release cycle drives clicks. (3) **Legal and authority framing** dominates over personal testimonials — 'government program', 'legally required', 'bankruptcy attorney says' all outperform pure UGC in this vertical because trust is the primary objection. The winning angle gap is **proactive pre-crisis targeting** (the 'warning signs' format) rather than waiting for the audience to be in full panic mode.",
+  "briefs": [
+    {
+      "angleName": "The Minimum-Payment Trap Calculator",
+      "emotionalDriver": "fear",
+      "whyNow": "Specific numbers win in this vertical, but no top ad shows the audience their OWN trapped number — a personalized 'how long until you're free' shock is an untapped specificity play.",
+      "hookLine": "Paying the minimum on $20k? You'll be in debt until 2049. See your real date.",
+      "formatRecommendation": "Static calculator visual with a shocking payoff-date readout",
+      "targetPersona": "Cardholders making only minimum payments who haven't done the math",
+      "priority": 1,
+      "variants": {
+        "meta": "Paying the minimum? See the year you'll finally be debt-free.",
+        "tiktok": "Minimum payments = debt until 2049 😨 check yours",
+        "native": "The Minimum-Payment Calculator Banks Don't Want You to See"
+      }
+    },
+    {
+      "angleName": "The Warning-Signs Pre-Crisis Play",
+      "emotionalDriver": "fear",
+      "whyNow": "The winner summary identifies pre-crisis targeting as the open gap — catch people upstream of panic, before they search for help.",
+      "hookLine": "3 signs you're 6 months from a debt spiral (and how to stop it now).",
+      "formatRecommendation": "Listicle/educational founder talking-head",
+      "targetPersona": "People feeling early financial pressure but not yet in crisis",
+      "priority": 2,
+      "variants": {
+        "meta": "3 early warning signs of a debt spiral — and how to stop it.",
+        "tiktok": "3 signs you're heading for a debt spiral 🚩",
+        "native": "Financial Experts: 3 Warning Signs You're Headed for Trouble"
+      }
+    },
+    {
+      "angleName": "The Government-Program Eligibility Check",
+      "emotionalDriver": "curiosity",
+      "whyNow": "Authority/'government program' framing outperforms UGC; a 90-second eligibility check leans into the proven legal-authority angle with low friction.",
+      "hookLine": "A little-known 2026 relief program may erase part of your balance. Check eligibility.",
+      "formatRecommendation": "Static official-looking eligibility gateway",
+      "targetPersona": "Debt-burdened adults who trust official/government-framed solutions",
+      "priority": 3,
+      "variants": {
+        "meta": "New 2026 relief program — check if your balance qualifies.",
+        "tiktok": "This 2026 debt program is barely advertised 👀",
+        "native": "Little-Known 2026 Program May Forgive Part of Your Balance"
+      }
+    },
+    {
+      "angleName": "The Cents-on-the-Dollar Receipt",
+      "emotionalDriver": "social_proof",
+      "whyNow": "Settlement-ratio specificity (25 cents on the dollar) is proven; pairing it with a real redacted settlement letter is a credibility format the vertical underuses.",
+      "hookLine": "She owed $41,000. She settled for $9,800. Here's the actual letter.",
+      "formatRecommendation": "Testimonial with redacted settlement-letter visual",
+      "targetPersona": "Skeptical high-balance debtors who need hard proof settlement works",
+      "priority": 4,
+      "variants": {
+        "meta": "$41,000 settled for $9,800. Here's the real letter.",
+        "tiktok": "She settled $41k for $9,800. Proof in the letter.",
+        "native": "She Owed $41,000 and Settled for Less Than $10,000"
+      }
+    },
+    {
+      "angleName": "The Stop-the-Calls Relief Hook",
+      "emotionalDriver": "urgency",
+      "whyNow": "Fear+relief in one breath is the winning cadence; the collector-harassment angle targets an acute, daily pain no top ad currently leads with.",
+      "hookLine": "Collectors calling 8 times a day? One call can legally make them stop.",
+      "formatRecommendation": "UGC phone-screen demo showing call logs going quiet",
+      "targetPersona": "People being actively pursued by collection agencies",
+      "priority": 5,
+      "variants": {
+        "meta": "Make the collection calls stop — legally, with one call.",
+        "tiktok": "How I made the collectors legally stop calling 📵",
+        "native": "One Legal Step That Makes Collection Calls Stop"
+      }
+    },
+    {
+      "angleName": "The Bankruptcy Off-Ramp",
+      "emotionalDriver": "fear",
+      "whyNow": "Negative-definition framing (seed_dr_015) isolates the category; positioning settlement as the 'avoid bankruptcy' option answers the audience's biggest fear directly.",
+      "hookLine": "Considering bankruptcy? A debt attorney explains the option most people miss.",
+      "formatRecommendation": "Authority talking-head (attorney persona)",
+      "targetPersona": "People weighing bankruptcy who fear the long-term credit damage",
+      "priority": 6,
+      "variants": {
+        "meta": "Before you file bankruptcy, hear the option most people miss.",
+        "tiktok": "Don't file bankruptcy before watching this ⚖️",
+        "native": "Debt Attorney Reveals the Option Most People Overlook"
+      }
+    },
+    {
+      "angleName": "The Interest-Bleed Visualizer",
+      "emotionalDriver": "fear",
+      "whyNow": "Interest agitation is proven; showing the monthly dollar amount 'bleeding' to interest makes an abstract fear concrete in a way no current ad does.",
+      "hookLine": "$380 of your last payment went to interest. Only $40 touched the balance.",
+      "formatRecommendation": "Static infographic breaking down a single payment",
+      "targetPersona": "Cardholders who don't realize how little of each payment reduces principal",
+      "priority": 7,
+      "variants": {
+        "meta": "$380 to interest, $40 to your balance. See the breakdown.",
+        "tiktok": "Where your payment actually goes 💸 (it's bad)",
+        "native": "Where Your Credit Card Payment Actually Goes Each Month"
+      }
+    },
+    {
+      "angleName": "The 90-Second Pre-Qualifier",
+      "emotionalDriver": "curiosity",
+      "whyNow": "90-second/2-minute checks are proven low-friction CTAs; a 'no impact to your credit score' reassurance removes the last objection competitors leave on the table.",
+      "hookLine": "Check your relief options in 90 seconds — won't affect your credit score.",
+      "formatRecommendation": "Static gateway with prominent 'no credit impact' badge",
+      "targetPersona": "Hesitant debtors worried that checking options will hurt their score",
+      "priority": 8,
+      "variants": {
+        "meta": "See your options in 90 seconds — no hit to your credit.",
+        "tiktok": "90 seconds, zero credit impact. Check it 👇",
+        "native": "Check Your Relief Options in Under 2 Minutes"
+      }
+    },
+    {
+      "angleName": "The Spouse Secret-Debt Reveal",
+      "emotionalDriver": "social_proof",
+      "whyNow": "Emotional narrative is underused vs. legal framing; the 'we faced it together' story adds an identification angle no current ad occupies.",
+      "hookLine": "We hid $60k in debt from each other. The day we combined it, we fixed it.",
+      "formatRecommendation": "Couple testimonial, conversational",
+      "targetPersona": "Couples carrying hidden or shared debt and financial stress",
+      "priority": 9,
+      "variants": {
+        "meta": "We hid $60k from each other — then fixed it together.",
+        "tiktok": "We both hid debt from each other 😬 here's the fix",
+        "native": "The Couple Who Hid $60,000 in Debt — and How They Fixed It"
+      }
+    },
+    {
+      "angleName": "The One-Payment Simplifier",
+      "emotionalDriver": "urgency",
+      "whyNow": "Overwhelm is the daily emotion; the 'five bills become one' simplicity angle reframes relief as control rather than rescue — a fresh emotional lane.",
+      "hookLine": "Five due dates, five logins, five stresses. What if it was just one?",
+      "formatRecommendation": "Static before/after of a cluttered vs. single bill",
+      "targetPersona": "Juggling-multiple-debts adults overwhelmed by complexity, not just balance",
+      "priority": 10,
+      "variants": {
+        "meta": "Turn five payments into one. Breathe again.",
+        "tiktok": "5 payments → 1. The relief is real 😮‍💨",
+        "native": "How to Turn Five Monthly Payments Into a Single One"
+      }
+    }
+  ]
 }

@@ -1,0 +1,168 @@
+{
+  "slug": "debt-relief-redundant",
+  "label": "Debt Relief — 6 ads (looks diverse)",
+  "vertical": "debt-relief",
+  "ads": [
+    {
+      "id": "own_dr_01",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Drowning in credit card debt? See if you qualify to cut your balance by up to 50%.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-25",
+      "runDays": 24,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_dr_02",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Cut your debt by up to half. Check your eligibility in 2 minutes.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-25",
+      "runDays": 24,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_dr_03",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Reduce what you owe by up to 50%. See if you qualify today.",
+      "firstSeen": "2026-06-05",
+      "lastSeen": "2026-06-25",
+      "runDays": 20,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_dr_04",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Settle your debt for a fraction of what you owe. Free eligibility check.",
+      "firstSeen": "2026-06-05",
+      "lastSeen": "2026-06-25",
+      "runDays": 20,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_dr_05",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "There's a government-backed program that may forgive part of your debt. Check now.",
+      "firstSeen": "2026-06-10",
+      "lastSeen": "2026-06-25",
+      "runDays": 15,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_dr_06",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "A new federal relief program could erase thousands in debt. See if you're eligible.",
+      "firstSeen": "2026-06-10",
+      "lastSeen": "2026-06-25",
+      "runDays": 15,
+      "rawMetrics": {}
+    }
+  ],
+  "dna": [
+    {
+      "adId": "own_dr_01",
+      "dna": {
+        "hookType": "question",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "People overwhelmed by credit card debt",
+        "oneLineSummary": "Fear hook plus a 'cut your balance by up to 50%' settlement-ratio promise"
+      }
+    },
+    {
+      "adId": "own_dr_02",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "People overwhelmed by credit card debt",
+        "oneLineSummary": "Settlement-ratio promise ('up to half') with a 2-minute eligibility check"
+      }
+    },
+    {
+      "adId": "own_dr_03",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "People overwhelmed by credit card debt",
+        "oneLineSummary": "Settlement-ratio promise ('up to 50%') with an eligibility-check CTA"
+      }
+    },
+    {
+      "adId": "own_dr_04",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "People overwhelmed by credit card debt",
+        "oneLineSummary": "Settlement-ratio promise ('a fraction of what you owe') with a free eligibility check"
+      }
+    },
+    {
+      "adId": "own_dr_05",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "Debtors who trust government/official programs",
+        "oneLineSummary": "Government-program authority framing implying partial debt forgiveness"
+      }
+    },
+    {
+      "adId": "own_dr_06",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Check Eligibility",
+        "targetPersona": "Debtors who trust government/official programs",
+        "oneLineSummary": "Federal-program authority framing implying thousands in debt erased"
+      }
+    }
+  ],
+  "clustering": {
+    "nAds": 6,
+    "kConcepts": 2,
+    "clusters": [
+      {
+        "concept": "Cut-Your-Balance Settlement Offer",
+        "adIds": ["own_dr_01", "own_dr_02", "own_dr_03", "own_dr_04"],
+        "reason": "All four are the same static settlement-ratio promise ('up to 50% / a fraction') with an eligibility-check CTA — only the wording changes, so Meta reads them as one Entity ID."
+      },
+      {
+        "concept": "Government-Program Authority",
+        "adIds": ["own_dr_05", "own_dr_06"],
+        "reason": "Both lean on official/federal-program framing implying forgiveness; same angle and format collapses them into a single concept."
+      }
+    ],
+    "gaps": [
+      "Pre-crisis 'warning signs' targeting — every ad assumes the person is already in crisis; none catch people upstream before they panic, the market's biggest open lane",
+      "Stop-the-collection-calls relief — no ad addresses the acute daily pain of collector harassment, a proven high-urgency hook",
+      "Couple/shared-debt narrative — your set is all cold settlement math; no emotional identification angle despite its proven longevity"
+    ]
+  }
+}

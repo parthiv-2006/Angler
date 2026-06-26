@@ -1,0 +1,219 @@
+{
+  "slug": "weight-loss-redundant",
+  "label": "Weight-Loss — 8 ads (looks diverse)",
+  "vertical": "weight-loss-supplement",
+  "ads": [
+    {
+      "id": "own_wls_01",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Sarah lost 28 lbs in 8 weeks. See her before & after — no gym required.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-25",
+      "runDays": 24,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_02",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Before: 192 lbs. After: 158 lbs. Real results in under 3 months.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-25",
+      "runDays": 24,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_03",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Jessica's transformation will shock you. Down 2 dress sizes — here's her before/after.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-25",
+      "runDays": 24,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_04",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "30 lbs gone. See the before and after photos that have everyone talking.",
+      "firstSeen": "2026-06-05",
+      "lastSeen": "2026-06-25",
+      "runDays": 20,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_05",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "A doctor explains the #1 reason you can't lose weight after 40.",
+      "firstSeen": "2026-06-05",
+      "lastSeen": "2026-06-25",
+      "runDays": 20,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_06",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Doctors are stunned by this simple metabolism fix. Here's what the research shows.",
+      "firstSeen": "2026-06-10",
+      "lastSeen": "2026-06-25",
+      "runDays": 15,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_07",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "A board-certified physician reveals the metabolism mistake almost everyone makes.",
+      "firstSeen": "2026-06-10",
+      "lastSeen": "2026-06-25",
+      "runDays": 15,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_wls_08",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Summer sale: 50% off your first bottle today only. Free shipping included.",
+      "firstSeen": "2026-06-15",
+      "lastSeen": "2026-06-25",
+      "runDays": 10,
+      "rawMetrics": {}
+    }
+  ],
+  "dna": [
+    {
+      "adId": "own_wls_01",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "See Results",
+        "targetPersona": "Women who want proof of results before buying",
+        "oneLineSummary": "Before/after testimonial leading with a specific weight-loss number"
+      }
+    },
+    {
+      "adId": "own_wls_02",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "See Results",
+        "targetPersona": "Women who want proof of results before buying",
+        "oneLineSummary": "Before/after testimonial leading with a specific weight-loss number"
+      }
+    },
+    {
+      "adId": "own_wls_03",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "See Results",
+        "targetPersona": "Women who want proof of results before buying",
+        "oneLineSummary": "Before/after transformation testimonial with a dress-size proof point"
+      }
+    },
+    {
+      "adId": "own_wls_04",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "testimonial",
+        "offerFraming": "social_proof",
+        "ctaStyle": "See Results",
+        "targetPersona": "Women who want proof of results before buying",
+        "oneLineSummary": "Before/after photo testimonial leading with a specific weight-loss number"
+      }
+    },
+    {
+      "adId": "own_wls_05",
+      "dna": {
+        "hookType": "callout",
+        "angle": "curiosity",
+        "format": "founder",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Adults over 40 who trust medical authority",
+        "oneLineSummary": "Doctor-authority explainer on the hidden reason for weight gain after 40"
+      }
+    },
+    {
+      "adId": "own_wls_06",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "curiosity",
+        "format": "founder",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Adults who trust medical authority and research",
+        "oneLineSummary": "Doctor-authority explainer on a simple metabolism fix"
+      }
+    },
+    {
+      "adId": "own_wls_07",
+      "dna": {
+        "hookType": "callout",
+        "angle": "curiosity",
+        "format": "founder",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Adults who trust medical authority",
+        "oneLineSummary": "Physician-authority explainer on a common metabolism mistake"
+      }
+    },
+    {
+      "adId": "own_wls_08",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "urgency",
+        "format": "static",
+        "offerFraming": "discount",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "Price-sensitive buyers ready to purchase",
+        "oneLineSummary": "Discount/scarcity offer ad with a same-day sale and free shipping"
+      }
+    }
+  ],
+  "clustering": {
+    "nAds": 8,
+    "kConcepts": 3,
+    "clusters": [
+      {
+        "concept": "Before/After Results Testimonial",
+        "adIds": ["own_wls_01", "own_wls_02", "own_wls_03", "own_wls_04"],
+        "reason": "All four lead with a before/after transformation and a specific weight number in the same testimonial format — Meta's Andromeda would read these as one visual entity and collapse them."
+      },
+      {
+        "concept": "Doctor-Authority Metabolism Explainer",
+        "adIds": ["own_wls_05", "own_wls_06", "own_wls_07"],
+        "reason": "All three use a medical-authority figure explaining a hidden metabolism cause; same hook, angle, and founder/talking-head format means near-identical Entity IDs."
+      },
+      {
+        "concept": "Discount Offer",
+        "adIds": ["own_wls_08"],
+        "reason": "The only ad built on a price/urgency offer rather than proof or authority — a genuinely distinct concept."
+      }
+    ],
+    "gaps": [
+      "Ozempic/GLP-1 off-ramp — no ad addresses fear of regaining weight after stopping the drug, despite it dominating the market right now",
+      "Self-forgiveness / anti-blame reframe — the highest-longevity market ads remove personal guilt ('it's your metabolism, not you'); your set never does",
+      "Anti-restriction permission — no ad reframes weight loss as adding one thing rather than giving up everything, a proven relief angle in this vertical"
+    ]
+  }
+}

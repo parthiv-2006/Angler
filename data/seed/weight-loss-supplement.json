@@ -353,5 +353,147 @@
       }
     }
   ],
-  "winnerSummary": "Weight-loss supplement ads winning right now rely on three core patterns: (1) **Curiosity-gap hooks** that tease a non-obvious mechanism ('morning ritual', 'alpine ice hack', 'blood sugar switch') — the mechanism itself is less important than the mystery; (2) **Authority + social proof stacking** — doctors, scientists, and large user counts (214k, outsells Ozempic) used together remove skepticism faster than either alone; (3) **Persona-specific pain reframes** — the highest-longevity ads don't sell weight loss, they sell relief from a specific form of failure (self-blame, partner judgment, past diet exhaustion). UGC and testimonial formats dominate over static for run duration, suggesting authentic voice outperforms polish in this vertical."
+  "winnerSummary": "Weight-loss supplement ads winning right now rely on three core patterns: (1) **Curiosity-gap hooks** that tease a non-obvious mechanism ('morning ritual', 'alpine ice hack', 'blood sugar switch') — the mechanism itself is less important than the mystery; (2) **Authority + social proof stacking** — doctors, scientists, and large user counts (214k, outsells Ozempic) used together remove skepticism faster than either alone; (3) **Persona-specific pain reframes** — the highest-longevity ads don't sell weight loss, they sell relief from a specific form of failure (self-blame, partner judgment, past diet exhaustion). UGC and testimonial formats dominate over static for run duration, suggesting authentic voice outperforms polish in this vertical.",
+  "briefs": [
+    {
+      "angleName": "The Ozempic Off-Ramp",
+      "emotionalDriver": "fear",
+      "whyNow": "Market is saturated with 'beats Ozempic' social proof, but nobody addresses the fear of rebound weight after stopping GLP-1 drugs — a fast-growing, unserved anxiety.",
+      "hookLine": "Coming off Ozempic? Here's how to keep the weight off without the $1,000/month needle.",
+      "formatRecommendation": "Founder/expert talking-head explaining the 'maintenance gap', then product as the bridge",
+      "targetPersona": "Adults who lost weight on a GLP-1 and are terrified of regaining it once they stop",
+      "priority": 1,
+      "variants": {
+        "meta": "Coming off Ozempic? Don't let the weight come roaring back.",
+        "tiktok": "What no one tells you about quitting Ozempic 👀",
+        "native": "Doctors Warn About the 'Ozempic Rebound' Nobody Mentions"
+      }
+    },
+    {
+      "angleName": "The Self-Forgiveness Reframe",
+      "emotionalDriver": "social_proof",
+      "whyNow": "Top ad seed_wls_002 proves the self-blame reframe works, but it's only running as UGC POV — a permission-giving testimonial format is an untapped variant of a proven angle.",
+      "hookLine": "It was never your willpower. A nurse explained what actually slows your metabolism after 35.",
+      "formatRecommendation": "Testimonial from a relatable 'nurse friend' figure, conversational",
+      "targetPersona": "Women 35-55 carrying guilt and shame about repeated diet failures",
+      "priority": 2,
+      "variants": {
+        "meta": "It was never your willpower — it was this.",
+        "tiktok": "Stop blaming yourself. It's your metabolism, not you.",
+        "native": "Nurse Reveals Why Willpower Has Nothing to Do With It After 35"
+      }
+    },
+    {
+      "angleName": "The Sleep Switch",
+      "emotionalDriver": "curiosity",
+      "whyNow": "The 'while you sleep' mechanism appears once (seed_wls_009) and is winning, but no ad ties it to the well-known cortisol/sleep-debt conversation — a fresh, credible mechanism gap.",
+      "hookLine": "Your worst fat-burning hours are 11pm–2am. Here's the bedtime ritual fixing it.",
+      "formatRecommendation": "Static explainer graphic with a simple timeline visual",
+      "targetPersona": "Stressed, sleep-deprived professionals who suspect their lifestyle is the problem",
+      "priority": 3,
+      "variants": {
+        "meta": "Burn fat in your sleep — if you fix these 3 hours first.",
+        "tiktok": "Your body burns fat 11pm-2am. Are you blocking it?",
+        "native": "The Bedtime Ritual That Turns Sleep Into Fat-Burning Hours"
+      }
+    },
+    {
+      "angleName": "The Quiz Pre-Qualifier",
+      "emotionalDriver": "curiosity",
+      "whyNow": "Quiz framing (seed_wls_005, seed_wls_010) is proven for pre-qualifying, but no ad personalizes by body-type — a sharper, higher-intent quiz hook.",
+      "hookLine": "Take the 60-second metabolism quiz — your result picks your protocol.",
+      "formatRecommendation": "Interactive quiz teaser, UGC voiceover over screen recording",
+      "targetPersona": "Data-driven dieters who distrust one-size-fits-all solutions",
+      "priority": 4,
+      "variants": {
+        "meta": "Your metabolism type changes everything. Find yours in 60 seconds.",
+        "tiktok": "Which metabolism type are you? Quiz 👇",
+        "native": "60-Second Quiz Reveals Your Hidden Metabolism Type"
+      }
+    },
+    {
+      "angleName": "The Husband Doubt Arc",
+      "emotionalDriver": "status",
+      "whyNow": "seed_wls_008's conflict-and-triumph narrative is the longest-running emotional story; extending it to a status/'prove them wrong' angle widens a proven vein.",
+      "hookLine": "They said it was genetic. At the reunion, no one recognized her.",
+      "formatRecommendation": "Story-driven testimonial with before/after reveal",
+      "targetPersona": "Women motivated by an upcoming event and the desire to surprise doubters",
+      "priority": 5,
+      "variants": {
+        "meta": "They said it was genetic. She proved them all wrong.",
+        "tiktok": "POV: the reunion where no one recognized you 🤯",
+        "native": "She Was Told It Was Genetic — Then the Reunion Happened"
+      }
+    },
+    {
+      "angleName": "The Anti-Restriction Permission",
+      "emotionalDriver": "novelty",
+      "whyNow": "seed_wls_011 reframes the category from subtraction to addition and is winning, but only as a question hook — a declarative 'eat more, not less' version is a net-new entry point.",
+      "hookLine": "I added one thing to breakfast and stopped dieting completely.",
+      "formatRecommendation": "UGC kitchen-counter demo, casual",
+      "targetPersona": "Burned-out dieters exhausted by deprivation and restriction",
+      "priority": 6,
+      "variants": {
+        "meta": "I stopped dieting and lost more than ever. Here's the one add.",
+        "tiktok": "Add this, don't subtract. Diets are over.",
+        "native": "The 'Add One Thing' Approach That Replaced Her Diet"
+      }
+    },
+    {
+      "angleName": "The Skeptic's Confession",
+      "emotionalDriver": "curiosity",
+      "whyNow": "Insider/'off the record' framing (seed_wls_015) drives forbidden-knowledge appeal; a 'former skeptic' version adds credibility the market hasn't tapped.",
+      "hookLine": "I review supplements for a living and trash 95% of them. This one I actually take.",
+      "formatRecommendation": "Founder/expert talking-head, dry and credible",
+      "targetPersona": "Trust-skeptical buyers who have been burned by supplement hype",
+      "priority": 7,
+      "variants": {
+        "meta": "A supplement reviewer's honest take (this one surprised me).",
+        "tiktok": "I trash 95% of supplements. Not this one.",
+        "native": "Supplement Reviewer Admits the One Product He Actually Uses"
+      }
+    },
+    {
+      "angleName": "The 7-Day Proof Window",
+      "emotionalDriver": "urgency",
+      "whyNow": "Specific time anchors (6 weeks, 90 days) work, but no winning ad offers a fast, low-commitment 'first sign' window — a friction-reducing urgency gap.",
+      "hookLine": "You'll notice the first change in 7 days. If not, you didn't lose a thing.",
+      "formatRecommendation": "Static with bold 7-day callout + risk reversal",
+      "targetPersona": "Impatient first-time buyers who need quick proof before committing",
+      "priority": 8,
+      "variants": {
+        "meta": "The first change shows in 7 days — or it's free.",
+        "tiktok": "Day 1 vs Day 7. Watch what happens.",
+        "native": "What Happens in the First 7 Days Surprises Most People"
+      }
+    },
+    {
+      "angleName": "The Walmart-Mom Value Play",
+      "emotionalDriver": "social_proof",
+      "whyNow": "seed_wls_007 taps mass-market validation; a price-anchored value angle ('cheaper than your coffee habit') serves the budget-conscious persona no premium ad addresses.",
+      "hookLine": "It costs less per day than your morning coffee — and it's outselling the pharmacy.",
+      "formatRecommendation": "Static price-comparison graphic, mass-market tone",
+      "targetPersona": "Budget-conscious shoppers who trust what's popular and affordable",
+      "priority": 9,
+      "variants": {
+        "meta": "Less than your daily coffee. Outsells the pharmacy 3:1.",
+        "tiktok": "Cheaper than coffee. Why is everyone buying it?",
+        "native": "The $1-a-Day Supplement Outselling Pharmacy Shelves"
+      }
+    },
+    {
+      "angleName": "The Bloodwork Believer",
+      "emotionalDriver": "novelty",
+      "whyNow": "Blood-sugar root-cause framing (seed_wls_010) is gaining traction; a 'show your labs' proof angle is a credible, net-new format the vertical hasn't used.",
+      "hookLine": "My doctor saw my new bloodwork and asked what I changed. This.",
+      "formatRecommendation": "Testimonial with (blurred) lab-report visual for proof",
+      "targetPersona": "Health-data-motivated adults who trust measurable, clinical proof",
+      "priority": 10,
+      "variants": {
+        "meta": "My doctor saw my labs and asked what changed. Here's the answer.",
+        "tiktok": "My bloodwork shocked my doctor 😳",
+        "native": "Her Bloodwork Changed So Much Her Doctor Asked Questions"
+      }
+    }
+  ]
 }
