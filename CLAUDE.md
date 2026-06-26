@@ -197,6 +197,19 @@ Keep entries concise. A future AI session needs enough to act, not a novel.
 5. **Clean, professional codebase at all times.** No dead code, no debug `console.log`
    left in, no commented-out blocks, no stray files. The repo must look production-ready
    on every commit.
+6. **Seed path first, live path second.** When implementing any feature, make the
+   seed/cached path work and verify it before touching the live API path. The demo judge
+   clicks seed verticals first — a broken live path is recoverable; a broken seed path
+   loses the contest.
+7. **Route timeout budget.** Every `app/api/*` route must complete its primary path in
+   under 8 seconds (Vercel default is 10s). If a route might exceed this — e.g. vision
+   analysis over many ads — use streaming, reduce batch size, or move the heavy work to
+   offline seed pre-computation. Never assume a serverless function can do multi-step AI
+   work synchronously without checking the math.
+8. **"Does it demo?" is the definition of done.** Before marking any module complete, it
+   must work end-to-end on the seed path in an incognito window with zero env vars set.
+   TypeScript and lint passing are necessary but not sufficient — the win condition is a
+   working live URL, not clean types.
 
 ---
 
