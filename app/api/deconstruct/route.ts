@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { getOrAnalyzeDNA, withRetry } from "@/lib/cache";
 
+// Live vision analysis over a batch of ads can exceed the 10s default.
+export const maxDuration = 60;
+
 const adInputSchema = z.object({
   id: z.string(),
   coverUrl: z.string().optional(),
