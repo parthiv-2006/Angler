@@ -47,24 +47,27 @@
 
 ---
 
-## Module 3 — Andromeda Diversity Scorer ⬜
+## Module 3 — Andromeda Diversity Scorer ✅ (seed path)
 
-- [x] `/api/score` route stub — accepts `{ dna: CreativeDNA[] }`, calls `provider.clusterConcepts()`
-- [x] LLM concept-clustering prompt (`lib/ai/prompts/cluster.ts`)
-- [ ] Drag-and-drop upload UI for user's own ad set
-- [ ] Upload → DNA extraction flow wired
-- [ ] Diversity report rendered in UI (N ads → K concepts + gap callout)
-- [ ] Sample ad sets loadable with one click
+- [x] `/api/score` route — **seed-first** via `sampleSetId`; live clustering capped at 20 DNA
+- [x] LLM concept-clustering prompt now **grounds gaps in mined market DNA** (`cluster.ts`)
+- [x] Scores the **user's own** ad set (was clustering competitor DNA — fixed)
+- [x] Sample ad sets loadable with one click (`/api/samples`, `data/seed/samples/*.json`)
+- [x] Paste-your-own-captions flow (live path)
+- [x] Diversity report rendered in UI (N ads → K concepts + amber gap callout)
+- [ ] Drag-and-drop **image** upload (deferred — sample sets + paste chosen instead)
 
 ---
 
-## Module 4 — Angle Generator ⬜
+## Module 4 — Angle Generator ✅ (seed path)
 
-- [x] `/api/generate` route stub — accepts `{ vertical, winnerSummary, marketDNA, clustering }`, returns `{ briefs }`
+- [x] `/api/generate` route — **seed-first** via vertical slug (`getSeedBriefs`)
 - [x] Angle generation prompt (`lib/ai/prompts/generate.ts`)
-- [ ] Copy-to-clipboard per brief (per-field and full brief)
+- [x] 10 pre-baked briefs per seed vertical (in `data/seed/*.json`)
+- [x] Copy-to-clipboard per brief (full brief)
+- [x] ≥10 prioritized briefs with 3-platform variants confirmed end-to-end (seed path)
 - [ ] CSV export of angle batch
-- [ ] ≥10 prioritized briefs with ≥2-platform variants confirmed end-to-end
+- [ ] Per-field copy buttons
 
 ---
 
@@ -86,12 +89,16 @@
 
 ---
 
-## Demo hardening ⬜
+## Demo hardening 🔄
 
+- [x] Seed-first path for **all four** modules (zero-credential full flow verified)
+- [x] Tolerant model-JSON parsing (`lib/ai/json.ts`) so a fenced response can't 500
+- [x] Graceful live-source fallback in `/api/mine` (TikTok → Apify → friendly 200)
+- [x] `maxDuration = 60` on all AI routes; live score batch-capped at 20
+- [x] Loading + error + `unavailable` states wired in `app/page.tsx`
+- [x] Tested with zero credentials (no `.env.local`, no shell keys) end-to-end
 - [ ] Concurrency guard (prefer cache under simultaneous requests)
-- [ ] All loading/empty/error states complete
-- [ ] Seed path confirmed sub-second on fresh incognito session
-- [ ] Tested with zero credentials on a fresh machine
+- [ ] Empty-state polish on every module
 
 ---
 

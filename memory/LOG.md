@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-06-26 — Plan audit + seed-path hardening (Modules 3 & 4)
+
+**What was done (correction + hardening pass after a full plan audit):**
+- **C1 — closed the biggest hole:** Modules 3 & 4 had no seed/cached path (routes always
+  called live AI; seed JSON had no clustering/briefs). Pre-baked 10 angle briefs into each
+  of the 3 vertical seeds, added 2 redundant sample ad sets under `data/seed/samples/`
+  (with pre-baked clustering), and added seed-first lookup to `/api/score` (by `sampleSetId`)
+  and `/api/generate` (by vertical slug).
+- **C2 — Module 3 now scores the USER's own ad set**, not the competitor ads. New
+  `/api/samples` route + sample-set picker + paste box in `app/page.tsx`. Step renumbered:
+  1 mine → 2 winners → 3 market DNA → 4 score your set → 5 N→K + gaps → 6 briefs.
+- **C3 — gaps grounded in market DNA:** `clusterConcepts(dna, marketDNA?)` + prompt now
+  receive the mined winners so gaps are real, not hallucinated.
+- **H1 — graceful source fallback:** `/api/mine` tries TikTok → Apify → returns 200 with
+  `unavailable:true` + friendly message (never a 500). UI renders the nudge.
+- **H2 — tolerant JSON parsing:** new `lib/ai/json.ts` `parseModelJSON()` strips fences /
+  slices to outer braces; both providers use it.
+- **H3 — `export const maxDuration = 60`** on mine/deconstruct/score/generate; live score
+  capped at 20 DNA records.
+- **M1 — moved the 5 design docs into `docs/`** so CLAUDE.md's `./docs/*` refs resolve.
+
+**Verified:** `npm run typecheck` + `npm run build` clean. Full 5-step flow exercised on
+the **zero-credential** production server (port 3100, no `.env.local`, no shell keys):
+mine→deconstruct→samples→score→generate all returned `fromSeed:true` with real data.
+Novel vertical returned the friendly `unavailable` fallback (HTTP 200), not an error.
+
+**Branch state:** `main`. **What's next:** README (25% of score), Supabase apply + Vercel
+deploy, optional normalize/seed unit tests, fallback Loom.
+
+---
+
 ## 2026-06-26 — Memory system
 
 **What was done:**

@@ -57,6 +57,19 @@ All callers must pass all 5 args. Check `app/api/deconstruct/route.ts` if you se
 
 ---
 
+## Tooling
+
+### `npm run lint` (`next lint`) prompts interactively and hangs
+**Symptom:** `next lint` asks "How would you like to configure ESLint? (Strict/Base/Cancel)"
+and blocks — ESLint was never configured in this project.
+**Workaround:** Don't rely on `npm run lint` in non-interactive runs. `npm run typecheck`
+and `npm run build` are the real gates. `next lint` is also deprecated in Next 16; migrate to
+the ESLint CLI later if a lint gate is wanted.
+
+### `next build` rewrites `tsconfig.json`
+**Symptom:** After `npm run build`, `tsconfig.json` shows a diff (reformatted arrays + added
+`"target": "ES2017"`). This is Next.js auto-reconfiguring TS; it's benign — keep it.
+
 ## TypeScript
 
 ### Hook post-tool false positives ("Write operation failed")

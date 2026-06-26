@@ -54,6 +54,42 @@
 
 ---
 
+## Module 3 scores the user's OWN ad set; sample sets are pre-baked
+
+**Decision:** Module 3 (Diversity Scorer) clusters a *user-supplied* ad set (a one-click
+sample set from `data/seed/samples/`, or pasted captions), not the mined competitor ads.
+Sample sets ship with pre-baked `clustering` so the seed demo is instant and deterministic.
+**Why:** The product's whole wedge (Entity-ID collapse) is about the user's *own* redundancy.
+The earlier UI mistakenly clustered competitor DNA. Sample sets are deliberately redundant
+(8→3, 6→2) so the "N ads → K concepts" headline lands. Paste is the live (key-required)
+path; sample sets are the zero-credential path.
+**Files:** `data/seed/samples/*.json`, `app/api/samples/route.ts`, `app/api/score/route.ts`, `app/page.tsx`
+
+## Modules 3 & 4 are seed-first, like Modules 1 & 2
+
+**Decision:** `/api/score` returns a pre-baked sample clustering when `sampleSetId` matches a
+seed sample; `/api/generate` returns pre-baked `briefs` when the vertical is a seed vertical.
+Live AI runs only for novel verticals / pasted sets.
+**Why:** Hard Rule #6 (seed-first) + #5 (every live call needs a cached fallback) + the
+Vercel timeout budget. A live `generate` (~10 briefs × variants) can take 20–35s and would
+time out; pre-baking removes that from the judging path entirely.
+**Files:** `app/api/score/route.ts`, `app/api/generate/route.ts`, `lib/cache/seed.ts`
+
+## Diversity gaps are grounded in mined market DNA
+
+**Decision:** `clusterConcepts(dna, marketDNA?)` passes the Module 1–2 winners into the
+clustering call; gaps = proven market angles absent from the user's set.
+**Why:** Without market context the model hallucinated gaps from general knowledge, breaking
+the "grounded in what's actually winning in THIS vertical" promise.
+**Files:** `lib/ai/provider.ts`, `lib/ai/prompts/cluster.ts`, both provider impls
+
+## Design docs live in `docs/`
+
+**Decision:** The 5 design docs were moved from repo root into `docs/` (via `git mv`).
+**Why:** `CLAUDE.md` referenced `./docs/CONTEXT.md` etc., but the files were at root —
+broken links in a repo the judge reads. Cross-doc references between them are bare filenames,
+so they still resolve now that all 5 share `docs/`.
+
 ## Ad longevity (`run_days`) as the winning signal, not CTR/views
 
 **Decision:** Ads are ranked by `run_days` (how long the ad has been running), not by raw view counts or CTR.
