@@ -3,6 +3,7 @@ import type { ZodType } from "zod";
 import type { AIProvider } from "./provider";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 import { creativeDNASchema, conceptClusteringSchema } from "./schemas";
+import { parseModelJSON } from "./json";
 import { ANALYZE_CREATIVE_SYSTEM, buildAnalyzeCreativePrompt } from "./prompts/analyze";
 import { CLUSTER_CONCEPTS_SYSTEM, buildClusterConceptsPrompt } from "./prompts/cluster";
 
@@ -39,10 +40,13 @@ export class GeminiProvider implements AIProvider {
     void parts; // unused — Gemini content shape differs from the local type annotation above
     const result = await model.generateContent({ contents: content });
     const text = result.response.text();
-    return creativeDNASchema.parse(JSON.parse(text));
+    return creativeDNASchema.parse(parseModelJSON(text));
   }
 
-  async clusterConcepts(dna: CreativeDNA[]): Promise<ConceptClustering> {
+  async clusterConcepts(
+    dna: CreativeDNA[],
+    marketDNA?: CreativeDNA[],
+  ): Promise<ConceptClustering> {
     const model = this.client.getGenerativeModel({ model: MODEL_DEFAULT });
     const result = await model.generateContent({
       contents: [
@@ -50,14 +54,14 @@ export class GeminiProvider implements AIProvider {
           role: "user",
           parts: [
             {
-              text: `${CLUSTER_CONCEPTS_SYSTEM}\n\n${buildClusterConceptsPrompt(dna)}`,
+              text: `${CLUSTER_CONCEPTS_SYSTEM}\n\n${buildClusterConceptsPrompt(dna, marketDNA)}`,
             },
           ],
         },
       ],
     });
     const text = result.response.text();
-    return conceptClusteringSchema.parse(JSON.parse(text));
+    return conceptClusteringSchema.parse(parseModelJSON(text));
   }
 
   async generateJSON<T>(args: {
@@ -75,6 +79,6 @@ export class GeminiProvider implements AIProvider {
       ],
     });
     const text = result.response.text();
-    return args.schema.parse(JSON.parse(text));
+    return args.schema.parse(parseModelJSON(text));
   }
 }

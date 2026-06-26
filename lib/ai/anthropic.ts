@@ -3,6 +3,7 @@ import type { ZodType } from "zod";
 import type { AIProvider } from "./provider";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 import { creativeDNASchema, conceptClusteringSchema } from "./schemas";
+import { parseModelJSON } from "./json";
 import { ANALYZE_CREATIVE_SYSTEM, buildAnalyzeCreativePrompt } from "./prompts/analyze";
 import { CLUSTER_CONCEPTS_SYSTEM, buildClusterConceptsPrompt } from "./prompts/cluster";
 
@@ -52,21 +53,24 @@ export class AnthropicProvider implements AIProvider {
     });
 
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
-    return creativeDNASchema.parse(JSON.parse(text));
+    return creativeDNASchema.parse(parseModelJSON(text));
   }
 
-  async clusterConcepts(dna: CreativeDNA[]): Promise<ConceptClustering> {
+  async clusterConcepts(
+    dna: CreativeDNA[],
+    marketDNA?: CreativeDNA[],
+  ): Promise<ConceptClustering> {
     const message = await this.client.messages.create({
       model: MODEL_DEFAULT,
       max_tokens: 2048,
       system: CLUSTER_CONCEPTS_SYSTEM,
       messages: [
-        { role: "user", content: buildClusterConceptsPrompt(dna) },
+        { role: "user", content: buildClusterConceptsPrompt(dna, marketDNA) },
       ],
     });
 
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
-    return conceptClusteringSchema.parse(JSON.parse(text));
+    return conceptClusteringSchema.parse(parseModelJSON(text));
   }
 
   async generateJSON<T>(args: {
@@ -82,6 +86,6 @@ export class AnthropicProvider implements AIProvider {
     });
 
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
-    return args.schema.parse(JSON.parse(text));
+    return args.schema.parse(parseModelJSON(text));
   }
 }

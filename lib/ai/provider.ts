@@ -9,7 +9,9 @@ export interface AIProvider {
     metadata?: Record<string, unknown>;
   }): Promise<CreativeDNA>;
 
-  clusterConcepts(dna: CreativeDNA[]): Promise<ConceptClustering>;
+  // `dna` is the user's own ad set to cluster. `marketDNA` (the mined winners
+  // from Modules 1–2) grounds the gap analysis in what's actually winning.
+  clusterConcepts(dna: CreativeDNA[], marketDNA?: CreativeDNA[]): Promise<ConceptClustering>;
 
   generateJSON<T>(args: {
     system: string;

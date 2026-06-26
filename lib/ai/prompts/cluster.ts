@@ -21,6 +21,12 @@ Return raw JSON only matching this exact schema:
   "gaps": ["string — market-proven angle that is absent from this ad set"]
 }`;
 
-export function buildClusterConceptsPrompt(dna: CreativeDNA[]): string {
-  return `Here are ${dna.length} ad creative DNA records to cluster:\n\n${JSON.stringify(dna, null, 2)}\n\nReturn the JSON schema. Raw JSON only.`;
+export function buildClusterConceptsPrompt(
+  dna: CreativeDNA[],
+  marketDNA?: CreativeDNA[],
+): string {
+  const market = marketDNA?.length
+    ? `\n\nFor the "gaps", here is the market-proven creative DNA currently winning in this vertical (the mined top performers). Identify proven angles present in the market below but ABSENT from the user's set above:\n\n${JSON.stringify(marketDNA, null, 2)}`
+    : "";
+  return `Here are ${dna.length} ad creative DNA records (the user's own ad set) to cluster:\n\n${JSON.stringify(dna, null, 2)}${market}\n\nReturn the JSON schema. Raw JSON only.`;
 }
