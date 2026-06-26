@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
+
+interface SampleSummary {
+  slug: string;
+  label: string;
+  vertical: string;
+  adCount: number;
+}
 
 interface AppState {
   vertical: string;
   ads: Ad[];
   winnerSummary: string | null;
   fromSeed: boolean;
-  dnaResults: { adId: string; dna: CreativeDNA }[];
+  unavailable: string | null;
+  marketDna: { adId: string; dna: CreativeDNA }[];
+  // Module 3 — the user's own ad set
+  sampleSets: SampleSummary[];
+  userAds: Ad[];
+  selectedSample: string | null;
+  pasteText: string;
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
   loading: boolean;
@@ -27,7 +40,12 @@ const INITIAL: AppState = {
   ads: [],
   winnerSummary: null,
   fromSeed: false,
-  dnaResults: [],
+  unavailable: null,
+  marketDna: [],
+  sampleSets: [],
+  userAds: [],
+  selectedSample: null,
+  pasteText: "",
   clustering: null,
   briefs: [],
   loading: false,
@@ -35,8 +53,19 @@ const INITIAL: AppState = {
   error: null,
 };
 
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export default function Home() {
   const [state, setState] = useState<AppState>(INITIAL);
+
+  useEffect(() => {
+    fetch("/api/samples")
+      .then((r) => r.json())
+      .then((d) => setState((s) => ({ ...s, sampleSets: d.samples ?? [] })))
+      .catch(() => {});
+  }, []);
 
   function setLoading(step: string) {
     setState((s) => ({ ...s, loading: true, error: null, loadingStep: step }));
@@ -44,80 +73,163 @@ export default function Home() {
   function setError(error: string) {
     setState((s) => ({ ...s, loading: false, loadingStep: "", error }));
   }
-  function stopLoading() {
-    setState((s) => ({ ...s, loading: false, loadingStep: "" }));
-  }
 
   async function handleMine() {
     setLoading("Pulling competitor ads…");
-    const res = await fetch("/api/mine", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ vertical: state.vertical }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error); return; }
-    setState((s) => ({
-      ...s,
-      ads: data.ads,
-      winnerSummary: data.winnerSummary,
-      fromSeed: data.fromSeed,
-      dnaResults: [],
-      clustering: null,
-      briefs: [],
-      loading: false,
-      loadingStep: "",
-      error: null,
-    }));
+    try {
+      const res = await fetch("/api/mine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vertical: state.vertical }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Something went wrong");
+      setState((s) => ({
+        ...s,
+        ads: data.ads ?? [],
+        winnerSummary: data.winnerSummary ?? null,
+        fromSeed: !!data.fromSeed,
+        unavailable: data.unavailable ? data.message : null,
+        marketDna: [],
+        userAds: [],
+        selectedSample: null,
+        clustering: null,
+        briefs: [],
+        loading: false,
+        loadingStep: "",
+        error: null,
+      }));
+    } catch {
+      setError("Network error — please try again");
+    }
   }
 
   async function handleDeconstruct() {
     setLoading("Extracting creative DNA…");
-    const res = await fetch("/api/deconstruct", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        vertical: state.vertical,
-        ads: state.ads.slice(0, 15).map((ad) => ({
-          id: ad.id,
-          coverUrl: ad.coverUrl || undefined,
-          copy: ad.copy || undefined,
-        })),
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error); return; }
-    setState((s) => ({ ...s, dnaResults: data.results, clustering: null, briefs: [], loading: false, loadingStep: "" }));
+    try {
+      const res = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vertical: state.vertical,
+          ads: state.ads.slice(0, 15).map((ad) => ({
+            id: ad.id,
+            coverUrl: ad.coverUrl || undefined,
+            copy: ad.copy || undefined,
+          })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Failed to analyze creatives");
+      setState((s) => ({ ...s, marketDna: data.results, clustering: null, briefs: [], loading: false, loadingStep: "" }));
+    } catch {
+      setError("Network error — please try again");
+    }
   }
 
-  async function handleScore() {
-    setLoading("Scoring creative diversity…");
-    const res = await fetch("/api/score", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dna: state.dnaResults.map((r) => r.dna) }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error); return; }
-    setState((s) => ({ ...s, clustering: data.clustering, briefs: [], loading: false, loadingStep: "" }));
+  // Module 3 — score a pre-baked sample ad set (instant, seed path).
+  async function handleScoreSample(slug: string) {
+    setLoading("Scoring your ad set…");
+    try {
+      const setRes = await fetch(`/api/samples?slug=${encodeURIComponent(slug)}`);
+      const sample = await setRes.json();
+      if (!setRes.ok) return setError(sample.error ?? "Couldn't load sample set");
+
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sampleSetId: slug,
+          dna: sample.dna.map((d: { dna: CreativeDNA }) => d.dna),
+          marketDNA: state.marketDna.map((r) => r.dna),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Failed to score diversity");
+      setState((s) => ({
+        ...s,
+        userAds: sample.ads,
+        selectedSample: slug,
+        clustering: data.clustering,
+        briefs: [],
+        loading: false,
+        loadingStep: "",
+      }));
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
+  // Module 3 — score pasted ad copy (live path; needs an AI key).
+  async function handleScorePaste() {
+    const lines = state.pasteText.split("\n").map((l) => l.trim()).filter(Boolean);
+    if (lines.length < 3) return setError("Paste at least 3 ad captions (one per line).");
+    setLoading("Analyzing & scoring your ad set…");
+    try {
+      const userAds: Ad[] = lines.map((copy, i) => ({
+        id: `paste_${i}`,
+        source: "uploaded",
+        advertiser: "Your Ad Set",
+        coverUrl: "",
+        copy,
+        firstSeen: "",
+        lastSeen: "",
+        runDays: 0,
+        rawMetrics: {},
+      }));
+
+      const dnaRes = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ads: userAds.map((a) => ({ id: a.id, copy: a.copy })) }),
+      });
+      const dnaData = await dnaRes.json();
+      if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
+
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dna: dnaData.results.map((r: { dna: CreativeDNA }) => r.dna),
+          marketDNA: state.marketDna.map((r) => r.dna),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Failed to score diversity");
+      setState((s) => ({
+        ...s,
+        userAds,
+        selectedSample: null,
+        clustering: data.clustering,
+        briefs: [],
+        loading: false,
+        loadingStep: "",
+      }));
+    } catch {
+      setError("Network error — please try again");
+    }
   }
 
   async function handleGenerate() {
     if (!state.clustering) return;
     setLoading("Generating angle briefs…");
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        vertical: state.vertical,
-        winnerSummary: state.winnerSummary ?? "",
-        marketDNA: state.dnaResults.map((r) => r.dna),
-        clustering: state.clustering,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error); return; }
-    setState((s) => ({ ...s, briefs: data.briefs, loading: false, loadingStep: "" }));
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vertical: state.vertical,
+          winnerSummary: state.winnerSummary ?? "",
+          marketDNA: state.marketDna.map((r) => r.dna),
+          clustering: state.clustering,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Failed to generate angle briefs");
+      setState((s) => ({ ...s, briefs: data.briefs, loading: false, loadingStep: "" }));
+    } catch {
+      setError("Network error — please try again");
+    }
   }
 
   function handleCopyBrief(brief: AngleBrief) {
@@ -135,14 +247,15 @@ export default function Home() {
     void navigator.clipboard.writeText(text);
   }
 
+  const currentSlug = slugify(state.vertical);
+  const relevantSamples = state.sampleSets.filter((s) => s.vertical === currentSlug);
+  const samplesToShow = relevantSamples.length ? relevantSamples : state.sampleSets;
+
   const hasAds = state.ads.length > 0;
-  const hasDNA = state.dnaResults.length > 0;
-  const hasClustering = !!state.clustering;
-  const hasBriefs = state.briefs.length > 0;
+  const hasMarketDna = state.marketDna.length > 0;
 
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
-      {/* Header */}
       <header style={{ marginBottom: 48 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 6 }}>
           Creative Strategist
@@ -174,52 +287,34 @@ export default function Home() {
             placeholder="e.g. weight-loss supplement, debt relief, ED telehealth…"
             style={inputStyle}
           />
-          <button
-            onClick={handleMine}
-            disabled={state.loading || !state.vertical.trim()}
-            style={primaryBtnStyle(state.loading)}
-          >
+          <button onClick={handleMine} disabled={state.loading || !state.vertical.trim()} style={primaryBtnStyle(state.loading)}>
             {state.loading && state.loadingStep.includes("Pulling") ? "Searching…" : "Find Ads"}
           </button>
         </div>
       </section>
 
-      {state.error && (
-        <p style={{ color: "#f87171", marginBottom: 24, fontSize: 14 }}>{state.error}</p>
+      {state.error && <p style={{ color: "#f87171", marginBottom: 24, fontSize: 14 }}>{state.error}</p>}
+      {state.unavailable && (
+        <div style={{ ...calloutStyle, marginBottom: 24, borderColor: "rgba(245,158,11,0.4)", background: "rgba(245,158,11,0.06)" }}>
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{state.unavailable}</p>
+        </div>
       )}
-
-      {state.loading && (
-        <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 24 }}>
-          {state.loadingStep}
-        </p>
-      )}
+      {state.loading && <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 24 }}>{state.loadingStep}</p>}
 
       {/* ── Step 2: Ads + winner summary ────────────────────────────────────── */}
       {hasAds && (
         <section style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
-            <Label
-              step="2"
-              text={`${state.ads.length} competitor ads — sorted by run duration`}
-              badge={state.fromSeed ? "instant" : "live"}
-            />
-            <button
-              onClick={handleDeconstruct}
-              disabled={state.loading}
-              style={secondaryBtnStyle(state.loading)}
-            >
+            <Label step="2" text={`${state.ads.length} competitor ads — sorted by run duration`} badge={state.fromSeed ? "instant" : "live"} />
+            <button onClick={handleDeconstruct} disabled={state.loading} style={secondaryBtnStyle(state.loading)}>
               {state.loading && state.loadingStep.includes("DNA") ? "Analyzing…" : "Extract DNA →"}
             </button>
           </div>
 
           {state.winnerSummary && (
             <div style={calloutStyle}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>
-                WHAT&apos;S WINNING &amp; WHY
-              </p>
-              <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)" }}>
-                {state.winnerSummary}
-              </p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>WHAT&apos;S WINNING &amp; WHY</p>
+              <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)" }}>{state.winnerSummary}</p>
             </div>
           )}
 
@@ -239,21 +334,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Step 3: DNA ──────────────────────────────────────────────────────── */}
-      {hasDNA && (
+      {/* ── Step 3: Market DNA ───────────────────────────────────────────────── */}
+      {hasMarketDna && (
         <section style={{ marginBottom: 40 }}>
-          <div style={sectionHeaderStyle}>
-            <Label step="3" text="Creative DNA extracted" />
-            <button
-              onClick={handleScore}
-              disabled={state.loading}
-              style={secondaryBtnStyle(state.loading)}
-            >
-              {state.loading && state.loadingStep.includes("diversity") ? "Scoring…" : "Score Diversity →"}
-            </button>
-          </div>
+          <Label step="3" text="Creative DNA of the market winners" />
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {state.dnaResults.map((r) => (
+            {state.marketDna.map((r) => (
               <div key={r.adId} style={{ ...cardStyle, padding: "8px 12px" }}>
                 <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>{r.dna.angle}</span>
                 <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
@@ -266,19 +352,65 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Step 4: Diversity score ─────────────────────────────────────────── */}
-      {hasClustering && state.clustering && (
+      {/* ── Step 4: Score YOUR ad set ────────────────────────────────────────── */}
+      {hasMarketDna && (
+        <section style={{ marginBottom: 40 }}>
+          <Label step="4" text="Score your own ad set for hidden redundancy" />
+          <p style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 12 }}>
+            Load a sample ad set (or paste your own captions) to see how many concepts Meta&apos;s
+            algorithm really sees — and which proven angles you&apos;re missing.
+          </p>
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            {samplesToShow.map((sample) => (
+              <button
+                key={sample.slug}
+                onClick={() => handleScoreSample(sample.slug)}
+                disabled={state.loading}
+                style={chipStyle(state.selectedSample === sample.slug)}
+              >
+                {sample.label}
+              </button>
+            ))}
+          </div>
+
+          <details style={{ marginBottom: 8 }}>
+            <summary style={{ fontSize: 13, color: "var(--text-muted)", cursor: "pointer" }}>
+              …or paste your own ad captions
+            </summary>
+            <textarea
+              value={state.pasteText}
+              onChange={(e) => setState((s) => ({ ...s, pasteText: e.target.value }))}
+              placeholder={"One ad caption per line (min 3)…"}
+              rows={4}
+              style={{ ...inputStyle, width: "100%", marginTop: 8, fontFamily: "inherit", resize: "vertical" }}
+            />
+            <button onClick={handleScorePaste} disabled={state.loading} style={{ ...secondaryBtnStyle(state.loading), marginTop: 8 }}>
+              Score pasted ads →
+            </button>
+          </details>
+
+          {state.userAds.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
+                YOUR AD SET ({state.userAds.length} ads)
+              </p>
+              {state.userAds.map((ad) => (
+                <div key={ad.id} style={{ ...cardStyle, padding: "8px 12px" }}>
+                  <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{ad.copy}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── Step 5: Diversity result ─────────────────────────────────────────── */}
+      {state.clustering && (
         <section style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
-            <Label
-              step="4"
-              text={`${state.clustering.nAds} ads → ${state.clustering.kConcepts} distinct concepts`}
-            />
-            <button
-              onClick={handleGenerate}
-              disabled={state.loading}
-              style={primaryBtnStyle(state.loading)}
-            >
+            <Label step="5" text={`Meta likely sees these ${state.clustering.nAds} ads as ${state.clustering.kConcepts} concepts`} />
+            <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
               {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
             </button>
           </div>
@@ -289,14 +421,14 @@ export default function Home() {
                 <p style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cluster.concept}</p>
                 <p style={{ color: "var(--text-muted)", fontSize: 12 }}>{cluster.reason}</p>
                 <p style={{ color: "var(--accent)", fontSize: 12, marginTop: 4 }}>
-                  {cluster.adIds.length} ad{cluster.adIds.length !== 1 ? "s" : ""} in this concept
+                  {cluster.adIds.length} ad{cluster.adIds.length !== 1 ? "s" : ""} collapse into this concept
                 </p>
               </div>
             ))}
           </div>
 
           {state.clustering.gaps.length > 0 && (
-            <div style={{ ...calloutStyle, marginTop: 16 }}>
+            <div style={{ ...calloutStyle, marginTop: 16, borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.06)" }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 8 }}>
                 ANGLE GAPS — proven market angles you&apos;re not running
               </p>
@@ -310,41 +442,39 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Step 5: Angle briefs ─────────────────────────────────────────────── */}
-      {hasBriefs && (
+      {/* ── Step 6: Angle briefs ─────────────────────────────────────────────── */}
+      {state.briefs.length > 0 && (
         <section>
-          <Label step="5" text={`${state.briefs.length} angle briefs generated`} />
+          <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {state.briefs
-              .sort((a, b) => a.priority - b.priority)
-              .map((brief, i) => (
-                <div key={i} style={cardStyle}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                    <div>
-                      <span style={{ fontWeight: 700, fontSize: 14 }}>{brief.angleName}</span>
-                      <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 10 }}>
-                        #{brief.priority} · {brief.emotionalDriver}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleCopyBrief(brief)}
-                      style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}
-                    >
-                      Copy
-                    </button>
+            {[...state.briefs].sort((a, b) => a.priority - b.priority).map((brief, i) => (
+              <div key={i} style={cardStyle}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                  <div>
+                    <span style={{ fontWeight: 700, fontSize: 14 }}>{brief.angleName}</span>
+                    <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 10 }}>
+                      #{brief.priority} · {brief.emotionalDriver}
+                    </span>
                   </div>
-                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>{brief.whyNow}</p>
-                  <p style={{ fontSize: 14, fontStyle: "italic", marginBottom: 10 }}>&ldquo;{brief.hookLine}&rdquo;</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <CopyVariant platform="Meta" copy={brief.variants.meta} />
-                    <CopyVariant platform="TikTok" copy={brief.variants.tiktok} />
-                    <CopyVariant platform="Native" copy={brief.variants.native} />
-                  </div>
-                  <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
-                    Format: {brief.formatRecommendation} · Persona: {brief.targetPersona}
-                  </p>
+                  <button
+                    onClick={() => handleCopyBrief(brief)}
+                    style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}
+                  >
+                    Copy
+                  </button>
                 </div>
-              ))}
+                <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>{brief.whyNow}</p>
+                <p style={{ fontSize: 14, fontStyle: "italic", marginBottom: 10 }}>&ldquo;{brief.hookLine}&rdquo;</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <CopyVariant platform="Meta" copy={brief.variants.meta} />
+                  <CopyVariant platform="TikTok" copy={brief.variants.tiktok} />
+                  <CopyVariant platform="Native" copy={brief.variants.native} />
+                </div>
+                <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
+                  Format: {brief.formatRecommendation} · Persona: {brief.targetPersona}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
       )}
