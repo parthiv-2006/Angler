@@ -13,12 +13,17 @@
 - [x] Provider-agnostic AI layer (`lib/ai/provider.ts` + `anthropic.ts` + `gemini.ts`)
 - [x] Zod schemas for all AI outputs (`lib/ai/schemas.ts`)
 - [x] Prompt templates (`lib/ai/prompts/analyze.ts`, `cluster.ts`, `generate.ts`)
-- [x] Supabase schema written (`supabase/migrations/001_initial_schema.sql`) — **not yet applied to prod Supabase project**
+- [x] Supabase schema written (`supabase/migrations/001_initial_schema.sql`)
+- [x] Supabase schema **applied** to `parthiv-2006's Project` (xtigqcoogbraorwhmshw, us-west-2) via MCP
 - [x] Supabase client + typed queries (`lib/db/client.ts`, `lib/db/queries.ts`, `lib/db/types.ts`)
 - [x] Seed-first cache layer (`lib/cache/index.ts`, `lib/cache/seed.ts`)
 - [x] `withRetry` exponential backoff utility in `lib/cache/index.ts`
-- [ ] Supabase env vars added to `.env.local` and Vercel project settings
-- [ ] Supabase migration applied (`supabase db push` or manual paste)
+- [x] Supabase env vars added to `.env.local`
+- [x] `/api/score` validation fix: `dna` schema changed to `.min(0)` so seed path accepts empty array
+- [ ] Supabase env vars added to Vercel project settings
+- [ ] Anthropic Console API key obtained and added to `.env.local` (currently using Gemini; Gemini free tier quota exhausted — add billing or swap to Anthropic key)
+- [ ] README written
+- [ ] Vercel deploy
 
 ---
 

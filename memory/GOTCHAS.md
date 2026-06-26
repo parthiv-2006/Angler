@@ -34,6 +34,16 @@
 **Cause:** If `ANTHROPIC_API_KEY` is exported in `.zshrc` / `.bashrc` / a global `.env`, Claude Code picks it up and uses it for its own calls.
 **Fix:** Keep the app's key **only** in `.env.local` (git-ignored). Never export it globally. Verify with `claude` → `/status` — the Auth field should show subscription, not the API key.
 
+### Claude Code OAuth token (`sk-ant-oat...`) cannot be used as `ANTHROPIC_API_KEY`
+**Symptom:** 401 `invalid x-api-key` even though the key looks valid.
+**Cause:** `sk-ant-oat` tokens are Claude Code's internal OAuth credentials. They authenticate against Anthropic's internal services, not `api.anthropic.com`. The SDK's `authToken` option also fails — it uses `Authorization: Bearer` which the public API does not accept for these tokens.
+**Fix:** Only a Console API key (`sk-ant-api03-...`) from console.anthropic.com works for app traffic.
+
+### Gemini free tier quota exhausts quickly under `withRetry`
+**Symptom:** 429 `You exceeded your current quota` with `limit: 0` on the free tier.
+**Cause:** `withRetry` retries 3×, so a single failed request burns 3 quota units. Free tier has very low daily RPD limits.
+**Fix:** Quota resets daily. For sustained local testing, either add billing to the Google Cloud project or use an Anthropic Console key instead.
+
 ---
 
 ## TikTok Creative Center

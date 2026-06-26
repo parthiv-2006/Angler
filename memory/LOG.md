@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-06-26 — Supabase setup + env verification
+
+**What was done:**
+- Applied Supabase schema (7 tables + RLS) to `parthiv-2006's Project` (xtigqcoogbraorwhmshw, us-west-2) via MCP
+- Added all Supabase env vars to `.env.local`
+- Fixed `/api/score` validation bug: `dna: z.array(...).min(1)` → `.min(0)` so seed path works with empty array
+- Verified full seed path (mine/samples/score/generate) — all return `fromSeed: true` correctly
+- Diagnosed AI key issues: `sk-ant-oat` OAuth tokens cannot authenticate to api.anthropic.com; Gemini free tier daily quota exhausted from retry burns
+
+**Current AI provider state:** `AI_PROVIDER=gemini` in `.env.local` but Gemini quota exhausted. Seed path unaffected. Live path needs either Gemini quota reset (daily) or Anthropic Console key (`sk-ant-api03-...`).
+
+**Branch state:** `main`. **What's next:** Anthropic Console API key → README → Vercel deploy → Loom.
+
+---
+
 ## 2026-06-26 — Plan audit + seed-path hardening (Modules 3 & 4)
 
 **What was done (correction + hardening pass after a full plan audit):**
