@@ -247,6 +247,23 @@ export default function Home() {
     void navigator.clipboard.writeText(text);
   }
 
+  function handleExportCSV() {
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const headers = ["Priority", "Angle Name", "Emotional Driver", "Why Now", "Hook Line", "Format", "Persona", "Meta Copy", "TikTok Copy", "Native Copy"];
+    const rows = [...state.briefs]
+      .sort((a, b) => a.priority - b.priority)
+      .map((b) => [b.priority, b.angleName, b.emotionalDriver, b.whyNow, b.hookLine, b.formatRecommendation, b.targetPersona, b.variants.meta, b.variants.tiktok, b.variants.native]
+        .map((v) => esc(String(v)))
+        .join(","));
+    const csv = [headers.map((h) => esc(h)).join(","), ...rows].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `angle-briefs-${slugify(state.vertical) || "export"}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const currentSlug = slugify(state.vertical);
   const relevantSamples = state.sampleSets.filter((s) => s.vertical === currentSlug);
   const samplesToShow = relevantSamples.length ? relevantSamples : state.sampleSets;
@@ -445,7 +462,12 @@ export default function Home() {
       {/* ── Step 6: Angle briefs ─────────────────────────────────────────────── */}
       {state.briefs.length > 0 && (
         <section>
-          <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
+          <div style={sectionHeaderStyle}>
+            <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
+            <button onClick={handleExportCSV} style={secondaryBtnStyle(false)}>
+              Export CSV
+            </button>
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[...state.briefs].sort((a, b) => a.priority - b.priority).map((brief, i) => (
               <div key={i} style={cardStyle}>
