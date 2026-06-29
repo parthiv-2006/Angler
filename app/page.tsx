@@ -523,10 +523,24 @@ function Label({ step, text, badge }: { step: string; text: string; badge?: stri
 }
 
 function CopyVariant({ platform, copy }: { platform: string; copy: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    void navigator.clipboard.writeText(copy);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", minWidth: 44, paddingTop: 1 }}>{platform}</span>
-      <span style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.4 }}>{copy}</span>
+      <span style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.4, flex: 1 }}>{copy}</span>
+      <button
+        onClick={handleCopy}
+        style={{ fontSize: 11, color: copied ? "#10b981" : "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "2px 7px", cursor: "pointer", flexShrink: 0, transition: "color 0.15s" }}
+      >
+        {copied ? "✓" : "Copy"}
+      </button>
     </div>
   );
 }
