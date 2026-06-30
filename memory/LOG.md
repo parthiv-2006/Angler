@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-06-30 — Live AI path fixed (Gemini model swap)
+
+**Problem:** Live AI calls all 429'd with `limit: 0, model: gemini-2.0-flash`. The standing
+assumption (recorded as a gotcha) was "free tier daily quota exhausted, resets daily." That
+was wrong: `limit: 0` means this project has **zero** free-tier allocation for that model —
+Google retired free-tier `gemini-2.0-flash` for new keys. No amount of waiting fixes it.
+
+**Diagnosis:** Direct `generateContent` probes on the same key: `gemini-2.5-flash` → 200,
+`gemini-2.5-flash-lite` → 503, `gemini-1.5-flash` → 404 (retired).
+
+**Fix:** `lib/ai/gemini.ts` — `MODEL_DEFAULT` now `process.env.GEMINI_MODEL ?? "gemini-2.5-flash"`.
+
+**Verified on the live path (port 3002, `AI_PROVIDER=gemini`):**
+- `/api/deconstruct` novel vertical "nootropic focus supplement" + `generateSummary:true` →
+  real per-ad DNA (both `analyzeCreative` calls) **and** a synthesized `winnerSummary`
+  (`generateJSON`). 200.
+- `/api/score` with no `sampleSetId` → live `clusterConcepts` correctly collapsed 3 ads → 2
+  concepts with grounded gap `authority`. 200.
+- `npm run typecheck` clean. Gotcha rewritten; PROGRESS updated.
+
+**Branch state:** `main` (uncommitted: gemini.ts + memory). **What's next:** commit; deploy
+(user-owned) — set `AI_PROVIDER=gemini` + `GEMINI_API_KEY` in Vercel for the live path.
+
+---
+
 ## 2026-06-30 — High-ROI demo features (collapse viz, waste $, coverage, guided demo, novel summary)
 
 **What was done (5 atomic commits, all pushed to `main`):**

@@ -39,10 +39,12 @@
 **Cause:** `sk-ant-oat` tokens are Claude Code's internal OAuth credentials. They authenticate against Anthropic's internal services, not `api.anthropic.com`. The SDK's `authToken` option also fails — it uses `Authorization: Bearer` which the public API does not accept for these tokens.
 **Fix:** Only a Console API key (`sk-ant-api03-...`) from console.anthropic.com works for app traffic.
 
-### Gemini free tier quota exhausts quickly under `withRetry`
-**Symptom:** 429 `You exceeded your current quota` with `limit: 0` on the free tier.
-**Cause:** `withRetry` retries 3×, so a single failed request burns 3 quota units. Free tier has very low daily RPD limits.
-**Fix:** Quota resets daily. For sustained local testing, either add billing to the Google Cloud project or use an Anthropic Console key instead.
+### Gemini 429 `limit: 0` is a dead model, not exhausted quota
+**Symptom:** Every live call 429s with `You exceeded your current quota ... limit: 0, model: gemini-2.0-flash`.
+**Cause (the real one):** `limit: 0` means this project has **no free-tier allocation for that model at all** — it is *not* daily exhaustion (which shows a non-zero limit you've used up). Google has stopped granting free-tier requests for `gemini-2.0-flash` on new API keys. Retrying or waiting for a "daily reset" never helps.
+**Fix:** Point the provider at a model that still has a free tier. Verified 2026-06-30: `gemini-2.5-flash` → HTTP 200; `gemini-2.0-flash` → 429 limit:0; `gemini-1.5-flash` → 404 (retired). `lib/ai/gemini.ts` `MODEL_DEFAULT` now defaults to `gemini-2.5-flash` (override with `GEMINI_MODEL`). All three live entry points (analyzeCreative, clusterConcepts, generateJSON) confirmed working on a novel vertical after the switch.
+**Diagnose which model works:** `curl -s -o /dev/null -w "%{http_code}" -X POST "https://generativelanguage.googleapis.com/v1beta/models/<MODEL>:generateContent?key=$GEMINI_API_KEY" -H "Content-Type: application/json" -d '{"contents":[{"parts":[{"text":"ok"}]}]}'`
+**Note:** `withRetry` still amplifies a genuine per-minute throttle 3×, but that is unrelated to the `limit: 0` case above.
 
 ---
 

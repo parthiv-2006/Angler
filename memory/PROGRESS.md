@@ -21,7 +21,8 @@
 - [x] Supabase env vars added to `.env.local`
 - [x] `/api/score` validation fix: `dna` schema changed to `.min(0)` so seed path accepts empty array
 - [ ] Supabase env vars added to Vercel project settings
-- [ ] Anthropic Console API key obtained and added to `.env.local` (currently using Gemini; Gemini free tier quota exhausted — add billing or swap to Anthropic key)
+- [x] **Live AI path working** via Gemini `gemini-2.5-flash` (free tier). The earlier "quota exhausted" was actually a dead model (`gemini-2.0-flash` → 429 `limit:0`); switching `MODEL_DEFAULT` fixed it. All three entry points verified on a novel vertical.
+- [ ] (Optional) Anthropic Console API key (`sk-ant-api03-...`) for a non-Gemini provider — current `ANTHROPIC_API_KEY` is an unusable `sk-ant-oat` token; not needed while Gemini works
 - [ ] README written
 - [ ] Vercel deploy
 
@@ -45,7 +46,7 @@
 
 - [x] `/api/deconstruct` route — validates input, calls `getOrAnalyzeDNA`, returns `{ results: [{ adId, dna }] }`
 - [x] Seed DNA pre-baked for all 3 verticals (15 DNA records each in seed JSON)
-- [x] Live path: calls `provider.analyzeCreative()` for novel ads (requires `ANTHROPIC_API_KEY`)
+- [x] Live path: calls `provider.analyzeCreative()` for novel ads — **verified working on Gemini `gemini-2.5-flash`**
 - [x] Winner summary AI generation for novel verticals — gated `generateSummary` flag in `/api/deconstruct` (`lib/ai/prompts/summary.ts`, `winnerSummarySchema`); seed path sends `false` → no AI call
 - [x] Filterable DNA view in `app/page.tsx` (filter chips by angle / format / hookType + "showing X of Y")
 - [x] "What's winning and why" summary panel in the UI (seed verticals from mine; novel verticals from deconstruct)
