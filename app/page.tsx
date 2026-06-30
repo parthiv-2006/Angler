@@ -22,6 +22,7 @@ interface AppState {
   userAds: Ad[];
   selectedSample: string | null;
   pasteText: string;
+  budget: string;
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
   loading: boolean;
@@ -46,6 +47,7 @@ const INITIAL: AppState = {
   userAds: [],
   selectedSample: null,
   pasteText: "",
+  budget: "",
   clustering: null,
   briefs: [],
   loading: false,
@@ -271,6 +273,14 @@ export default function Home() {
   const hasAds = state.ads.length > 0;
   const hasMarketDna = state.marketDna.length > 0;
 
+  // Module 3 derived values — the Entity-ID "collapse" math (Feature A).
+  const clustering = state.clustering;
+  const adById = new Map(state.userAds.map((a) => [a.id, a] as const));
+  const redundant = clustering ? clustering.nAds - clustering.kConcepts : 0;
+  const wastePct = clustering && clustering.nAds > 0 ? Math.round((redundant / clustering.nAds) * 100) : 0;
+  const budgetNum = parseFloat(state.budget);
+  const estWaste = clustering && !isNaN(budgetNum) && budgetNum > 0 ? Math.round((budgetNum * wastePct) / 100) : null;
+
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
       <header style={{ marginBottom: 48 }}>
@@ -423,34 +433,77 @@ export default function Home() {
       )}
 
       {/* ── Step 5: Diversity result ─────────────────────────────────────────── */}
-      {state.clustering && (
+      {clustering && (
         <section style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
-            <Label step="5" text={`Meta likely sees these ${state.clustering.nAds} ads as ${state.clustering.kConcepts} concepts`} />
+            <Label step="5" text={`Meta likely sees these ${clustering.nAds} ads as ${clustering.kConcepts} concepts`} />
             <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
               {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
             </button>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {state.clustering.clusters.map((cluster, i) => (
-              <div key={i} style={cardStyle}>
-                <p style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cluster.concept}</p>
-                <p style={{ color: "var(--text-muted)", fontSize: 12 }}>{cluster.reason}</p>
-                <p style={{ color: "var(--accent)", fontSize: 12, marginTop: 4 }}>
-                  {cluster.adIds.length} ad{cluster.adIds.length !== 1 ? "s" : ""} collapse into this concept
-                </p>
-              </div>
-            ))}
+          {/* Waste headline — the Entity-ID collapse, quantified (Feature A1) */}
+          <div style={{ ...calloutStyle, borderColor: "rgba(245,158,11,0.4)", background: "rgba(245,158,11,0.06)", marginBottom: 16 }}>
+            <p style={{ fontSize: 14, lineHeight: 1.6 }}>
+              You&apos;re managing <strong>{clustering.nAds} ads</strong>, but Meta&apos;s Andromeda likely reads them as{" "}
+              <strong>{clustering.kConcepts} distinct concepts</strong> —{" "}
+              <strong style={{ color: "#f59e0b" }}>
+                {redundant} {redundant === 1 ? "is a redundant duplicate" : "are redundant duplicates"}
+              </strong>{" "}
+              (~{wastePct}% of your creative-testing effort is wasted auction entries).
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Monthly creative-test budget ($):</span>
+              <input
+                value={state.budget}
+                onChange={(e) => setState((s) => ({ ...s, budget: e.target.value }))}
+                placeholder="e.g. 10000"
+                inputMode="numeric"
+                style={{ ...inputStyle, flex: "none", width: 130, padding: "6px 10px" }}
+              />
+              {estWaste !== null && (
+                <span style={{ fontSize: 13, fontWeight: 600 }}>
+                  ≈ <span style={{ color: "#f59e0b" }}>${estWaste.toLocaleString()}/mo</span> managing redundant creative{" "}
+                  <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(estimated)</span>
+                </span>
+              )}
+            </div>
           </div>
 
-          {state.clustering.gaps.length > 0 && (
+          {/* Visual collapse — N ad cards grouping into K concept buckets (Feature A2) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {clustering.clusters.map((cluster, i) => {
+              const color = BUCKET_COLORS[i % BUCKET_COLORS.length];
+              return (
+                <div key={i} style={{ ...cardStyle, borderColor: color, borderLeft: `3px solid ${color}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <p style={{ fontWeight: 600, fontSize: 13, color }}>{cluster.concept}</p>
+                    {cluster.adIds.length > 1 && (
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: color, borderRadius: 9999, padding: "2px 9px", whiteSpace: "nowrap" }}>
+                        {cluster.adIds.length}× collapsed
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ color: "var(--text-muted)", fontSize: 12, marginBottom: 10 }}>{cluster.reason}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {cluster.adIds.map((id) => (
+                      <div key={id} style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.45, padding: "7px 11px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)" }}>
+                        {adById.get(id)?.copy ?? id}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {clustering.gaps.length > 0 && (
             <div style={{ ...calloutStyle, marginTop: 16, borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.06)" }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 8 }}>
                 ANGLE GAPS — proven market angles you&apos;re not running
               </p>
               <ul style={{ paddingLeft: 16, margin: 0 }}>
-                {state.clustering.gaps.map((g, i) => (
+                {clustering.gaps.map((g, i) => (
                   <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 4 }}>{g}</li>
                 ))}
               </ul>
@@ -546,6 +599,9 @@ function CopyVariant({ platform, copy }: { platform: string; copy: string }) {
 }
 
 // ── Styles ─────────────────────────────────────────────────────────────────────
+
+// Distinct hues for the concept buckets in Step 5 (cycled by index).
+const BUCKET_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#06b6d4", "#a855f7"];
 
 const inputStyle: React.CSSProperties = {
   flex: 1,
