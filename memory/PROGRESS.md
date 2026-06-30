@@ -46,9 +46,9 @@
 - [x] `/api/deconstruct` route — validates input, calls `getOrAnalyzeDNA`, returns `{ results: [{ adId, dna }] }`
 - [x] Seed DNA pre-baked for all 3 verticals (15 DNA records each in seed JSON)
 - [x] Live path: calls `provider.analyzeCreative()` for novel ads (requires `ANTHROPIC_API_KEY`)
-- [ ] Winner summary AI generation for novel verticals in the mine route
-- [ ] Filterable DNA view in `app/page.tsx` (filter by angle / format / hookType)
-- [ ] "What's winning and why" AI summary panel in the UI
+- [x] Winner summary AI generation for novel verticals — gated `generateSummary` flag in `/api/deconstruct` (`lib/ai/prompts/summary.ts`, `winnerSummarySchema`); seed path sends `false` → no AI call
+- [x] Filterable DNA view in `app/page.tsx` (filter chips by angle / format / hookType + "showing X of Y")
+- [x] "What's winning and why" summary panel in the UI (seed verticals from mine; novel verticals from deconstruct)
 
 ---
 
@@ -71,8 +71,8 @@
 - [x] 10 pre-baked briefs per seed vertical (in `data/seed/*.json`)
 - [x] Copy-to-clipboard per brief (full brief)
 - [x] ≥10 prioritized briefs with 3-platform variants confirmed end-to-end (seed path)
-- [ ] CSV export of angle batch
-- [ ] Per-field copy buttons
+- [x] CSV export of angle batch
+- [x] Per-field copy buttons
 
 ---
 
@@ -87,9 +87,12 @@
 - [x] DNA tags per ad (angle · format · hookType)
 - [x] Diversity clusters + gap analysis callout (amber)
 - [x] Angle briefs sorted by priority with "Copy" button
-- [ ] Filterable DNA view (filter by angle/format/hookType)
+- [x] Filterable DNA view (filter chips by angle/format/hookType + count) — Step 3
+- [x] **Visual Entity-ID collapse** in Step 5: color-coded concept buckets with real ad copy stacked inside + `N× collapsed` badges
+- [x] **Waste quantification**: headline (`N ads → K concepts`, redundant count, `~X%`) + optional budget input → labelled `$` estimate
+- [x] **Market-vs-you coverage panel**: proven market angles (by frequency) beside the gap list
+- [x] **One-click "Run the full demo"** button (orchestrates mine→DNA→score→generate on the weight-loss seed with smooth scroll)
 - [ ] Drag-and-drop upload for Module 3
-- [ ] Sample ad set one-click loader
 - [ ] Loading / partial / empty / error states on every module
 
 ---

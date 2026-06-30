@@ -76,6 +76,15 @@ and blocks — ESLint was never configured in this project.
 and `npm run build` are the real gates. `next lint` is also deprecated in Next 16; migrate to
 the ESLint CLI later if a lint gate is wanted.
 
+### Running `npm run build` while `npm run dev` is live corrupts the dev server
+**Symptom:** The running dev server starts 500ing on routes with `Error: Cannot find
+module './XXX.js'` (MODULE_NOT_FOUND) from `.next/server/...`. Looks like a code bug but isn't.
+**Cause:** `next build` and `next dev` share the `.next/` directory. Building while dev is
+running overwrites dev's webpack chunks, so dev can no longer resolve them at runtime.
+**Fix:** Stop the dev server before building, or build in a separate checkout. To recover a
+poisoned server: stop it, `rm -rf .next`, restart `npm run dev`. (During Playwright/Preview
+verification, don't run `npm run build` against the same tree — typecheck is enough mid-session.)
+
 ### `next build` rewrites `tsconfig.json`
 **Symptom:** After `npm run build`, `tsconfig.json` shows a diff (reformatted arrays + added
 `"target": "ES2017"`). This is Next.js auto-reconfiguring TS; it's benign — keep it.

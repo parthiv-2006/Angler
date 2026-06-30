@@ -5,6 +5,63 @@
 
 ---
 
+## 2026-06-30 — High-ROI demo features (collapse viz, waste $, coverage, guided demo, novel summary)
+
+**What was done (5 atomic commits, all pushed to `main`):**
+- **A — Visual Entity-ID collapse + $ waste** (`23aee41`): Step 5 now renders color-coded
+  concept buckets with the real ad copy stacked inside each + `N× collapsed` badges; a waste
+  headline (`N ads → K concepts`, redundant count, `~X%`) and an optional budget input that
+  yields a labelled `$` estimate. Pure client-side from existing `clustering` + `userAds`.
+- **D — Market-vs-you coverage** (`109e78c`): replaced the flat gaps list with a side-by-side
+  panel — proven market angles by frequency (from `marketDna`) next to the gap list.
+- **B1 — Filterable DNA** (`5e7ba32`): toggle filter chips for angle/format/hookType + "showing
+  X of Y" + clear, in Step 3. Closes the Module 2 "filterable/groupable" acceptance criterion.
+- **C — One-click guided demo** (`5e22888`): "Run the full demo" button; `handleRunFullDemo()`
+  threads mine→deconstruct→score→generate inline (locals, not state) with smooth scroll between
+  the six `id`-tagged sections. Seed path → ~2s, no timeout risk.
+- **B2 — Novel-vertical "what's winning" summary** (`973ab4b`): gated `generateSummary` flag in
+  `/api/deconstruct` (+ `lib/ai/prompts/summary.ts`, `winnerSummarySchema`). Client sends `true`
+  only when no seed summary exists; seed verticals send `false` → **zero AI call on the seed path**.
+  Live generation wrapped in try/catch (returns null, never 500).
+
+**Verified:** `npm run typecheck` + `npm run build` clean. Playwright on the live dev server:
+guided demo populates all 6 steps in one click; collapse buckets show real copy + `4×/3×`
+badges; waste headline = `8 ads / 3 concepts / 5 redundant / ~63%`; budget `$10k → $6,300/mo
+(estimated)`; coverage panel shows curiosity ×7 / social_proof ×5 / fear ×2 / novelty ×1; DNA
+filter `curiosity` → "Showing 7 of 15"; deconstruct on the seed sent `generateSummary:false`
+(confirmed in the request body). Console clean except a benign favicon 404.
+
+**Gotcha hit & recorded:** running `npm run build` while `npm run dev` was live corrupted the
+dev server's `.next` chunks (MODULE_NOT_FOUND 500s). Fix: stop dev → `rm -rf .next` → restart.
+
+**Branch state:** `main`, all 5 commits pushed. **What's next:** deploy (user-owned) — seed path
+needs no env; then README live-URL update + fallback Loom. The live AI path (novel-vertical
+summary generation, paste-your-own scoring) still needs a working `ANTHROPIC_API_KEY`.
+
+---
+
+## 2026-06-29 — Per-field copy buttons on angle brief variants
+
+**What was done:**
+- Added per-field `Copy` button to each `CopyVariant` row (Meta / TikTok / Native) in `app/page.tsx`.
+- Button flashes green "✓" for 1.5 s after click using local `useState`. Previously only a whole-brief Copy existed.
+- `npm run typecheck` exits 0. Commit `6355ece` pushed to `main`.
+
+**Branch state:** `main`. **What's next:** Vercel deploy (live URL is the win condition) → README Vercel URL update → Loom.
+
+---
+
+## 2026-06-27 — CSV export for angle briefs
+
+**What was done:**
+- Added `handleExportCSV()` to `app/page.tsx`: builds a properly-quoted 10-column CSV (Priority → Native Copy), sorted by priority, filename keyed to the active vertical slug.
+- Added "Export CSV" button in the Step 6 section header next to the Label, using the existing `secondaryBtnStyle`.
+- `npm run typecheck` + `npm run build` both exit 0. Commit `29e8712` pushed to `main`.
+
+**Branch state:** `main`. **What's next:** README (25% of score) → Vercel env vars → deploy → Loom.
+
+---
+
 ## 2026-06-26 — Supabase setup + env verification
 
 **What was done:**
