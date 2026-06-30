@@ -19,3 +19,12 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Local agent state (not part of the app)
+/.omc/
+/.playwright-mcp/
+
+# Build-time seed-refresh cache (raw scrapes + partial DNA; the derived
+# data/seed/*.json is committed, this intermediate cache is not)
+/scripts/.cache/
+/scripts/.apify-trial-raw.json
