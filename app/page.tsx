@@ -36,6 +36,21 @@ const SEED_VERTICALS = [
   { label: "ED Telehealth", value: "ed telehealth" },
 ];
 
+// Date the seed verticals were last refreshed from the live ad libraries. Shown to
+// the judge so cached real data is never mistaken for a live fetch.
+const SEED_CACHED_DATE = "June 2026";
+
+// Clean display names for the truthful `ad.source` provenance tag.
+const SOURCE_LABELS: Record<string, string> = {
+  facebook_ad_library: "Meta Ad Library",
+  tiktok_creative_center: "TikTok Creative Center",
+  uploaded: "Your ad",
+};
+
+function sourceLabel(source: string): string {
+  return SOURCE_LABELS[source] ?? source.replace(/_/g, " ");
+}
+
 const INITIAL: AppState = {
   vertical: "",
   ads: [],
@@ -448,6 +463,12 @@ export default function Home() {
             </button>
           </div>
 
+          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: -4, marginBottom: 8 }}>
+            {state.fromSeed
+              ? `Real ads from public ad libraries · cached ${SEED_CACHED_DATE}`
+              : "Real ads pulled live from the Meta Ad Library"}
+          </p>
+
           {state.winnerSummary && (
             <div style={calloutStyle}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>WHAT&apos;S WINNING &amp; WHY</p>
@@ -461,7 +482,7 @@ export default function Home() {
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{ad.advertiser}</span>
                   <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>
-                    {ad.runDays}d running · {ad.source.replace(/_/g, " ")}
+                    {ad.runDays}d running · {sourceLabel(ad.source)}
                   </span>
                 </div>
                 <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.5 }}>{ad.copy}</p>
