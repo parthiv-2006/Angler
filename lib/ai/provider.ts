@@ -21,7 +21,9 @@ export interface AIProvider {
 }
 
 export function getProvider(): AIProvider {
-  const provider = process.env.AI_PROVIDER ?? "anthropic";
+  // Tolerate stray whitespace / inline `# comment` baked into the env value:
+  // .env files don't strip `# ...` after a value, so take the first token only.
+  const provider = (process.env.AI_PROVIDER ?? "anthropic").trim().split(/\s/)[0];
 
   if (provider === "gemini") {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
