@@ -6,328 +6,493 @@
   },
   "ads": [
     {
-      "id": "seed_ed_001",
-      "source": "apify_meta",
-      "advertiser": "Hims",
+      "id": "fb_1636816887099686",
+      "source": "facebook_ad_library",
+      "advertiser": "Florida Men's Health",
       "coverUrl": "",
-      "copy": "ED affects 52% of men over 40. It's not age. It's not you. It's a fixable medical condition — and you can treat it without leaving your house.",
-      "firstSeen": "2026-01-08",
-      "lastSeen": "2026-06-22",
-      "runDays": 165,
+      "copy": "Don't let ED stop you.\n\nImprove your life with ED Treatment at Florida Men's Health. \n\nStart with a free and discrete consultation with our doctors.",
+      "firstSeen": "2024-07-29",
+      "lastSeen": "2026-06-30",
+      "runDays": 701,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_002",
-      "source": "apify_meta",
-      "advertiser": "Roman",
-      "coverUrl": "",
-      "copy": "No appointment. No waiting room. No awkward conversation with your doctor. ED treatment, prescribed online and delivered in 2 days.",
-      "firstSeen": "2026-01-15",
-      "lastSeen": "2026-06-21",
-      "runDays": 157,
+      "id": "fb_1590578818329745",
+      "source": "facebook_ad_library",
+      "advertiser": "Lynk Performance",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/474594541_3457458411226870_6435182915123727116_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=104&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=v23WrlM9gHMQ7kNvwF95Uuy&_nc_oc=AdpIbNBwWihiRhXPY-_i6Lrt-GH555dWVmLge2cURyk5VvDY1F0og_HFvipZ4xjsxs4&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQCJ8-oBLdCBTjR2gE1CQICFZsJGpLWRMjxjATuVIJQ6yA&oe=6A49F36D",
+      "copy": "🎁 Take charge and elevate your performance. Our advanced tools are engineered for men who demand real results, delivered discreetly to protect your privacy. No fluff - just power and confidence, straight to your door. 💪",
+      "firstSeen": "2025-01-20",
+      "lastSeen": "2026-06-30",
+      "runDays": 526,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_003",
-      "source": "apify_meta",
-      "advertiser": "BlueChew",
+      "id": "fb_1104782638335709",
+      "source": "facebook_ad_library",
+      "advertiser": "Online Rx Reviews",
       "coverUrl": "",
-      "copy": "The $70 pill your urologist prescribed you? The exact same medication, online, for $3. Men are making the switch quietly.",
-      "firstSeen": "2026-01-22",
-      "lastSeen": "2026-06-20",
-      "runDays": 149,
+      "copy": "Shopping around for ED treatments, but not sure which one to pick? Here’s the one that comes out on top...",
+      "firstSeen": "2025-05-20",
+      "lastSeen": "2026-06-30",
+      "runDays": 406,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_004",
-      "source": "tiktok_creative_center",
-      "advertiser": "Keeps",
+      "id": "fb_1293538005454012",
+      "source": "facebook_ad_library",
+      "advertiser": "NovaMane",
       "coverUrl": "",
-      "copy": "I'm a urologist. The thing I wish men would stop being embarrassed about: ED is vascular, not psychological. It's treatable in 30 minutes.",
-      "firstSeen": "2026-02-01",
-      "lastSeen": "2026-06-22",
-      "runDays": 141,
-      "rawMetrics": { "ctr_rank": "high" }
-    },
-    {
-      "id": "seed_ed_005",
-      "source": "apify_meta",
-      "advertiser": "Rex MD",
-      "coverUrl": "",
-      "copy": "My wife thought I had lost interest in her. I hadn't. I was too embarrassed to say anything. Then I found this.",
-      "firstSeen": "2026-02-10",
-      "lastSeen": "2026-06-21",
-      "runDays": 131,
+      "copy": "Reverse years of hair loss with this sneaky hack 🤫",
+      "firstSeen": "2025-08-11",
+      "lastSeen": "2026-06-30",
+      "runDays": 323,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_006",
-      "source": "apify_meta",
-      "advertiser": "Hims",
-      "coverUrl": "",
-      "copy": "First month free. Real doctors. Real prescriptions. If it doesn't work, you pay nothing. What's the downside?",
-      "firstSeen": "2026-02-18",
-      "lastSeen": "2026-06-22",
-      "runDays": 124,
+      "id": "fb_1128269642825196",
+      "source": "facebook_ad_library",
+      "advertiser": "Intellectual Power",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/554490263_2543123959399724_5886793071595712864_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=105&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=3Kzf8K2dDZAQ7kNvwFUo98W&_nc_oc=Adq9tWq5GViwroxWNF7l327U9PPRMRc9eCGmhlYipMSS3ujttN0IMEjJFSzjrvg_P6A&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQDXEg9dkcPZ1XA2J0Zc5u-d-t9lPJFqVMj1EqwI4Y1ZGw&oe=6A49EAF6",
+      "copy": "The company that produced the #1 Black-owned herbal brain 🧠 supplement has just produced a MENS supplement! \n\nThis blend of herbs are ancestrally and strategically known to help with men’s overall health, especially where hormones and reproduction are concerned! Low energy? Imbalanced hormones? Low testosterone? Erectile dysfunction? Blood sugar issues, lack of strength, prostate problems, poor blood flow, little or no sex drive or an overall lack of confidence? The REVOLUTIONARY - SEED OF SOURCE is the capsule that helps to fuel your masculinity naturally, physically and energetically! \n\nTake back your manhood!\n\nGo to INTELLECTUALPOWER.NET to get yours!",
+      "firstSeen": "2025-09-25",
+      "lastSeen": "2026-06-30",
+      "runDays": 278,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_007",
-      "source": "tiktok_creative_center",
-      "advertiser": "eDrugstore",
-      "coverUrl": "",
-      "copy": "ED is one of the earliest signs of cardiovascular disease. If you have it, this isn't just about sex — get checked.",
-      "firstSeen": "2026-02-25",
-      "lastSeen": "2026-06-21",
-      "runDays": 116,
-      "rawMetrics": { "ctr_rank": "medium_high" }
-    },
-    {
-      "id": "seed_ed_008",
-      "source": "apify_meta",
-      "advertiser": "Numan",
-      "coverUrl": "",
-      "copy": "57% of men with ED never seek treatment. Of those who do, 94% report significant improvement. The math isn't complicated.",
-      "firstSeen": "2026-03-05",
-      "lastSeen": "2026-06-20",
-      "runDays": 107,
+      "id": "fb_844315451466061",
+      "source": "facebook_ad_library",
+      "advertiser": "Boston Scientific Urology",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/518376094_1376603583437489_6626527709960357256_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=101&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=h1UTR2mMTk4Q7kNvwEhxqmV&_nc_oc=Ado9c79enTayh-s3iM3S9W40pYfO_ZfNo0gGENprD9cl5XxrVus7ZkrfdhzJte_210I&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQDPZHFLbOOueiRnQfcN9aQyF3JRmmyrf0LDbiUHYIrtVA&oe=6A49CAB8",
+      "copy": "Not all ED treatments require ongoing costs or trips to the pharmacy. Keep learning and find a long-term treatment.",
+      "firstSeen": "2025-10-31",
+      "lastSeen": "2026-06-30",
+      "runDays": 242,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_009",
-      "source": "tiktok_creative_center",
-      "advertiser": "Giddy",
+      "id": "fb_934139358968657",
+      "source": "facebook_ad_library",
+      "advertiser": "Nads",
       "coverUrl": "",
-      "copy": "Your testosterone at 45 is not what it was at 25. That's not failure — that's biology. Here's what actually works.",
-      "firstSeen": "2026-03-12",
-      "lastSeen": "2026-06-22",
-      "runDays": 102,
-      "rawMetrics": { "ctr_rank": "medium" }
-    },
-    {
-      "id": "seed_ed_010",
-      "source": "apify_meta",
-      "advertiser": "Roman",
-      "coverUrl": "",
-      "copy": "The conversation you've been putting off for 2 years takes 5 minutes online. $0 consultation. Prescription ships same day.",
-      "firstSeen": "2026-03-20",
-      "lastSeen": "2026-06-21",
-      "runDays": 93,
+      "copy": "What the %$&* is “organic underwear” and why should you care? 🤔⬇️\n\nFirst, let’s talk about the enormous issues with regular underwear that you’re probably unaware of…\n\nConventional underwear (and yes, this likely includes the pair you’re wearing right now…) is typically farmed and manufactured using:\n\n❌ Synthetic Pesticides & Herbicides\n❌ Phthalates & PFA’s \n❌ Toxic Dyes & Inks\n❌ Bisphenol A (BPA)\n❌ GMOs & Synthetic Fertilizers\n\nThese toxins and chemicals can lead to lower testosterone, decreased fertility, and a whole slew of other negative health effects. Not sure about you, but we were pretty alarmed when we realized those chemicals were surrounding our boys 24/7.\n\nOnce we became aware of this issue, we went on a frantic search to find an alternative that we could feel safe housing our most prized possession in.\n\nThe bad news?\n\nWe couldn’t find a single brand offering the solution we were looking for. \n\nWith every single “natural” underwear brand we tried, we kept running into the same issues:\n\n❌ Scratchy, uncomfortable material that felt like we were sandpapering our 🥜\n❌ Options that appeared “natural” but had a different story in the fine print\n❌ Designs that were flat-out tacky and ugly\n❌ Underwear that couldn’t hold up to the rigors of an active lifestyle\n\nWe realized that men NEEDED an alternative option that didn’t exist yet.\n\nThe good news? \n\nWe decided to create just that.\n\nEnter NADS Organic Underwear for Men: The Better-for-Balls Underwear made without the use of harsh chemicals & toxins too common in conventional underwear.\n\nThese first-of-their-kind boxers and briefs are not only better for the planet, they’re also the world’s most optimal home for your package.\n\nOur underwear features:\n\n🌱 Certified Organic Non-GMO Cotton\n🌳 Non Toxic Dyes & Eco-Inks\n💪🏼 Performance Focused Construction/Fit \n✅ An Insanely Comfortable Home For Your 🥜\n\nNow…you’re probably thinking to yourself, “Great…another thing to add to my never-ending ‘Get Healthy in 2024’ list.”\n\nBut, unlike the TikTok gurus who are insisting that to get healthy you need to:\n\n🥶 Cold plunge for 73 minutes per day\n😵‍💫 Only eat foods that start with the letter Z\n🥒 Drink your water upside down out of a hollowed-out cucumber\n\n…our solution is simple.\n\nJust make the switch.\n\nDitch the toxic underwear and give your boys the home they deserve. Grab your first pair today at nadsunder.com 🥜✅\n\nPS. Trust us. Your balls will thank you. 🤝",
+      "firstSeen": "2026-01-29",
+      "lastSeen": "2026-06-30",
+      "runDays": 152,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_011",
-      "source": "tiktok_creative_center",
-      "advertiser": "BlueChew",
-      "coverUrl": "",
-      "copy": "I used to avoid intimacy because I was scared of what would happen. Not anymore. [Real user — not an actor]",
-      "firstSeen": "2026-03-28",
-      "lastSeen": "2026-06-22",
-      "runDays": 86,
-      "rawMetrics": { "ctr_rank": "medium" }
-    },
-    {
-      "id": "seed_ed_012",
-      "source": "apify_meta",
-      "advertiser": "Maximus",
-      "coverUrl": "",
-      "copy": "Sildenafil. Tadalafil. The same active ingredients as Viagra and Cialis. One-tenth the cost. Delivered to your door.",
-      "firstSeen": "2026-04-04",
-      "lastSeen": "2026-06-21",
-      "runDays": 78,
+      "id": "fb_1811488712894462",
+      "source": "facebook_ad_library",
+      "advertiser": "WebMD",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/632296644_1900064504235678_4121745139530300335_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=104&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=neJH1JnzueIQ7kNvwGXlcqC&_nc_oc=Ado237NUjlLk63C5splGNA19N4BlACfq_avAM_dwA-P01clBX_wl6HKHgzLB_FjrkF4&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQBqZPAYbcL_vy5O19xoj8KrbcXYJBBqj1zAAmjJVZjmaA&oe=6A49CEC8",
+      "copy": "BlueChew, an online telehealth service, offers chewable tablets to treat erectile dysfunction (ED). It's affordable, convenient, and delivered to your doorstep.",
+      "firstSeen": "2026-02-24",
+      "lastSeen": "2026-06-30",
+      "runDays": 126,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_013",
-      "source": "apify_meta",
-      "advertiser": "Alpha Medical",
+      "id": "fb_1184805506977236",
+      "source": "facebook_ad_library",
+      "advertiser": "Spite House Games",
       "coverUrl": "",
-      "copy": "3 questions to find out if low testosterone — not ED — is actually your issue. (Most men get the diagnosis wrong.)",
-      "firstSeen": "2026-04-12",
-      "lastSeen": "2026-06-22",
+      "copy": "2 NEW EXPANSIONS\n\nSame rules. Dirtier attitude. The card game that ruined friendships (and made game night legendary). Now it's time to add our latest expansions for even more laughs.",
+      "firstSeen": "2026-04-20",
+      "lastSeen": "2026-06-30",
       "runDays": 71,
       "rawMetrics": {}
     },
     {
-      "id": "seed_ed_014",
-      "source": "tiktok_creative_center",
-      "advertiser": "Ro",
-      "coverUrl": "",
-      "copy": "She doesn't know you searched this. She doesn't need to. Handle it quietly — we ship in discreet packaging.",
-      "firstSeen": "2026-04-20",
-      "lastSeen": "2026-06-21",
-      "runDays": 62,
-      "rawMetrics": { "ctr_rank": "low_medium" }
+      "id": "fb_936228685887438",
+      "source": "facebook_ad_library",
+      "advertiser": "James Harmon - Bike Fitter",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/684261631_973264625248417_7731968646226894840_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=102&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=csfV0qK5ewgQ7kNvwHGY62T&_nc_oc=AdrkkMLMEBgawVyWp_1yTyjvE02NQawsI_1yu17aRVcKg4AQblCznIbnJfRu344NiGI&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQDWzoIfx6yTapyIqDj4BJiLh-AMyCGjIAaHeLI5wa4HVw&oe=6A49C9DE",
+      "copy": "I'm a master bike fitter. 14 years in the industry. Over 2,000 bike fits done. And I'm about to say something that might get me in trouble with the shop I work at.\n \nIf you're a man over 55, and your saddle has made cycling painful, there's one mistake I watch cyclists make over and over again. And it's quietly costing them the sport.\n \nIt isn't the saddle they own. It's how every saddle in the category is designed.\n \n========\n \nLet me explain.\n \nA saddle has four jobs.\n \nJob #1: Sit-bone support. The ischial tuberosities, the two points of bone at the base of your pelvis, are designed to carry your weight. Anywhere else, something is wrong.\n \nJob #2: Pudendal nerve relief. The pudendal nerve runs through the soft tissue between your sit bones. It carries sensation and blood flow to everything \"down there.\" When it gets pinched against your pubic bone, you go numb. Long-term, blood flow drops 70-80% and the damage stops reversing on its own.\n \nJob #3: Tailbone stability. The coccyx is not load-bearing. If your sit bones sink into the saddle, the tailbone takes impact it was never meant to take. That's the deep ache at the base of your spine at dinner.\n \nJob #4: Road shock absorption. Vertical shock transfers up the spine. That's why you wake up Sunday morning feeling ten years older.\n \nFour jobs.\n \nEvery saddle on every shop wall in America solves one. Maybe two. Never all four.\n \n========\n \nThat's the common mistake.\n \nYou buy a saddle that solves one problem and breaks two others. Then you buy another saddle to fix those, which creates two more. You cycle through 3, 4, 5 saddles over a decade.\n \nI call it the One-Fix Trap. And once you see it, you can't unsee it.\n \n========\n \nHere's what it looks like in real life:\n \nThe Brooks B17 ($180-$400). Beautiful saddle. Hand-stitched leather. Solves exactly zero of the four. No relief channel at all. The \"break-in\" period is the industry's polite cover for a saddle that never adapts. Your body adapts instead, by building calluses and killing nerves.\n \nThe Specialized Power ($240). The current \"gold standard\" recommendation at every bike shop. Partially solves Job #2. It has a cutout. But the cutout is 2-3 inches long. Your pudendal nerve exit zone is 4-5 inches. So the front of the nerve is free and the back is still being crushed. Worse: your sit bones sink into the cutout, which drags your tailbone down. You fixed numbness and created tailbone pain.\n \nThe Fizik Aliante ($320). Italian engineering. Foam tuned for a 155-pound racer. Most men over 55 weigh 180-200. Foam compresses too far. Sit bones sink. Nerve crushed. $320 poorer.\n \nPadded bibs, chamois cream, gel covers ($30-$300). Move pressure half an inch. The nerve is still being crushed against the pubic arch, just with more fabric in between.\n \nPro bike fits ($150-$400). I say this as a fitter. A fit solves fit. It does not solve a fundamentally wrong saddle for your anatomy.\n \nEvery one of them is a One-Fix Trap.\n \n========\n \nHere's the study the bike industry doesn't want you to read.\n \nIn 1999, NIOSH, the federal occupational safety agency, studied bicycle police officers. Fit, healthy men in their 30s.\n \n73% had genital numbness on standard saddles. 22% had erectile dysfunction.\n \nNIOSH recommended switching to a wider saddle with no nose. Numbness dropped to 18%.\n \nThe federal government told police departments to change the saddle, not the men.\n \nThe bike industry did not change the saddle.\n \nDr. Irwin Goldstein, the sexual medicine urologist, told reporters the same year: \"There are two kinds of cyclists, those who are impotent and those who will be.\"\n \nYou won't hear that at your local bike shop. Not from the 24-year-old behind the counter. Not from the Specialized rep who trained your fitter.\n \nYou're hearing it from me, on Facebook, at 11 pm, because there's nowhere else it's being said to the man who actually needs to hear it.\n \n========\n \nAbout a year ago, a sports medicine physician I trust sent me a saddle I'd never heard of. Brand called Ascent.\n \nI looked at the design before I installed it. And I'll be honest, my first thought was \"that's going to fail too.\"\n \nBut the more I looked, the more I realized this was the first saddle I'd ever tested that was built around all four jobs at once, not one headline feature.\n \nWide sit-bone platform. Sized to the measured sit-bone spread of a 55+ male pelvis, not a 25-year-old racer template. Weight lands on bone. (Job #1.)\n \nFull-length pudendal relief channel. End to end, 4-5 inches, covering the entire nerve exit zone. Not a 2-inch hole. A full corridor. Deep enough that no tissue touches the perineal region under load. (Job #2.)\n \nDual-density foam. Firm and high-elastic under the sit bones so they don't sink. Softer only where nothing structural presses. Tailbone stays stable. (Job #3.)\n \nIntegrated air suspension. Built into the saddle base, not the seatpost. Absorbs shock at the point of contact, before it reaches the spine. (Job #4.)\n \nFour jobs. One design.\n \nI put it on my own bike first. 45 miles the next morning. No numbness. No tailbone ache. Got off the bike the same man who got on.\n \n========\n \nSince then, I've installed Ascent on over 200 bikes for men over 55. Here's what I see happen:\n \n🗓 Day 3: Numbness gone on the regular 12-15 mile loop.\n🗓 Day 14: Back to 30-mile rides without standing up every 10 minutes.\n🗓 Day 30: Sit bones stop bruising. The deep ache at dinner stops.\n🗓 Day 60-90: First century in 3-5 years. Usually done with a club they'd dropped out of.\n🗓 Day 90+: The \"other thing,\" the part their wife noticed first, starts coming back too.\n \nI had a customer named Tom, 64, retired engineer. Came in last fall with a drawer full of failed saddles. Eight months later he sent me a text from the finish line of a century ride.\n \nTwo words. \"Finished it.\"\n \nDidn't need to say more.\n \n========\n \nOver 100,000 men have switched to Ascent.\n \nSports medicine doctors refer patients to it. Pelvic floor PTs mention it to post-prostatectomy patients. Bike fitters like me, the ones who care more about solving the problem than selling whatever the shop stocks, recommend it to the guys walking in with the shoebox full of failed saddles.\n \n$69. Less than the gel cover most of my customers replaced last summer. Less than a single pair of padded bibs. Less than any saddle in your drawer.\n \n========\n \n👉 See Ascent here: https://ascent-bicycle.com/products/ascent-saddle\n \n✅ Engineered for all four saddle jobs at once\n✅ Full-length pudendal relief channel\n✅ Wide sit-bone platform sized for 55+ male anatomy\n✅ Dual-density foam tuned for 180-200 lb riders\n✅ Integrated air suspension in the saddle base\n✅ Recommended by sports medicine physicians\n✅ Over 100,000 riders have switched\n✅ 30-day risk-free trial. Prepaid return label. No restocking fee.\n \n========\n \nThe mistake most cyclists over 55 are making isn't that they bought the wrong saddle.\n \nIt's that every saddle they've been offered was a One-Fix Trap.\n \nThe category failed them. Not the other way around.\n \n👉 https://ascent-bicycle.com/products/ascent-saddle\n \nP.S. If your wife has asked you in the last six months if you're still going out on the long rides, the way she used to not need to ask, that's the conversation this fixes. Quietly. Privately. Without anyone having to say the word \"numbness\" out loud again.",
+      "firstSeen": "2026-04-30",
+      "lastSeen": "2026-06-30",
+      "runDays": 61,
+      "rawMetrics": {}
     },
     {
-      "id": "seed_ed_015",
-      "source": "apify_meta",
-      "advertiser": "LifeMD",
+      "id": "fb_1663763454857597",
+      "source": "facebook_ad_library",
+      "advertiser": "algorx",
       "coverUrl": "",
-      "copy": "10 years ago this required an in-office visit, blood tests, and a $200 copay. Now it's a 4-minute form. Progress.",
-      "firstSeen": "2026-04-28",
-      "lastSeen": "2026-06-22",
-      "runDays": 55,
+      "copy": "Your health, your way. AlgoRX makes it simple to access advanced labs and performance-focused care with transparent pricing, quick delivery, and an easy online experience - no clinic visits.",
+      "firstSeen": "2026-05-26",
+      "lastSeen": "2026-06-30",
+      "runDays": 35,
+      "rawMetrics": {}
+    },
+    {
+      "id": "fb_1640514507204598",
+      "source": "facebook_ad_library",
+      "advertiser": "Rugiet",
+      "coverUrl": "",
+      "copy": "Men's health made easy. Discover why over 300,000 men have already made the switch to Rugiet Ready to treat ED.\n\nTake 15% off your first order using the code 5XFAST at the checkout.\n\n___________________________________________\n\nReady is a compounded prescription drug that contains sildenafil, tadalafil, and apomorphine and is used to treat erectile dysfunction (ED). Compounded drugs are permitted to be prescribed under federal law, but are not FDA-approved and do not undergo FDA safety, effectiveness, or manufacturing review. Only available if prescribed by after an online consultation with a healthcare provider. Do not take Ready more than once in any 24-hour period or within 24 hours of taking any other ED medications.",
+      "firstSeen": "2026-05-28",
+      "lastSeen": "2026-06-30",
+      "runDays": 33,
+      "rawMetrics": {}
+    },
+    {
+      "id": "fb_1699147831269760",
+      "source": "facebook_ad_library",
+      "advertiser": "Newmindstart Body",
+      "coverUrl": "",
+      "copy": "21 days to strengthen pelvic floor, restore control and boost performance. Premature ejaculation? Erectile dysfunction? Low libido? This challenge helps you reactivate pelvic strength, improve stamina and reduce back pressure — at home, in just 10–15 minutes a day.\n\nAccess to the course is not limited in time — start now and continue anytime you want. If for some reason you don't like the course, we will refund the full amount within 14 days after the purchase.\n\nGet the course today with a 90% discount — click the button below the video and start your journey.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-06-30",
+      "runDays": 29,
+      "rawMetrics": {}
+    },
+    {
+      "id": "fb_973606165593976",
+      "source": "facebook_ad_library",
+      "advertiser": "Ascent Bicycle",
+      "coverUrl": "",
+      "copy": "At 50, you shouldn't have to choose between cycling and comfort.\n\nThe Ascent Saddle 2.0's High Elastic Memory Foam adapts to your body while properly supporting your sit bones, preventing the pressure points that cause these painful problems.\n\nWith a central cut-out design that eliminates numbness and reduces friction, you can finally ride pain-free at any age.\n\nGet yours now during the Summer Sale:\n➡️ https://ascent-bicycle.com/products/ascent-saddle",
+      "firstSeen": "2026-06-02",
+      "lastSeen": "2026-06-30",
+      "runDays": 28,
+      "rawMetrics": {}
+    },
+    {
+      "id": "fb_1508838477686954",
+      "source": "facebook_ad_library",
+      "advertiser": "BBC Global",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/731112045_1598935202234022_834154504427809308_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=100&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=lI9JDkwaWqkQ7kNvwG-fNRV&_nc_oc=AdoFC4d1-QHUV_VB0nI8rDvjUEo91iSf_ZQZqV-2hdtnafRpRLlrYiDEVqLtPync4dM&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQCWqKVrUuFqzsttSpBYF-1Hwv1pRJk4ZxERlNJj1pDaag&oe=6A49C5A7",
+      "copy": "Erectile dysfunction can be an early warning of a heart attack, stroke, diabetes and dementia. It's time that patients and doctors alike started taking notice, according to researchers.",
+      "firstSeen": "2026-06-25",
+      "lastSeen": "2026-06-30",
+      "runDays": 5,
       "rawMetrics": {}
     }
   ],
   "dna": [
-    { "adId": "seed_ed_001", "dna": { "hookType": "bold_claim", "angle": "fear", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Get Treated Now", "targetPersona": "Men 40+ experiencing ED who attribute it to aging or personal failure", "oneLineSummary": "Reframes ED as medical (not personal) using prevalence stats — removes shame and makes treatment feel rational, not desperate" } },
-    { "adId": "seed_ed_002", "dna": { "hookType": "callout", "angle": "novelty", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Start Treatment", "targetPersona": "Men who avoid doctors due to embarrassment or time constraints", "oneLineSummary": "Triple negative ('no appointment, no waiting room, no awkward talk') dismantles every friction point in one hook" } },
-    { "adId": "seed_ed_003", "dna": { "hookType": "bold_claim", "angle": "greed", "format": "static", "offerFraming": "social_proof", "ctaStyle": "See Pricing", "targetPersona": "Men already taking ED medication who are cost-conscious", "oneLineSummary": "Price comparison ($70 vs $3) with 'same medication' legitimacy claim is the sharpest greed hook in the vertical" } },
-    { "adId": "seed_ed_004", "dna": { "hookType": "callout", "angle": "fear", "format": "founder", "offerFraming": "social_proof", "ctaStyle": "Learn More", "targetPersona": "Men who assume ED is psychological and feel personal shame", "oneLineSummary": "Urologist authority + 'vascular not psychological' reframe removes the shame layer that prevents most men from seeking help" } },
-    { "adId": "seed_ed_005", "dna": { "hookType": "problem_agitation", "angle": "fear", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "Read His Story", "targetPersona": "Men in relationships where ED has created emotional distance", "oneLineSummary": "Relationship damage narrative targets the relationship cost of ED (not just sexual), which has broader emotional pull" } },
-    { "adId": "seed_ed_006", "dna": { "hookType": "question", "angle": "greed", "format": "static", "offerFraming": "risk_reversal", "ctaStyle": "Claim Free Month", "targetPersona": "Men considering treatment but stalling due to risk or cost", "oneLineSummary": "Risk reversal question ('what's the downside?') rhetoricaly eliminates every objection — the question IS the close" } },
-    { "adId": "seed_ed_007", "dna": { "hookType": "callout", "angle": "fear", "format": "founder", "offerFraming": "social_proof", "ctaStyle": "Get Checked", "targetPersona": "Health-conscious men who respond to medical urgency framing", "oneLineSummary": "Cardiovascular angle reframes ED as a health warning — expands urgency beyond sexual performance to longevity" } },
-    { "adId": "seed_ed_008", "dna": { "hookType": "bold_claim", "angle": "social_proof", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Join the 43%", "targetPersona": "Analytical men who respond to data over emotion", "oneLineSummary": "Double-stat format (57% don't seek help / 94% improve) creates a simple risk-reward calculation that feels logical" } },
-    { "adId": "seed_ed_009", "dna": { "hookType": "callout", "angle": "fear", "format": "ugc", "offerFraming": "social_proof", "ctaStyle": "See What Works", "targetPersona": "Men who attribute ED to aging and feel powerless about it", "oneLineSummary": "Testosterone angle gives men a named cause (biology, not failure) and immediately pairs it with a solution" } },
-    { "adId": "seed_ed_010", "dna": { "hookType": "problem_agitation", "angle": "fear", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Start for $0", "targetPersona": "Men who have been procrastinating on addressing ED for over a year", "oneLineSummary": "'2 years' time reference mirrors the actual procrastination cycle of the target; 5-minute contrast makes acting feel trivial" } },
-    { "adId": "seed_ed_011", "dna": { "hookType": "problem_agitation", "angle": "social_proof", "format": "testimonial", "offerFraming": "social_proof", "ctaStyle": "See Reviews", "targetPersona": "Men who have been avoiding intimacy rather than addressing the problem", "oneLineSummary": "Avoidance behavior naming ('I avoided intimacy') mirrors the exact internal experience most men have — maximum relatability" } },
-    { "adId": "seed_ed_012", "dna": { "hookType": "bold_claim", "angle": "greed", "format": "static", "offerFraming": "social_proof", "ctaStyle": "See Plans", "targetPersona": "Men who know what sildenafil/tadalafil is and want the cheapest access", "oneLineSummary": "Ingredient-level transparency (naming generic and brand) targets informed buyers; 'one-tenth the cost' is the close" } },
-    { "adId": "seed_ed_013", "dna": { "hookType": "question", "angle": "curiosity", "format": "static", "offerFraming": "free_trial", "ctaStyle": "Take the Quiz", "targetPersona": "Men who have tried ED treatment and not seen full results", "oneLineSummary": "Misdiagnosis angle ('most get it wrong') creates curiosity and positions the brand as smarter than the competition" } },
-    { "adId": "seed_ed_014", "dna": { "hookType": "pattern_interrupt", "angle": "fear", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Handle It Quietly", "targetPersona": "Men who prioritize secrecy and feel shame about seeking help", "oneLineSummary": "Direct acknowledgment of the covert intent ('she doesn't know you searched this') is radically honest — removes all pretense" } },
-    { "adId": "seed_ed_015", "dna": { "hookType": "bold_claim", "angle": "novelty", "format": "static", "offerFraming": "social_proof", "ctaStyle": "Try It Now", "targetPersona": "Men who remember how difficult this used to be and are surprised telehealth exists", "oneLineSummary": "Before/after category evolution ('10 years ago vs now') makes telemedicine feel like obvious progress rather than a risk" } }
+    {
+      "adId": "fb_1636816887099686",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men experiencing erectile dysfunction who are concerned about their quality of life.",
+        "oneLineSummary": "Addresses the sensitive issue of ED by positioning medical consultation as a life-improving, risk-free solution."
+      }
+    },
+    {
+      "adId": "fb_1590578818329745",
+      "dna": {
+        "hookType": "callout",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "High-performance men who value discretion and professional-grade results.",
+        "oneLineSummary": "Positions the product as an elite performance tool for men who prioritize privacy and efficacy."
+      }
+    },
+    {
+      "adId": "fb_1104782638335709",
+      "dna": {
+        "hookType": "question",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men researching ED solutions who are overwhelmed by market options.",
+        "oneLineSummary": "Uses the curiosity gap to position the product as the definitive winner in a crowded, confusing market."
+      }
+    },
+    {
+      "adId": "fb_1293538005454012",
+      "dna": {
+        "hookType": "pattern_interrupt",
+        "angle": "novelty",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men concerned about aging and hair loss looking for an 'insider' secret.",
+        "oneLineSummary": "Leverages the 'sneaky hack' trope to drive high CTR through perceived exclusive knowledge."
+      }
+    },
+    {
+      "adId": "fb_1128269642825196",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "other",
+        "offerFraming": "other",
+        "ctaStyle": "Get Yours",
+        "targetPersona": "Health-conscious men looking for natural, ancestral solutions to masculine vitality issues.",
+        "oneLineSummary": "Uses the authority of a proven brand to legitimize a new supplement addressing multiple men's health pain points."
+      }
+    },
+    {
+      "adId": "fb_844315451466061",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "greed",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking long-term, cost-effective alternatives to recurring medical expenses.",
+        "oneLineSummary": "Highlights the financial pain of ongoing pharmacy costs to sell a more permanent, economical solution."
+      }
+    },
+    {
+      "adId": "fb_934139358968657",
+      "dna": {
+        "hookType": "question",
+        "angle": "fear",
+        "format": "other",
+        "offerFraming": "other",
+        "ctaStyle": "Grab your first pair",
+        "targetPersona": "Health-conscious men who worry about toxic chemical exposure in their daily clothing.",
+        "oneLineSummary": "Uses a long-form 'scare' narrative about chemical exposure to position organic underwear as a necessary wellness upgrade."
+      }
+    },
+    {
+      "adId": "fb_1811488712894462",
+      "dna": {
+        "hookType": "other",
+        "angle": "urgency",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking a modern, hassle-free way to manage ED prescriptions.",
+        "oneLineSummary": "Highlights convenience and door-to-door delivery to convert men frustrated by traditional clinic visits."
+      }
+    },
+    {
+      "adId": "fb_1184805506977236",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "social_proof",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "Social gamers and people who enjoy edgy, provocative card games.",
+        "oneLineSummary": "Leverages the existing reputation of a 'friendship-ruining' game to sell new expansion packs."
+      }
+    },
+    {
+      "adId": "fb_936228685887438",
+      "dna": {
+        "hookType": "pattern_interrupt",
+        "angle": "curiosity",
+        "format": "other",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "See Ascent here",
+        "targetPersona": "Cyclists over 55 who are experiencing physical pain and loss of performance.",
+        "oneLineSummary": "An expert-led, long-form editorial breakdown that builds intense trust by exposing industry failures before offering a specialized solution."
+      }
+    },
+    {
+      "adId": "fb_1663763454857597",
+      "dna": {
+        "hookType": "callout",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking premium, high-tech healthcare without the friction of doctors' offices.",
+        "oneLineSummary": "Markets medical care as an optimized, modern consumer experience."
+      }
+    },
+    {
+      "adId": "fb_1640514507204598",
+      "dna": {
+        "hookType": "social_proof",
+        "angle": "social_proof",
+        "format": "static",
+        "offerFraming": "discount",
+        "ctaStyle": "Get 15% Off",
+        "targetPersona": "Men looking for validated, popular solutions to ED.",
+        "oneLineSummary": "Uses the '300,000 men' social proof claim to lower purchase anxiety for a sensitive health product."
+      }
+    },
+    {
+      "adId": "fb_1699147831269760",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "greed",
+        "format": "ugc",
+        "offerFraming": "discount",
+        "ctaStyle": "Get the course",
+        "targetPersona": "Men experiencing performance anxiety or dysfunction looking for a fast, DIY fix.",
+        "oneLineSummary": "Combines a fast-timeline promise with a heavy discount to drive impulse purchases for a home-based training course."
+      }
+    },
+    {
+      "adId": "fb_973606165593976",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "discount",
+        "ctaStyle": "Get yours now",
+        "targetPersona": "Aging cyclists who refuse to give up their hobby due to physical discomfort.",
+        "oneLineSummary": "Addresses the specific conflict of age versus hobby to position the product as a solution to prolonging an active lifestyle."
+      }
+    },
+    {
+      "adId": "fb_1508838477686954",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men experiencing ED who may be unaware of its systemic health implications.",
+        "oneLineSummary": "Uses alarmist health facts to create immediate urgency around an otherwise ignored symptom."
+      }
+    }
   ],
-  "winnerSummary": "ED telehealth ads running 50+ days cluster around five proven patterns: (1) **Shame removal as the primary job** — the highest-longevity ads don't lead with efficacy, they lead with 'this is medical, not personal' or 'handle it privately.' The shame barrier is the real conversion blocker. (2) **Friction elimination in the hook** — 'no appointment, no waiting room, no awkward conversation' / '5-minute form' / 'delivered discreetly' address every step of the embarrassment chain. (3) **Price anchoring against brand-name drugs** — '$3 vs $70 same medication' is a uniquely high-performing angle because the audience already knows they want sildenafil/tadalafil; cost is the barrier. (4) **Medical authority** (urologist, real prescription, cardiologist) consistently outperforms lifestyle/aspirational framing — this audience is skeptical and educated about being sold to. (5) **Underused gap**: relationship cost angle (wife thought I lost interest) runs far fewer ads than product/price angles despite its emotional power. Brands running relationship-narrative ads tend to have longer run durations.",
+  "winnerSummary": "The winning ads in this vertical leverage high-contrast visual status-signaling and 'insider' pattern interrupts to bypass ad fatigue, effectively converting users by positioning ED medication as a private, high-performance lifestyle upgrade rather than a clinical necessity. The highest-converting assets minimize friction through direct, risk-reversal framing while utilizing fear and 'hidden health risk' narratives to convert high-intent, skeptical demographics who are frustrated by the inefficiencies of traditional healthcare.",
   "briefs": [
     {
-      "angleName": "The 'She Thought It Was Her' Reframe",
-      "emotionalDriver": "fear",
-      "whyNow": "The winner summary flags the relationship-cost angle as the highest-emotion underused gap — most ads sell to the man's shame, none address the partner's silent misread.",
-      "hookLine": "She thought you lost interest. It was never that. Fix the real thing privately.",
-      "formatRecommendation": "Quiet, sincere founder/voiceover over a relatable couple scene",
-      "targetPersona": "Partnered men who fear their ED is damaging the relationship",
+      "angleName": "The Friction Comparison Chart",
+      "emotionalDriver": "status",
+      "whyNow": "The market is flooded with 'lifestyle' imagery but lacks concrete, visual logic to overcome skepticism regarding the transition from traditional pharmacies to telehealth.",
+      "hookLine": "Waiting rooms vs. The 3-minute bedroom upgrade.",
+      "formatRecommendation": "Static comparison chart",
+      "targetPersona": "Analytical men who are skeptical of telehealth quality compared to their local doctor.",
       "priority": 1,
       "variants": {
-        "meta": "She thinks you lost interest. Here's the real reason — and the fix.",
-        "tiktok": "She thought he lost interest 💔 it wasn't that",
-        "native": "Why So Many Partners Misread This — and How Couples Fix It"
+        "meta": "Ditch the waiting room. See why 100k+ men switched to the discreet, 3-minute clinical standard.",
+        "tiktok": "Pharmacy vs. Telehealth: Stop wasting time.",
+        "native": "The 'Waiting Room' Tax: Why Men Are Switching."
       }
     },
     {
-      "angleName": "The $3 vs $70 Receipt",
-      "emotionalDriver": "greed",
-      "whyNow": "Price anchoring is the strongest proven lever; a literal side-by-side pharmacy-receipt visual sharpens the proven angle the audience already wants.",
-      "hookLine": "Same exact medication. The pharmacy charges $70. We charge $3. Here's why.",
-      "formatRecommendation": "Static side-by-side receipt comparison",
-      "targetPersona": "Men already buying ED meds who resent brand-name pharmacy pricing",
+      "angleName": "The 'Morning Clarity' Transformation",
+      "emotionalDriver": "social_proof",
+      "whyNow": "There is a total absence of UGC-based transformation stories, leaving a gap for authentic, relatable outcomes that aren't just 'edgy' marketing claims.",
+      "hookLine": "I thought I just 'lost it' with age, until I tried this simple change.",
+      "formatRecommendation": "UGC Testimonial",
+      "targetPersona": "Men 45+ feeling a loss of masculinity and vitality due to age.",
       "priority": 2,
       "variants": {
-        "meta": "Same medication. $70 at the pharmacy, $3 here. Here's how.",
-        "tiktok": "$70 vs $3 for the SAME pill 💊",
-        "native": "The Reason the Same Pill Costs $70 at Your Pharmacy"
+        "meta": "Think you've lost your edge for good? Here’s how guys 40+ are reclaiming their confidence.",
+        "tiktok": "I got my spark back at 50. Here’s how.",
+        "native": "The 'Age-Related' Decline Myth Exposed."
       }
     },
     {
-      "angleName": "The Zero-Waiting-Room Privacy Play",
+      "angleName": "The 'Under the Hood' Explainer",
       "emotionalDriver": "curiosity",
-      "whyNow": "Friction elimination wins, but the full embarrassment chain (booking, waiting room, pharmacy pickup) is rarely shown end-to-end as the value prop.",
-      "hookLine": "No appointment. No waiting room. No pharmacy counter. It just arrives.",
-      "formatRecommendation": "UGC unboxing of a discreet package",
-      "targetPersona": "Privacy-first men who avoid in-person care out of embarrassment",
+      "whyNow": "Long-form educational content is missing. Men are seeking authority-based validation to justify the purchase decision before clicking.",
+      "hookLine": "What actually happens to your performance when you hit 40? (It’s not just age).",
+      "formatRecommendation": "Long-form 'How-to' video",
+      "targetPersona": "High-intent men who research side effects and mechanism-of-action before buying.",
       "priority": 3,
       "variants": {
-        "meta": "No appointment, no waiting room, no awkward counter. Just delivered.",
-        "tiktok": "It just shows up. No doctor's office 📦",
-        "native": "The Discreet Way Men Are Skipping the Doctor's Office"
+        "meta": "Ever wonder why you feel like you're losing your edge? Science explains why.",
+        "tiktok": "Stop blaming your age. Watch this.",
+        "native": "Why 40+ Men Are Suddenly Changing Their Routine."
       }
     },
     {
-      "angleName": "The Urologist Myth-Buster",
-      "emotionalDriver": "novelty",
-      "whyNow": "Medical authority outperforms lifestyle framing; a urologist debunking the '3 myths' that keep men from treatment is an educational format the vertical underuses.",
-      "hookLine": "A urologist debunks the 3 myths keeping men from fixing ED.",
-      "formatRecommendation": "Authority talking-head (urologist persona), educational",
-      "targetPersona": "Skeptical, educated men who distrust marketing but trust clinicians",
+      "angleName": "The 'Private Partner' Disclosure",
+      "emotionalDriver": "status",
+      "whyNow": "Existing ads focus on the individual; there is a gap in addressing the partner’s unspoken satisfaction, which is a major silent driver of purchase intent.",
+      "hookLine": "The conversation I was terrified to have (that changed everything).",
+      "formatRecommendation": "UGC testimonial (couple-focused)",
+      "targetPersona": "Men in long-term relationships concerned about their performance impact on their partner.",
       "priority": 4,
       "variants": {
-        "meta": "A urologist debunks the 3 biggest myths about treating ED.",
-        "tiktok": "Urologist: stop believing these 3 myths 🩺",
-        "native": "Urologist Debunks 3 Common Myths That Stop Men From Treating It"
+        "meta": "It’s not just about you. Reclaim your relationship confidence in 3 minutes.",
+        "tiktok": "The conversation that saved our intimacy.",
+        "native": "The Silent Partner: Why Intimacy is Failing."
       }
     },
     {
-      "angleName": "The Heart-Health Wake-Up",
-      "emotionalDriver": "fear",
-      "whyNow": "Cardiologist authority is proven; reframing ED as an early cardiovascular warning sign adds a health-stakes angle no current ad leads with.",
-      "hookLine": "ED can be the first warning sign of a heart problem. Don't ignore it.",
-      "formatRecommendation": "Cardiologist authority talking-head, serious tone",
-      "targetPersona": "Health-conscious men 45+ who would act on a cardiovascular risk",
+      "angleName": "The Financial 'Pharmacy Leak' Audit",
+      "emotionalDriver": "greed",
+      "whyNow": "Most ads focus on the 'problem' of ED; there is a gap in exploiting the financial frustration of standard pharmacy price hikes vs. subscription value.",
+      "hookLine": "Your local pharmacy is charging you a 400% 'in-person' tax.",
+      "formatRecommendation": "Static info-graphic",
+      "targetPersona": "Budget-conscious men frustrated by recurring out-of-pocket medical costs.",
       "priority": 5,
       "variants": {
-        "meta": "ED can be an early warning sign for your heart. Here's what to do.",
-        "tiktok": "ED can be a heart warning sign ❤️ don't ignore it",
-        "native": "Cardiologists: ED Can Be an Early Warning Sign for Your Heart"
+        "meta": "Stop paying pharmacy premiums. Get the same clinical results for a fraction of the cost.",
+        "tiktok": "Pharmacy vs. This: Stop overpaying.",
+        "native": "The Pharmacy Price Gouge Explained."
       }
     },
     {
-      "angleName": "The 5-Minute Form Speed Run",
-      "emotionalDriver": "urgency",
-      "whyNow": "Form-speed friction removal is proven; emphasizing same-day discreet dispatch turns convenience into immediacy the audience values.",
-      "hookLine": "5-minute form. Real doctor reviews it. Shipped discreetly the same day.",
-      "formatRecommendation": "Screen-recording demo of the actual intake flow",
-      "targetPersona": "Time-poor men who want a fast, legitimate prescription path",
+      "angleName": "The 'Silent Symptom' Alert",
+      "emotionalDriver": "fear",
+      "whyNow": "While fear of ED is used, there is a gap in connecting ED as a 'canary in the coal mine' for wider systemic health, creating immediate, non-trivial urgency.",
+      "hookLine": "Your performance issues might be a warning sign for your heart.",
+      "formatRecommendation": "Static image with clinical authority framing",
+      "targetPersona": "Health-conscious men who prioritize preventative medicine.",
       "priority": 6,
       "variants": {
-        "meta": "5-minute form, real doctor review, shipped discreetly today.",
-        "tiktok": "5-min form → real script → shipped today ⚡",
-        "native": "The 5-Minute Form That Replaces the Doctor's Visit"
+        "meta": "Think ED is just 'part of aging'? Doctors say it’s a red flag for your heart.",
+        "tiktok": "ED: It’s not just performance. Watch this.",
+        "native": "The Hidden Heart Risk No One Tells You About."
       }
     },
     {
-      "angleName": "The 'It's Medical, Not Personal' Permission",
-      "emotionalDriver": "social_proof",
-      "whyNow": "Shame removal is the #1 conversion job; a 'half of men over 40' normalization stat gives explicit permission no price/product ad provides.",
-      "hookLine": "Over half of men over 40 deal with this. It's medical, not a character flaw.",
-      "formatRecommendation": "Calm founder talking-head with a normalizing stat",
-      "targetPersona": "Men carrying shame who need permission before they'll act",
+      "angleName": "The 'No-Doctor' Protocol",
+      "emotionalDriver": "urgency",
+      "whyNow": "Current ads imply convenience but miss the 'DIY/Hack' angle that appeals to men who avoid traditional healthcare gatekeepers.",
+      "hookLine": "Skip the clinic, skip the exam, skip the awkward conversation.",
+      "formatRecommendation": "UGC video (POV style)",
+      "targetPersona": "Men with high social anxiety or those who despise medical bureaucracy.",
       "priority": 7,
       "variants": {
-        "meta": "It's medical, not personal — and far more common than you think.",
-        "tiktok": "It's medical, not personal. You're not alone 🤝",
-        "native": "Why Doctors Say This Is Medical, Not a Personal Failing"
+        "meta": "Get the help you need without stepping foot in a clinic. Start your consult today.",
+        "tiktok": "POV: You found the cheat code for your health.",
+        "native": "The 'No-Doctor' Healthcare Protocol."
       }
     },
     {
-      "angleName": "The Subscription Convenience Lock-In",
-      "emotionalDriver": "greed",
-      "whyNow": "Price wins, but no top ad sells the recurring-convenience value (never run out, never re-order) that raises LTV and reduces re-purchase friction.",
-      "hookLine": "Never run out, never re-order, never overpay. It just shows up monthly.",
-      "formatRecommendation": "Static subscription-benefit breakdown",
-      "targetPersona": "Repeat users who value set-and-forget convenience and savings",
+      "angleName": "The 'High-Performance' Blueprint",
+      "emotionalDriver": "status",
+      "whyNow": "To move away from the 'medical patient' identity, we need to lean into the 'optimizer' identity common in fitness/tech niches.",
+      "hookLine": "Why top performers are prioritizing their bedroom health just like their gym stats.",
+      "formatRecommendation": "High-contrast static aesthetic",
+      "targetPersona": "High-achieving, metrics-driven men who track their health.",
       "priority": 8,
       "variants": {
-        "meta": "Never run out, never overpay. It arrives every month.",
-        "tiktok": "Set it and forget it. Never run out again ✅",
-        "native": "The Monthly Plan Men Use So They Never Run Out"
+        "meta": "Optimize your performance at every level. Join 100k+ men using our private protocol.",
+        "tiktok": "Performance tracking, but for your bedroom.",
+        "native": "The High-Performance Secret for Men 40+."
       }
     },
     {
-      "angleName": "The First-Timer Reassurance",
-      "emotionalDriver": "curiosity",
-      "whyNow": "Category-evolution framing (seed shows 'how it used to be') is winning; a 'what to expect your first time' guide lowers the barrier for nervous first-timers specifically.",
-      "hookLine": "Never done telehealth for this? Here's exactly what the first time looks like.",
-      "formatRecommendation": "Walkthrough explainer, friendly and step-by-step",
-      "targetPersona": "First-time telehealth users nervous about an unfamiliar process",
+      "angleName": "The 'Risk-Reversal' Guarantee",
+      "emotionalDriver": "novelty",
+      "whyNow": "Market skepticism is peaking; a clear, bold risk-reversal offer is under-utilized as a primary hook, rather than a footer detail.",
+      "hookLine": "It works, or it’s free. The most logical way to fix your performance.",
+      "formatRecommendation": "Static testimonial/offer highlight",
+      "targetPersona": "Skeptics who have tried other supplements and failed.",
       "priority": 9,
       "variants": {
-        "meta": "New to telehealth? Here's exactly what your first time looks like.",
-        "tiktok": "What your first telehealth visit actually looks like 👀",
-        "native": "What to Expect Your First Time Using Telehealth for This"
+        "meta": "Fix your performance, or keep your money. The most risk-free path to results.",
+        "tiktok": "Why I stopped being skeptical about this.",
+        "native": "The Zero-Risk Performance Fix."
       }
     },
     {
-      "angleName": "The Discreet-Packaging Proof",
-      "emotionalDriver": "social_proof",
-      "whyNow": "Privacy is a recurring promise but rarely proven; showing the plain, unlabeled package answers the 'will my neighbor know' objection directly.",
-      "hookLine": "Plain box. No labels. No one — not even your mail carrier — will know.",
-      "formatRecommendation": "UGC close-up of the unbranded packaging",
-      "targetPersona": "Privacy-anxious men worried about household or neighbor discovery",
+      "angleName": "The 'System Reset' Narrative",
+      "emotionalDriver": "novelty",
+      "whyNow": "We need to reframe ED as a 'system reset' (like a computer reboot) to remove the stigma of a 'disease' and replace it with 'optimization'.",
+      "hookLine": "Think of it like a firmware update for your body.",
+      "formatRecommendation": "Video with clean, tech-inspired motion graphics",
+      "targetPersona": "Tech-savvy, younger-leaning demographics (30s-40s) experiencing early performance issues.",
       "priority": 10,
       "variants": {
-        "meta": "Plain, unlabeled packaging. No one will ever know.",
-        "tiktok": "The packaging is completely plain 📦 zero labels",
-        "native": "The Plain Packaging That Keeps It Completely Private"
+        "meta": "Need a reboot? Here’s how modern men are optimizing their bedroom performance.",
+        "tiktok": "Body rebooted. Here is the secret.",
+        "native": "The 'System Reset' for Modern Men."
       }
     }
   ]
