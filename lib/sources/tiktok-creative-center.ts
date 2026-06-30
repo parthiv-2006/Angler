@@ -1,8 +1,12 @@
 import type { Ad } from "@/lib/types";
 import { normalizeTikTokAd, type TikTokRawAd } from "./normalize";
 
-// TikTok Creative Center public top-ads endpoint (no login required).
-// Returns top-performing ads ranked by CTR/engagement for a keyword + time period.
+// TikTok Creative Center top-ads endpoint. NOTE: this public endpoint no longer
+// works for anonymous traffic — it returns `code 40101 "no permission"` without a
+// signed/anonymous-user token issued by the Creative Center web app. It is retained
+// as a documented production integration (a real deployment would mint that token
+// via a headless session), NOT as a working zero-credential demo path. The live
+// novel-vertical demo path uses Apify's Facebook Ad Library actor instead.
 const BASE_URL = "https://ads.tiktok.com/creative_radar_api/v1/top_ads/v2/list";
 
 interface TikTokCCResponse {

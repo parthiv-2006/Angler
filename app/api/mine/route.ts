@@ -25,20 +25,28 @@ async function getOrCreateVertical(slug: string, displayName: string) {
   return findOrCreateVertical(slug, displayName);
 }
 
-// Best-effort live pull for novel verticals: TikTok primary, Apify fallback.
-// Seed verticals never reach here (the cache layer serves them first).
+// Best-effort live pull for novel verticals. Apify's Facebook Ad Library actor is
+// the primary source (real, public, no login). The TikTok Creative Center call is a
+// commented-out last resort: its public endpoint now requires a signed token and
+// returns 40101 for anonymous demo traffic (see tiktok-creative-center.ts).
+// Seed verticals never reach here — the cache layer serves them first.
 async function fetchLiveAds(vertical: string): Promise<Ad[]> {
-  try {
-    const ads = await withRetry(() => fetchTikTokAds(vertical));
-    if (ads.length > 0) return ads;
-  } catch (err) {
-    console.error("[mine] TikTok source failed, trying Apify:", err);
+  if (process.env.APIFY_TOKEN) {
+    try {
+      const ads = await withRetry(() => fetchMetaAds(vertical));
+      if (ads.length > 0) return ads;
+    } catch (err) {
+      console.error("[mine] Apify source failed:", err);
+    }
   }
 
-  if (process.env.APIFY_TOKEN) {
-    return withRetry(() => fetchMetaAds(vertical));
+  // Last resort — kept wired but expected to fail anonymously (signed-token guard):
+  try {
+    return await withRetry(() => fetchTikTokAds(vertical));
+  } catch (err) {
+    console.error("[mine] TikTok Creative Center fallback failed:", err);
+    return [];
   }
-  return [];
 }
 
 export async function POST(req: NextRequest) {
