@@ -281,6 +281,13 @@ export default function Home() {
   const budgetNum = parseFloat(state.budget);
   const estWaste = clustering && !isNaN(budgetNum) && budgetNum > 0 ? Math.round((budgetNum * wastePct) / 100) : null;
 
+  // Distinct angles proven in the market, by frequency (Feature D).
+  const marketAngles = (() => {
+    const counts = new Map<string, number>();
+    state.marketDna.forEach((r) => counts.set(r.dna.angle, (counts.get(r.dna.angle) ?? 0) + 1));
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  })();
+
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
       <header style={{ marginBottom: 48 }}>
@@ -497,16 +504,35 @@ export default function Home() {
             })}
           </div>
 
-          {clustering.gaps.length > 0 && (
-            <div style={{ ...calloutStyle, marginTop: 16, borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.06)" }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 8 }}>
-                ANGLE GAPS — proven market angles you&apos;re not running
-              </p>
-              <ul style={{ paddingLeft: 16, margin: 0 }}>
-                {clustering.gaps.map((g, i) => (
-                  <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 4 }}>{g}</li>
-                ))}
-              </ul>
+          {/* Market-vs-you coverage — what's proven vs what you're missing (Feature D) */}
+          {(marketAngles.length > 0 || clustering.gaps.length > 0) && (
+            <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+              {marketAngles.length > 0 && (
+                <div style={{ ...calloutStyle, flex: "1 1 240px" }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 10 }}>
+                    PROVEN IN YOUR MARKET
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {marketAngles.map(([angle, count]) => (
+                      <span key={angle} style={{ fontSize: 12, padding: "3px 10px", borderRadius: 9999, border: "1px solid var(--border)", background: "var(--bg)" }}>
+                        {angle} <span style={{ color: "var(--text-muted)" }}>×{count}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {clustering.gaps.length > 0 && (
+                <div style={{ ...calloutStyle, flex: "1 1 240px", borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.06)" }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 10 }}>
+                    YOU&apos;RE NOT RUNNING — angle gaps
+                  </p>
+                  <ul style={{ paddingLeft: 16, margin: 0 }}>
+                    {clustering.gaps.map((g, i) => (
+                      <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 6 }}>{g}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </section>
