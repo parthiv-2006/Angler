@@ -55,9 +55,17 @@ Layer embeddings-based cosine similarity alongside the explained clusters, so te
 
 ---
 
-## Cost & limits
+## Data provenance (no fabricated data)
 
-**Data:** Public scrapers return samples of top performers, not exhaustive datasets (~20–50 ads/run without authentication). That's intentional — the use case is analyzing what's winning, not cataloguing everything. Production path: Apify paid plan or ScrapeCreators.
+Everything the demo shows is **real**. The competitor ads are genuine, currently/recently running ads pulled from public ad libraries — not invented examples.
+
+- **Seed verticals** (weight-loss supplement, debt relief, ED telehealth) are **real ads scraped from the Meta (Facebook) Ad Library** via the public Apify actor [`curious_coder/facebook-ads-library-scraper`](https://apify.com/curious_coder/facebook-ads-library-scraper), then **cached** so the demo runs instantly with zero credentials. Each ad's run-duration is derived from its real Ad Library delivery start date. Advertiser names are real entities you can look up in the [Meta Ad Library](https://www.facebook.com/ads/library/). Cached real data is the standard approach here — nothing is mocked or hand-written. Refresh the cache anytime with `npm run refresh-seed`.
+- **Novel verticals** (anything you type that isn't pre-seeded) attempt a **best-effort live Apify pull** of the Meta Ad Library. If it returns nothing in time, the app **degrades honestly** — it tells you to try a seeded vertical rather than showing a fabricated result.
+- **TikTok Creative Center** is wired as a documented production integration, but its public endpoint now requires a signed/anonymous-user token and returns `40101` for anonymous traffic, so it is **not** used as a zero-credential demo path. Meta Ad Library (via Apify) is the live source.
+
+**Data limits:** Public scrapers return samples of top performers, not exhaustive datasets (~20–50 ads/run). That's intentional — the use case is analyzing what's winning, not cataloguing everything. Production path: Apify's paid plan or ScrapeCreators (~$0.40/1k ads). Because results are cached per vertical, the steady-state scraping cost is near-zero.
+
+## Cost & limits
 
 **AI cost:** Seed verticals (weight-loss supplement, debt relief, ED telehealth) are pre-analyzed and served from cache — zero API calls for the demo path. A full live run on a novel vertical (15 ads → DNA → clustering → 10 briefs) costs roughly $0.03–0.05 at Anthropic's Sonnet pricing. Gemini Flash is a one-env-var fallback at effectively $0 on free tier.
 
