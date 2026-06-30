@@ -41,3 +41,7 @@ export const angleBriefSchema = z.object({
 export const angleBatchSchema = z.object({
   briefs: z.array(angleBriefSchema),
 });
+
+export const winnerSummarySchema = z.object({
+  summary: z.string(),
+});

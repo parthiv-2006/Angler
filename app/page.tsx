@@ -124,6 +124,8 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vertical: state.vertical,
+          // Synthesize a summary only when we don't already have a seed one (novel verticals).
+          generateSummary: state.winnerSummary === null,
           ads: state.ads.slice(0, 15).map((ad) => ({
             id: ad.id,
             coverUrl: ad.coverUrl || undefined,
@@ -133,7 +135,15 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Failed to analyze creatives");
-      setState((s) => ({ ...s, marketDna: data.results, clustering: null, briefs: [], loading: false, loadingStep: "" }));
+      setState((s) => ({
+        ...s,
+        marketDna: data.results,
+        winnerSummary: data.winnerSummary ?? s.winnerSummary,
+        clustering: null,
+        briefs: [],
+        loading: false,
+        loadingStep: "",
+      }));
     } catch {
       setError("Network error — please try again");
     }
