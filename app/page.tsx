@@ -59,6 +59,12 @@ function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+function scrollToStep(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+const jsonHeaders = { "Content-Type": "application/json" };
+
 type DnaFilter = { angle: string | null; format: string | null; hookType: string | null };
 const NO_FILTER: DnaFilter = { angle: null, format: null, hookType: null };
 
@@ -238,6 +244,68 @@ export default function Home() {
     }
   }
 
+  // One-click guided demo — runs all four modules on a seed vertical, threading
+  // each step's result forward locally and scrolling the new section into view.
+  async function handleRunFullDemo() {
+    const vertical = "weight-loss supplement";
+    const slug = slugify(vertical);
+    setDnaFilter(NO_FILTER);
+    setState((s) => ({ ...INITIAL, sampleSets: s.sampleSets, vertical, loading: true, loadingStep: "Pulling competitor ads…" }));
+    try {
+      // 1 — Mine
+      const mineRes = await fetch("/api/mine", { method: "POST", headers: jsonHeaders, body: JSON.stringify({ vertical }) });
+      const mine = await mineRes.json();
+      if (!mineRes.ok) return setError(mine.error ?? "Demo failed while mining ads");
+      const ads: Ad[] = mine.ads ?? [];
+      setState((s) => ({ ...s, ads, winnerSummary: mine.winnerSummary ?? null, fromSeed: !!mine.fromSeed, loadingStep: "Extracting creative DNA…" }));
+      await sleep(600);
+      scrollToStep("step-ads");
+
+      // 2 — Deconstruct
+      const dRes = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ vertical, ads: ads.slice(0, 15).map((a) => ({ id: a.id, coverUrl: a.coverUrl || undefined, copy: a.copy || undefined })) }),
+      });
+      const d = await dRes.json();
+      if (!dRes.ok) return setError(d.error ?? "Demo failed while extracting DNA");
+      const marketDna: { adId: string; dna: CreativeDNA }[] = d.results ?? [];
+      setState((s) => ({ ...s, marketDna, loadingStep: "Scoring your ad set…" }));
+      await sleep(600);
+      scrollToStep("step-dna");
+
+      // 3 — Score a pre-baked sample ad set
+      const sampleSlug = state.sampleSets.find((s) => s.vertical === slug)?.slug ?? "weight-loss-redundant";
+      const setRes = await fetch(`/api/samples?slug=${encodeURIComponent(sampleSlug)}`);
+      const sample = await setRes.json();
+      if (!setRes.ok) return setError(sample.error ?? "Demo failed while loading the sample set");
+      const scoreRes = await fetch("/api/score", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ sampleSetId: sampleSlug, dna: sample.dna.map((x: { dna: CreativeDNA }) => x.dna), marketDNA: marketDna.map((r) => r.dna) }),
+      });
+      const score = await scoreRes.json();
+      if (!scoreRes.ok) return setError(score.error ?? "Demo failed while scoring diversity");
+      setState((s) => ({ ...s, userAds: sample.ads, selectedSample: sampleSlug, clustering: score.clustering, loadingStep: "Generating angle briefs…" }));
+      await sleep(600);
+      scrollToStep("step-score");
+
+      // 4 — Generate angle briefs
+      const gRes = await fetch("/api/generate", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ vertical, winnerSummary: mine.winnerSummary ?? "", marketDNA: marketDna.map((r) => r.dna), clustering: score.clustering }),
+      });
+      const g = await gRes.json();
+      if (!gRes.ok) return setError(g.error ?? "Demo failed while generating angles");
+      setState((s) => ({ ...s, briefs: g.briefs ?? [], loading: false, loadingStep: "" }));
+      await sleep(500);
+      scrollToStep("step-briefs");
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
   function handleCopyBrief(brief: AngleBrief) {
     const text = [
       `Angle: ${brief.angleName}`,
@@ -343,6 +411,13 @@ export default function Home() {
             {state.loading && state.loadingStep.includes("Pulling") ? "Searching…" : "Find Ads"}
           </button>
         </div>
+        <button
+          onClick={handleRunFullDemo}
+          disabled={state.loading}
+          style={{ ...secondaryBtnStyle(state.loading), marginTop: 12 }}
+        >
+          ▶ Run the full demo (weight-loss)
+        </button>
       </section>
 
       {state.error && <p style={{ color: "#f87171", marginBottom: 24, fontSize: 14 }}>{state.error}</p>}
@@ -355,7 +430,7 @@ export default function Home() {
 
       {/* ── Step 2: Ads + winner summary ────────────────────────────────────── */}
       {hasAds && (
-        <section style={{ marginBottom: 40 }}>
+        <section id="step-ads" style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
             <Label step="2" text={`${state.ads.length} competitor ads — sorted by run duration`} badge={state.fromSeed ? "instant" : "live"} />
             <button onClick={handleDeconstruct} disabled={state.loading} style={secondaryBtnStyle(state.loading)}>
@@ -388,7 +463,7 @@ export default function Home() {
 
       {/* ── Step 3: Market DNA (filterable) ──────────────────────────────────── */}
       {hasMarketDna && (
-        <section style={{ marginBottom: 40 }}>
+        <section id="step-dna" style={{ marginBottom: 40 }}>
           <Label step="3" text="Creative DNA of the market winners" />
 
           {/* Filter controls — by angle / format / hook type (Feature B1) */}
@@ -489,7 +564,7 @@ export default function Home() {
 
       {/* ── Step 5: Diversity result ─────────────────────────────────────────── */}
       {clustering && (
-        <section style={{ marginBottom: 40 }}>
+        <section id="step-score" style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
             <Label step="5" text={`Meta likely sees these ${clustering.nAds} ads as ${clustering.kConcepts} concepts`} />
             <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
@@ -588,7 +663,7 @@ export default function Home() {
 
       {/* ── Step 6: Angle briefs ─────────────────────────────────────────────── */}
       {state.briefs.length > 0 && (
-        <section>
+        <section id="step-briefs">
           <div style={sectionHeaderStyle}>
             <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
             <button onClick={handleExportCSV} style={secondaryBtnStyle(false)}>
