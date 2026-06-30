@@ -7,7 +7,9 @@ import { parseModelJSON } from "./json";
 import { ANALYZE_CREATIVE_SYSTEM, buildAnalyzeCreativePrompt } from "./prompts/analyze";
 import { CLUSTER_CONCEPTS_SYSTEM, buildClusterConceptsPrompt } from "./prompts/cluster";
 
-const MODEL_DEFAULT = "gemini-2.0-flash";
+// gemini-2.0-flash has no free-tier request allocation on new projects (429 limit:0).
+// gemini-2.5-flash is the current model with a working free tier. Override via GEMINI_MODEL.
+const MODEL_DEFAULT = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 
 export class GeminiProvider implements AIProvider {
   private client: GoogleGenerativeAI;
