@@ -12,13 +12,38 @@ export interface TikTokRawAd {
   metrics?: Record<string, unknown>;
 }
 
+// Real output shape of the curious_coder~facebook-ads-library-scraper actor
+// (locked against a live trial run; only the fields we consume are typed).
 export interface ApifyRawAd {
-  id: string;
-  page_name: string;
-  snapshot_url?: string;
-  ad_creative_body?: string;
-  ad_delivery_start_time?: string;
-  ad_delivery_stop_time?: string;
+  ad_archive_id?: string;
+  page_name?: string;
+  is_active?: boolean;
+  start_date?: number; // unix seconds
+  end_date?: number; // unix seconds
+  snapshot?: {
+    body?: { text?: string } | string | null;
+    link_description?: string | null;
+    title?: string | null;
+    cta_text?: string | null;
+    images?: { original_image_url?: string; resized_image_url?: string }[] | null;
+  } | null;
+}
+
+// Meta's Ad Library returns dynamic-creative placeholders like "{{product.brand}}"
+// for some ads — useless as copy. Returns the best human-readable copy, or "".
+function bestCopy(snapshot: ApifyRawAd["snapshot"]): string {
+  const body =
+    typeof snapshot?.body === "string" ? snapshot.body : snapshot?.body?.text;
+  for (const candidate of [body, snapshot?.link_description, snapshot?.title]) {
+    const text = candidate?.trim();
+    if (text && !/^\{\{.*\}\}$/.test(text)) return text;
+  }
+  return "";
+}
+
+function dateOnly(unixSeconds?: number): string {
+  if (!unixSeconds) return "";
+  return new Date(unixSeconds * 1000).toISOString().split("T")[0];
 }
 
 export function normalizeTikTokAd(raw: TikTokRawAd): Ad {
@@ -42,22 +67,27 @@ export function normalizeTikTokAd(raw: TikTokRawAd): Ad {
 }
 
 export function normalizeApifyAd(raw: ApifyRawAd): Ad {
-  const firstSeen = raw.ad_delivery_start_time?.split("T")[0] ?? "";
-  const lastSeen = raw.ad_delivery_stop_time?.split("T")[0] ?? new Date().toISOString().split("T")[0];
-  const runDays =
-    firstSeen && lastSeen
-      ? Math.floor(
-          (new Date(lastSeen).getTime() - new Date(firstSeen).getTime()) /
-            (1000 * 60 * 60 * 24),
-        )
-      : 0;
+  const firstSeen = dateOnly(raw.start_date);
+  // Active ads have a future scheduled end_date; longevity is now − start.
+  // Inactive ads use their real end_date.
+  const lastSeenMs = raw.is_active
+    ? Date.now()
+    : (raw.end_date ?? raw.start_date ?? 0) * 1000;
+  const lastSeen = new Date(lastSeenMs).toISOString().split("T")[0];
+  const runDays = raw.start_date
+    ? Math.max(
+        0,
+        Math.floor((lastSeenMs - raw.start_date * 1000) / (1000 * 60 * 60 * 24)),
+      )
+    : 0;
 
+  const image = raw.snapshot?.images?.[0];
   return {
-    id: `apify_${raw.id}`,
-    source: "apify_meta",
-    advertiser: raw.page_name,
-    coverUrl: raw.snapshot_url ?? "",
-    copy: raw.ad_creative_body ?? "",
+    id: `fb_${raw.ad_archive_id ?? ""}`,
+    source: "facebook_ad_library",
+    advertiser: raw.page_name ?? "",
+    coverUrl: image?.resized_image_url ?? image?.original_image_url ?? "",
+    copy: bestCopy(raw.snapshot),
     firstSeen,
     lastSeen,
     runDays,

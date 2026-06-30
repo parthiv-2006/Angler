@@ -2,10 +2,32 @@ import type { Ad } from "@/lib/types";
 import { normalizeApifyAd, type ApifyRawAd } from "./normalize";
 
 const APIFY_BASE = "https://api.apify.com/v2";
-// Ready-made Meta Ad Library actor from Apify Store
-const META_ACTOR_ID = "apify~meta-ads-scraper";
 
-export async function fetchMetaAds(vertical: string): Promise<Ad[]> {
+// Public, maintained Facebook Ad Library actor. Search-URL oriented (the right fit
+// for keyword mining) with ~15M runs. Output is flat (advertiser/body at top level).
+// Fallback (page-centric, output nested under pageInfo.page.name): apify~facebook-ads-scraper
+const META_ACTOR_ID = "curious_coder~facebook-ads-library-scraper";
+
+// Build a public Meta Ad Library *search* URL for a keyword. Both real actors take
+// Ad Library URLs (not `searchTerms`), so the keyword is encoded into the URL.
+function buildAdLibraryUrl(vertical: string): string {
+  const params = new URLSearchParams({
+    active_status: "active",
+    ad_type: "all",
+    country: "US",
+    q: vertical,
+    search_type: "keyword_unordered",
+    media_type: "all",
+  });
+  return `https://www.facebook.com/ads/library/?${params.toString()}`;
+}
+
+// Run the actor and return the RAW dataset items (untyped). Exposed so the build-time
+// seed-refresh script can persist raw output and re-derive DNA without re-scraping.
+export async function fetchMetaAdsRaw(
+  vertical: string,
+  count = 30,
+): Promise<ApifyRawAd[]> {
   const token = process.env.APIFY_TOKEN;
   if (!token) throw new Error("APIFY_TOKEN is not set");
 
@@ -16,9 +38,10 @@ export async function fetchMetaAds(vertical: string): Promise<Ad[]> {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      searchTerms: [vertical],
-      maxResults: 50,
-      activeStatus: "ACTIVE",
+      urls: [{ url: buildAdLibraryUrl(vertical), method: "GET" }],
+      count,
+      "scrapePageAds.activeStatus": "active",
+      scrapeAdDetails: true,
     }),
   });
 
@@ -27,14 +50,16 @@ export async function fetchMetaAds(vertical: string): Promise<Ad[]> {
   }
 
   const { data: run } = (await runRes.json()) as { data: { id: string } };
+  return pollRunDataset(run.id, token);
+}
 
-  // Poll until the run finishes (max ~60 s)
-  const dataset = await pollRunDataset(run.id, token);
-  return dataset.map(normalizeApifyAd);
+export async function fetchMetaAds(vertical: string, count = 30): Promise<Ad[]> {
+  const raw = await fetchMetaAdsRaw(vertical, count);
+  return raw.map(normalizeApifyAd);
 }
 
 async function pollRunDataset(runId: string, token: string): Promise<ApifyRawAd[]> {
-  const maxAttempts = 12;
+  const maxAttempts = 24;
   const delayMs = 5_000;
 
   for (let i = 0; i < maxAttempts; i++) {
