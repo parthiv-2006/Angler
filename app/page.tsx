@@ -59,8 +59,12 @@ function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+type DnaFilter = { angle: string | null; format: string | null; hookType: string | null };
+const NO_FILTER: DnaFilter = { angle: null, format: null, hookType: null };
+
 export default function Home() {
   const [state, setState] = useState<AppState>(INITIAL);
+  const [dnaFilter, setDnaFilter] = useState<DnaFilter>(NO_FILTER);
 
   useEffect(() => {
     fetch("/api/samples")
@@ -288,6 +292,20 @@ export default function Home() {
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   })();
 
+  // Filterable creative-DNA view (Feature B1).
+  const dnaDims: Record<keyof DnaFilter, string[]> = {
+    angle: [...new Set(state.marketDna.map((r) => r.dna.angle))],
+    format: [...new Set(state.marketDna.map((r) => r.dna.format))],
+    hookType: [...new Set(state.marketDna.map((r) => r.dna.hookType))],
+  };
+  const filteredDna = state.marketDna.filter(
+    (r) =>
+      (!dnaFilter.angle || r.dna.angle === dnaFilter.angle) &&
+      (!dnaFilter.format || r.dna.format === dnaFilter.format) &&
+      (!dnaFilter.hookType || r.dna.hookType === dnaFilter.hookType),
+  );
+  const dnaFilterActive = !!(dnaFilter.angle || dnaFilter.format || dnaFilter.hookType);
+
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
       <header style={{ marginBottom: 48 }}>
@@ -368,12 +386,42 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Step 3: Market DNA ───────────────────────────────────────────────── */}
+      {/* ── Step 3: Market DNA (filterable) ──────────────────────────────────── */}
       {hasMarketDna && (
         <section style={{ marginBottom: 40 }}>
           <Label step="3" text="Creative DNA of the market winners" />
+
+          {/* Filter controls — by angle / format / hook type (Feature B1) */}
+          <div style={{ marginBottom: 10 }}>
+            {(["angle", "format", "hookType"] as const).map((dim) => (
+              <div key={dim} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: "var(--text-muted)", minWidth: 64, textTransform: "capitalize" }}>{dim}</span>
+                {dnaDims[dim].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setDnaFilter((f) => ({ ...f, [dim]: f[dim] === v ? null : v }))}
+                    style={{ ...chipStyle(dnaFilter[dim] === v), padding: "3px 10px", fontSize: 12 }}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 10 }}>
+            Showing {filteredDna.length} of {state.marketDna.length}
+            {dnaFilterActive && (
+              <button
+                onClick={() => setDnaFilter(NO_FILTER)}
+                style={{ marginLeft: 8, fontSize: 11, color: "var(--accent)", background: "none", border: "none", cursor: "pointer" }}
+              >
+                clear filters
+              </button>
+            )}
+          </p>
+
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {state.marketDna.map((r) => (
+            {filteredDna.map((r) => (
               <div key={r.adId} style={{ ...cardStyle, padding: "8px 12px" }}>
                 <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>{r.dna.angle}</span>
                 <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
