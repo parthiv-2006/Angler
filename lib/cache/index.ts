@@ -37,6 +37,24 @@ async function cacheDNA(
   await dbSet(adId, adKind, dna, model);
 }
 
+// ── Concurrency guard ─────────────────────────────────────────────────────────
+//
+// Within a single warm serverless instance, two near-simultaneous requests for the
+// same key (e.g. a double-click, or two judges hitting the same novel vertical at
+// once) would otherwise both miss the cache and both pay for a live fetch/analysis.
+// This single-flight map makes the second caller await the first's in-flight
+// promise instead, so the cache is always preferred over a redundant live call.
+const inFlight = new Map<string, Promise<unknown>>();
+
+async function dedupe<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const existing = inFlight.get(key);
+  if (existing) return existing as Promise<T>;
+
+  const promise = fn().finally(() => inFlight.delete(key));
+  inFlight.set(key, promise);
+  return promise;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function getOrFetchAds(
@@ -52,10 +70,12 @@ export async function getOrFetchAds(
   const cached = await getCachedAds(verticalId);
   if (cached) return cached;
 
-  // 3. Live fetch + write-through
-  const fresh = await fetcher();
-  await cacheAds(verticalId, fresh).catch(console.error);
-  return fresh;
+  // 3. Live fetch + write-through (deduped across concurrent requests for this vertical)
+  return dedupe(`ads:${verticalId}`, async () => {
+    const fresh = await fetcher();
+    await cacheAds(verticalId, fresh).catch(console.error);
+    return fresh;
+  });
 }
 
 export async function getOrAnalyzeDNA(
@@ -73,10 +93,12 @@ export async function getOrAnalyzeDNA(
   const cached = await getCachedDNA(adId);
   if (cached) return cached;
 
-  // 3. Live analysis + write-through
-  const fresh = await analyzer();
-  await cacheDNA(adId, adKind, fresh, model).catch(console.error);
-  return fresh;
+  // 3. Live analysis + write-through (deduped across concurrent requests for this ad)
+  return dedupe(`dna:${adId}`, async () => {
+    const fresh = await analyzer();
+    await cacheDNA(adId, adKind, fresh, model).catch(console.error);
+    return fresh;
+  });
 }
 
 export async function withRetry<T>(
