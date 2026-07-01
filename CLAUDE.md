@@ -183,30 +183,36 @@ Keep entries concise. A future AI session needs enough to act, not a novel.
 
 ## Engineering Rules (non-negotiable)
 
-1. **Commit like a senior engineer.** Write code in small, atomic batches — one concern per
+1. **Match subagent model to task complexity, defaulting to the cheapest tier that
+   meets the bar.** Simple, mechanical subagent work (formatting, single-file lookups,
+   boilerplate) should route to a cheaper/faster model. Anything touching architecture,
+   provider abstractions, the diversity-scoring logic, or code a judge will read for
+   quality should use a stronger model — this is a contest submission graded partly on
+   "could another engineer extend this?", so don't undercut quality to save tokens.
+2. **Commit like a senior engineer.** Write code in small, atomic batches — one concern per
    commit, never a single large dump. Always commit and push to the repo before moving to the
    next concern. The git history is part of the audition.
-2. **Simplest implementation first.** Always write the simplest code that satisfies the
+3. **Simplest implementation first.** Always write the simplest code that satisfies the
    requirement. No premature abstractions, no speculative generality. Add complexity only
    when the need is proven.
-3. **Ask before assuming.** When a requirement is ambiguous or two valid approaches exist,
+4. **Ask before assuming.** When a requirement is ambiguous or two valid approaches exist,
    stop and ask a clarifying question. Never silently pick one and proceed.
-4. **Architecture is everything.** Maintain the module boundaries defined in
+5. **Architecture is everything.** Maintain the module boundaries defined in
    `ARCHITECTURE.md` with the same discipline a senior engineer would on a production
    codebase. Do not let shortcuts collapse the layering (`lib/` ↔ `app/api/` ↔ `app/`).
-5. **Clean, professional codebase at all times.** No dead code, no debug `console.log`
+6. **Clean, professional codebase at all times.** No dead code, no debug `console.log`
    left in, no commented-out blocks, no stray files. The repo must look production-ready
    on every commit.
-6. **Seed path first, live path second.** When implementing any feature, make the
+7. **Seed path first, live path second.** When implementing any feature, make the
    seed/cached path work and verify it before touching the live API path. The demo judge
    clicks seed verticals first — a broken live path is recoverable; a broken seed path
    loses the contest.
-7. **Route timeout budget.** Every `app/api/*` route must complete its primary path in
+8. **Route timeout budget.** Every `app/api/*` route must complete its primary path in
    under 8 seconds (Vercel default is 10s). If a route might exceed this — e.g. vision
    analysis over many ads — use streaming, reduce batch size, or move the heavy work to
    offline seed pre-computation. Never assume a serverless function can do multi-step AI
    work synchronously without checking the math.
-8. **"Does it demo?" is the definition of done.** Before marking any module complete, it
+9. **"Does it demo?" is the definition of done.** Before marking any module complete, it
    must work end-to-end on the seed path in an incognito window with zero env vars set.
    TypeScript and lint passing are necessary but not sufficient — the win condition is a
    working live URL, not clean types.
