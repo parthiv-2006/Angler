@@ -150,6 +150,9 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Failed to analyze creatives");
+      if (!data.results || data.results.length === 0) {
+        return setError("Couldn't extract creative DNA from these ads — try again or pick a different vertical.");
+      }
       setState((s) => ({
         ...s,
         marketDna: data.results,
@@ -263,6 +266,9 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Failed to generate angle briefs");
+      if (!data.briefs || data.briefs.length === 0) {
+        return setError("No angle briefs were generated — please try again.");
+      }
       setState((s) => ({ ...s, briefs: data.briefs, loading: false, loadingStep: "" }));
     } catch {
       setError("Network error — please try again");
@@ -549,18 +555,24 @@ export default function Home() {
             algorithm really sees — and which proven angles you&apos;re missing.
           </p>
 
-          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            {samplesToShow.map((sample) => (
-              <button
-                key={sample.slug}
-                onClick={() => handleScoreSample(sample.slug)}
-                disabled={state.loading}
-                style={chipStyle(state.selectedSample === sample.slug)}
-              >
-                {sample.label}
-              </button>
-            ))}
-          </div>
+          {samplesToShow.length > 0 ? (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+              {samplesToShow.map((sample) => (
+                <button
+                  key={sample.slug}
+                  onClick={() => handleScoreSample(sample.slug)}
+                  disabled={state.loading}
+                  style={chipStyle(state.selectedSample === sample.slug)}
+                >
+                  {sample.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
+              No sample ad sets available right now — paste your own captions below instead.
+            </p>
+          )}
 
           <details style={{ marginBottom: 8 }}>
             <summary style={{ fontSize: 13, color: "var(--text-muted)", cursor: "pointer" }}>
@@ -632,6 +644,11 @@ export default function Home() {
           </div>
 
           {/* Visual collapse — N ad cards grouping into K concept buckets (Feature A2) */}
+          {clustering.clusters.length === 0 && (
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
+              No distinct concepts were detected in this ad set.
+            </p>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {clustering.clusters.map((cluster, i) => {
               const color = BUCKET_COLORS[i % BUCKET_COLORS.length];
