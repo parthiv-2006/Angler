@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-07-01 — Concurrency guard + empty/error state polish
+
+**What:** Closed two items from the demo-hardening checklist.
+- **Concurrency guard:** `lib/cache/index.ts` now single-flight dedupes `getOrFetchAds`/`getOrAnalyzeDNA` live calls by key (`ads:${verticalId}`, `dna:${adId}`) so simultaneous requests for the same vertical/ad prefer the in-flight promise over a redundant live call.
+- **Empty/error states:** `app/page.tsx` — DNA extraction returning zero results, angle generation returning zero briefs, an empty sample-set list, and a clustering response with zero concepts all now surface an explicit message instead of silently rendering nothing.
+
+**Verified:** `npm run typecheck` clean.
+
+**Branch state:** `main`. **What's next:** README + Vercel deploy + Loom are still the open submission items.
+
+---
+
 ## 2026-06-30 — Live AI path fixed (Gemini model swap)
 
 **Problem:** Live AI calls all 429'd with `limit: 0, model: gemini-2.0-flash`. The standing

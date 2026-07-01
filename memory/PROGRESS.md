@@ -106,8 +106,8 @@
 - [x] `maxDuration = 60` on all AI routes; live score batch-capped at 20
 - [x] Loading + error + `unavailable` states wired in `app/page.tsx`
 - [x] Tested with zero credentials (no `.env.local`, no shell keys) end-to-end
-- [ ] Concurrency guard (prefer cache under simultaneous requests)
-- [ ] Empty-state polish on every module
+- [x] Concurrency guard — single-flight dedup on live ad-fetch and DNA-analysis calls (`lib/cache/index.ts`)
+- [x] Empty-state polish — empty DNA extraction, empty briefs, empty sample list, empty clustering all surface a message instead of a silent no-op (`app/page.tsx`)
 
 ---
 

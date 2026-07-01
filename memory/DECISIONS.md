@@ -6,6 +6,14 @@
 
 ---
 
+## Single-flight in-memory dedup for concurrent live calls
+
+**Decision:** `getOrFetchAds` and `getOrAnalyzeDNA` in `lib/cache/index.ts` wrap their live-call step in a `Map<string, Promise>`-based dedupe keyed by `ads:${verticalId}` / `dna:${adId}`. A second concurrent request for the same key awaits the first's in-flight promise instead of firing its own live fetch/analysis.
+**Why:** A double-click, React re-render, or two near-simultaneous requests for the same novel vertical would otherwise both miss cache and both pay for a live call — wasted AI/API spend and a race on the Supabase write-through. This is process-local (only dedupes within one warm serverless instance), which is sufficient for the demo's traffic pattern and avoids adding external coordination (Redis, etc.) for a scope that doesn't need it.
+**Files:** `lib/cache/index.ts`
+
+---
+
 ## Cache hierarchy: seed-first, not Supabase-first
 
 **Decision:** Cache lookup order is seed JSON → Supabase → live fetch, not Supabase → seed → live.
