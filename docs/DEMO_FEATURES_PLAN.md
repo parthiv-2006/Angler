@@ -7,6 +7,43 @@
 
 ---
 
+## STATUS (as of 2026-07-02)
+
+**Feature A — DONE.** All of A1–A8 shipped and verified (commits 1–4 in the sequence
+below). Evidence chips + batch integrity panel confirmed working end-to-end in a real
+browser on the seed path (zero console errors).
+
+**Feature B — DONE.** All of B1–B6 shipped and verified (commits 5–7). Both seed-path
+pre-flight chips confirmed returning opposite verdicts (one collapse/red, one
+distinct/green) with real thumbnails and fix lists; live paste/upload paths wired
+but not exercised against a live key this session.
+
+**Feature C (MCP server) — NOT STARTED.** C1–C4 and the README/docs work (commits
+8–9) are still pending. Stopped intentionally after Feature B per instruction — do
+not start C without being told to.
+
+**Global regression checklist and `memory/` file updates (commit 10) — NOT DONE.**
+Still pending; only run after Feature C (or if told to run it standalone).
+
+### Gotchas hit this session (not yet resolved)
+
+- **No ESLint config exists in this repo** (confirmed via `git log`, never existed).
+  `npm run lint` launches an interactive `next lint` setup wizard instead of running
+  — not usable as a quality gate as-is. Used `npm run typecheck` + `npm run build` as
+  the effective gates for every commit instead. A `config-protection` hook blocks
+  creating `eslint.config.mjs` directly; needs either that hook lifted or a
+  human-run `npx next lint` to pick the config once, interactively.
+- **Gemini free-tier daily quota exhausted mid-session.** `gemini-2.5-flash` has a
+  20-requests/day free-tier cap; Feature A's re-bake (A7) burned through most of it,
+  and Feature B's re-bake (B4) hit the 429 on its first live call. Fixed by adding
+  `GEMINI_MODEL=gemini-2.5-flash-lite` to `.env.local` (separate quota bucket, **not
+  committed** — it's a local override). Before running `refresh-seed` again (e.g.
+  for Feature C, which needs none, or any future re-bake), check whether that line
+  should be removed once daily quotas reset, or kept if `-lite` output quality is
+  acceptable long-term.
+
+---
+
 ## 0. Ground rules (from CLAUDE.md — non-negotiable)
 
 - **Seed path first.** Every feature must work end-to-end with ZERO env vars set
@@ -52,7 +89,7 @@ so re-runs after a failure only spend what's missing.
 
 ---
 
-## Feature A — Evidence-cited briefs + self-scored batch ("receipts + dog food")
+## Feature A — Evidence-cited briefs + self-scored batch ("receipts + dog food") ✅ DONE
 
 **What the judge sees:** every generated angle brief shows the real competitor ads
 (thumbnail · advertiser · "running N days") that prove the pattern it exploits, and
@@ -192,7 +229,7 @@ panel silently (never block or error the demo).
 
 ---
 
-## Feature B — Pre-flight creative check ("Entity-ID linter")
+## Feature B — Pre-flight creative check ("Entity-ID linter") ✅ DONE
 
 **What the judge sees:** after scoring their set, they click a sample "planned ad"
 (or upload one) and instantly get a verdict: red *"Collapses into Concept 2 — wasted
@@ -303,7 +340,7 @@ Run `npm run refresh-seed` again (everything else is cached) and commit the JSON
 
 ---
 
-## Feature C — MCP server (seed-first, zero-cost)
+## Feature C — MCP server (seed-first, zero-cost) ⬜ NOT STARTED
 
 **What the judge sees:** a README snippet they paste into Claude Code/Desktop; then in
 Claude: *"What angles should I test for debt relief?"* — and this tool answers from the
@@ -378,23 +415,32 @@ map section (inspect before editing).
 
 ## Commit sequence (push after each)
 
-1. `feat(ai): evidence citations in angle-brief schema and generate prompt` (A1–A4)
-2. `feat(seed): bake brief evidence + batch self-clustering into seed refresh` (A5 script side)
-3. `chore(seed): re-bake seed verticals with evidence-cited briefs` (A7 JSON)
-4. `feat(ui): evidence chips + batch integrity panel in Step 6` (A6)
-5. `feat(api): pre-flight Entity-ID check route + prompt + schema` (B1–B3)
-6. `feat(seed): bake pre-flight example candidates into sample sets` (B4 script + JSON)
-7. `feat(ui): pre-flight check card` (B5)
-8. `feat(mcp): expose seed-first MCP server at /api/mcp` (C1–C2)
-9. `docs(readme): MCP usage + feature notes` (C3)
-10. Update `memory/PROGRESS.md`, `memory/LOG.md`, `memory/DECISIONS.md` (`docs(memory): …`)
+1. [x] `feat(ai): evidence citations in angle-brief schema and generate prompt` (A1–A4)
+2. [x] `feat(seed): bake brief evidence + batch self-clustering into seed refresh` (A5 script side)
+3. [x] `chore(seed): re-bake seed verticals with evidence-cited briefs` (A7 JSON)
+4. [x] `feat(ui): evidence chips + batch integrity panel in Step 6` (A6)
+5. [x] `feat(api): pre-flight Entity-ID check route + prompt + schema` (B1–B3)
+6. [x] `feat(seed): bake pre-flight example candidates into sample sets` (B4 script + JSON)
+7. [x] `feat(ui): pre-flight check card` (B5)
+8. [ ] `feat(mcp): expose seed-first MCP server at /api/mcp` (C1–C2)
+9. [ ] `docs(readme): MCP usage + feature notes` (C3)
+10. [ ] Update `memory/PROGRESS.md`, `memory/LOG.md`, `memory/DECISIONS.md` (`docs(memory): …`)
 
 ## Global regression checklist (run before calling the work done)
 
-- [ ] Incognito, zero env vars: full demo button end-to-end, all six steps + evidence
-      chips + integrity panel + pre-flight chips work, no console errors.
-- [ ] `npm run lint`, `npm run typecheck`, `npm run build` all green.
-- [ ] `/api/generate` old callers updated (request shape changed in A3) — search the
-      repo for `"/api/generate"` to confirm only the two known call sites exist.
-- [ ] No secrets in client bundle; no new env vars required for the seed path.
-- [ ] Seed JSON diffs contain only real model/scrape output (spot-read them).
+- [x] Incognito, zero env vars: full demo button end-to-end — verified through Step 6
+      (evidence chips + integrity panel) and the pre-flight card (both seed chips,
+      opposite verdicts) via a real browser this session, no console errors. Not yet
+      re-verified after Feature C lands.
+- [~] `npm run lint`, `npm run typecheck`, `npm run build` all green. **`lint` is not
+      runnable** — no ESLint config exists in this repo (confirmed via git history);
+      `npm run lint` opens an interactive setup wizard. Used `typecheck` + `build` as
+      the gates instead; both green on every commit. See STATUS section up top.
+- [x] `/api/generate` old callers updated (request shape changed in A3) — confirmed
+      only the two known call sites in `app/page.tsx` exist.
+- [x] No secrets in client bundle; no new env vars required for the seed path.
+      (`GEMINI_MODEL=gemini-2.5-flash-lite` was added to `.env.local` as a local,
+      uncommitted quota workaround — not a new required var.)
+- [x] Seed JSON diffs contain only real model/scrape output — spot-read via node
+      scripts validating evidenceAdIds, briefClustering.kConcepts, and preflight
+      verdict pairs against the actual seed/sample files.
