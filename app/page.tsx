@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
+import type { Ad, CreativeDNA, ConceptClustering, AngleBrief, PreflightVerdict } from "@/lib/types";
 import { briefToDNA } from "@/lib/ai/briefs";
 
 interface SampleSummary {
@@ -9,6 +9,11 @@ interface SampleSummary {
   label: string;
   vertical: string;
   adCount: number;
+}
+
+interface PreflightExampleSummary {
+  id: string;
+  label: string;
 }
 
 interface AppState {
@@ -28,6 +33,10 @@ interface AppState {
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
   briefClustering: ConceptClustering | null;
+  // Module 3.5 — pre-flight check on a planned ad
+  preflightExamples: PreflightExampleSummary[];
+  preflightPasteText: string;
+  preflight: { candidateAd: Ad | null; verdict: PreflightVerdict | null } | null;
   loading: boolean;
   loadingStep: string;
   error: string | null;
@@ -48,6 +57,7 @@ const SOURCE_LABELS: Record<string, string> = {
   facebook_ad_library: "Meta Ad Library",
   tiktok_creative_center: "TikTok Creative Center",
   uploaded: "Your ad",
+  planned: "Planned ad",
 };
 
 function sourceLabel(source: string): string {
@@ -70,6 +80,9 @@ const INITIAL: AppState = {
   clustering: null,
   briefs: [],
   briefClustering: null,
+  preflightExamples: [],
+  preflightPasteText: "",
+  preflight: null,
   loading: false,
   loadingStep: "",
   error: null,
@@ -167,6 +180,8 @@ export default function Home() {
         clustering: null,
         briefs: [],
         briefClustering: null,
+        preflightExamples: [],
+        preflight: null,
         loading: false,
         loadingStep: "",
         error: null,
@@ -205,6 +220,8 @@ export default function Home() {
         clustering: null,
         briefs: [],
         briefClustering: null,
+        preflightExamples: [],
+        preflight: null,
         loading: false,
         loadingStep: "",
       }));
@@ -239,6 +256,8 @@ export default function Home() {
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
+        preflightExamples: sample.preflightExamples ?? [],
+        preflight: null,
         loading: false,
         loadingStep: "",
       }));
@@ -290,6 +309,8 @@ export default function Home() {
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
+        preflightExamples: [],
+        preflight: null,
         loading: false,
         loadingStep: "",
       }));
@@ -344,6 +365,8 @@ export default function Home() {
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
+        preflightExamples: [],
+        preflight: null,
         loading: false,
         loadingStep: "",
       }));
@@ -397,6 +420,110 @@ export default function Home() {
     }
   }
 
+  // Module 3.5 — pre-flight check on a pre-baked example candidate (seed path).
+  async function handlePreflightSeed(exampleId: string) {
+    if (!state.selectedSample) return;
+    setLoading("Running pre-flight check…");
+    try {
+      const res = await fetch("/api/preflight", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ sampleSetId: state.selectedSample, candidateId: exampleId }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Pre-flight check failed");
+      setState((s) => ({
+        ...s,
+        preflight: { candidateAd: data.ad ?? null, verdict: data.verdict },
+        loading: false,
+        loadingStep: "",
+      }));
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
+  // Module 3.5 — pre-flight check on pasted ad copy (live path; needs an AI key).
+  async function handlePreflightPaste() {
+    if (!state.clustering) return;
+    const copy = state.preflightPasteText.trim();
+    if (!copy) return setError("Paste an ad caption to check.");
+    setLoading("Analyzing your planned ad…");
+    try {
+      const candidateId = `preflight_${Date.now()}`;
+      const dnaRes = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, copy }] }),
+      });
+      const dnaData = await dnaRes.json();
+      if (!dnaRes.ok || !dnaData.results?.[0]) return setError(dnaData.error ?? "Failed to analyze your planned ad");
+
+      const res = await fetch("/api/preflight", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ clustering: state.clustering, candidate: dnaData.results[0].dna }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Pre-flight check failed");
+
+      const candidateAd: Ad = {
+        id: candidateId,
+        source: "planned",
+        advertiser: "Your planned ad",
+        coverUrl: "",
+        copy,
+        firstSeen: "",
+        lastSeen: "",
+        runDays: 0,
+        rawMetrics: {},
+      };
+      setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
+  // Module 3.5 — pre-flight check on an uploaded ad image (live path; needs an AI key + vision).
+  async function handlePreflightImage(file: File) {
+    if (!state.clustering) return;
+    setLoading("Analyzing your planned ad…");
+    try {
+      const { base64, previewUrl } = await compressImage(file);
+      const candidateId = `preflight_${Date.now()}`;
+      const dnaRes = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, imageBase64: base64 }] }),
+      });
+      const dnaData = await dnaRes.json();
+      if (!dnaRes.ok || !dnaData.results?.[0]) return setError(dnaData.error ?? "Failed to analyze your planned ad");
+
+      const res = await fetch("/api/preflight", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ clustering: state.clustering, candidate: dnaData.results[0].dna }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Pre-flight check failed");
+
+      const candidateAd: Ad = {
+        id: candidateId,
+        source: "planned",
+        advertiser: "Your planned ad",
+        coverUrl: previewUrl,
+        copy: "",
+        firstSeen: "",
+        lastSeen: "",
+        runDays: 0,
+        rawMetrics: {},
+      };
+      setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
   // One-click guided demo — runs all four modules on a seed vertical, threading
   // each step's result forward locally and scrolling the new section into view.
   async function handleRunFullDemo() {
@@ -439,7 +566,14 @@ export default function Home() {
       });
       const score = await scoreRes.json();
       if (!scoreRes.ok) return setError(score.error ?? "Demo failed while scoring diversity");
-      setState((s) => ({ ...s, userAds: sample.ads, selectedSample: sampleSlug, clustering: score.clustering, loadingStep: "Generating angle briefs…" }));
+      setState((s) => ({
+        ...s,
+        userAds: sample.ads,
+        selectedSample: sampleSlug,
+        clustering: score.clustering,
+        preflightExamples: sample.preflightExamples ?? [],
+        loadingStep: "Generating angle briefs…",
+      }));
       await sleep(600);
       scrollToStep("step-score");
 
@@ -952,6 +1086,125 @@ export default function Home() {
                   </ul>
                 </div>
               )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── Pre-flight check — test a planned ad before you spend (Feature B) ──── */}
+      {clustering && (
+        <section style={{ marginBottom: 40 }}>
+          <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
+            PRE-FLIGHT CHECK — test a planned ad before you spend
+          </p>
+          <p style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 12 }}>
+            Before you spend on a new creative, check whether Meta would treat it as a new
+            Entity ID — or silently fold it into a concept you&apos;re already running.
+          </p>
+
+          {state.preflightExamples.length > 0 && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+              {state.preflightExamples.map((ex) => (
+                <button
+                  key={ex.id}
+                  onClick={() => handlePreflightSeed(ex.id)}
+                  disabled={state.loading}
+                  style={chipStyle(state.preflight?.candidateAd?.id === ex.id)}
+                >
+                  {ex.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <details style={{ marginBottom: 8 }}>
+            <summary style={{ fontSize: 13, color: "var(--text-muted)", cursor: "pointer" }}>
+              …or test your own planned ad
+            </summary>
+            <textarea
+              value={state.preflightPasteText}
+              onChange={(e) => setState((s) => ({ ...s, preflightPasteText: e.target.value }))}
+              placeholder="Paste your planned ad caption…"
+              rows={3}
+              style={{ ...inputStyle, width: "100%", marginTop: 8, fontFamily: "inherit", resize: "vertical" }}
+            />
+            <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+              <button onClick={handlePreflightPaste} disabled={state.loading} style={secondaryBtnStyle(state.loading)}>
+                Check this ad →
+              </button>
+              <button
+                onClick={() => document.getElementById("preflight-upload-input")?.click()}
+                disabled={state.loading}
+                style={secondaryBtnStyle(state.loading)}
+              >
+                …or upload a screenshot
+              </button>
+              <input
+                id="preflight-upload-input"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handlePreflightImage(file);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+          </details>
+
+          {state.preflight?.verdict && (
+            <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+              {state.preflight.candidateAd && (
+                <div style={{ ...cardStyle, flex: "0 0 160px", padding: "8px 12px" }}>
+                  {state.preflight.candidateAd.coverUrl && (
+                    <img
+                      src={state.preflight.candidateAd.coverUrl}
+                      alt=""
+                      style={{ width: "100%", borderRadius: 6, display: "block", marginBottom: 8 }}
+                    />
+                  )}
+                  {state.preflight.candidateAd.copy && (
+                    <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{state.preflight.candidateAd.copy}</p>
+                  )}
+                </div>
+              )}
+              <div
+                style={{
+                  ...calloutStyle,
+                  flex: "1 1 320px",
+                  borderColor: state.preflight.verdict.verdict === "collapses" ? "rgba(248,113,113,0.4)" : "rgba(16,185,129,0.4)",
+                  background: state.preflight.verdict.verdict === "collapses" ? "rgba(248,113,113,0.06)" : "rgba(16,185,129,0.06)",
+                }}
+              >
+                {state.preflight.verdict.verdict === "collapses" ? (
+                  <>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#f87171", marginBottom: 6 }}>
+                      ⚠ Collapses into &ldquo;{state.preflight.verdict.collidesWith}&rdquo;
+                    </p>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 10 }}>
+                      {state.preflight.verdict.reason} — a wasted auction entry.
+                    </p>
+                    {state.preflight.verdict.fixes.length > 0 && (
+                      <>
+                        <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>To earn a new Entity ID:</p>
+                        <ul style={{ paddingLeft: 16, margin: 0 }}>
+                          {state.preflight.verdict.fixes.map((f, i) => (
+                            <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 6 }}>{f}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#10b981", marginBottom: 6 }}>
+                      ✓ Genuinely new concept — safe to produce
+                    </p>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{state.preflight.verdict.reason}</p>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </section>
