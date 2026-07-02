@@ -344,7 +344,7 @@ export default function Home() {
         body: JSON.stringify({
           vertical: state.vertical,
           winnerSummary: state.winnerSummary ?? "",
-          marketDNA: state.marketDna.map((r) => r.dna),
+          marketDNA: state.marketDna,
           clustering: state.clustering,
         }),
       });
@@ -409,7 +409,7 @@ export default function Home() {
       const gRes = await fetch("/api/generate", {
         method: "POST",
         headers: jsonHeaders,
-        body: JSON.stringify({ vertical, winnerSummary: mine.winnerSummary ?? "", marketDNA: marketDna.map((r) => r.dna), clustering: score.clustering }),
+        body: JSON.stringify({ vertical, winnerSummary: mine.winnerSummary ?? "", marketDNA: marketDna, clustering: score.clustering }),
       });
       const g = await gRes.json();
       if (!gRes.ok) return setError(g.error ?? "Demo failed while generating angles");

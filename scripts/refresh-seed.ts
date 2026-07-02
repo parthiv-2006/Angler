@@ -246,14 +246,20 @@ async function buildVerticalSeed(
         system: GENERATE_ANGLES_SYSTEM,
         prompt: buildGenerateAnglesPrompt({
           vertical: v.display,
-          marketDNA,
+          marketDNA: marketDNAWithIds,
           winnerSummary: state.summary!,
           clustering: marketClustering,
         }),
         schema: angleBatchSchema,
       }),
     );
-    state.briefs = briefs as AngleBrief[];
+    // Never trust model-cited ids: keep only evidenceAdIds that actually exist
+    // in the market set we gave it.
+    const validIds = new Set(marketDNAWithIds.map((m) => m.adId));
+    state.briefs = (briefs as AngleBrief[]).map((b) => ({
+      ...b,
+      evidenceAdIds: b.evidenceAdIds.filter((id) => validIds.has(id)),
+    }));
     saveState(v.slug, state);
     await sleep(THROTTLE_MS);
   }

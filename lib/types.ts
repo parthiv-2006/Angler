@@ -49,4 +49,5 @@ export interface AngleBrief {
     tiktok: string;
     native: string;
   };
+  evidenceAdIds: string[];
 }

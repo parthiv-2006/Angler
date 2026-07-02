@@ -36,6 +36,9 @@ export const angleBriefSchema = z.object({
     tiktok: z.string(),
     native: z.string(),
   }),
+  // Real ad ids from the mined market set that evidence this angle's "whyNow".
+  // Default [] keeps old seed files and live responses from failing validation.
+  evidenceAdIds: z.array(z.string()).default([]),
 });
 
 export const angleBatchSchema = z.object({

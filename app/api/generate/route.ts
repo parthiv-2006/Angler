@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
 import { getSeedBriefs } from "@/lib/cache/seed";
-import { angleBatchSchema } from "@/lib/ai/schemas";
+import { angleBatchSchema, creativeDNASchema } from "@/lib/ai/schemas";
 import { GENERATE_ANGLES_SYSTEM, buildGenerateAnglesPrompt } from "@/lib/ai/prompts/generate";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 
@@ -13,15 +13,7 @@ export const maxDuration = 60;
 const requestSchema = z.object({
   vertical: z.string().min(1),
   winnerSummary: z.string(),
-  marketDNA: z.array(z.object({
-    hookType: z.string(),
-    angle: z.string(),
-    format: z.string(),
-    offerFraming: z.string(),
-    ctaStyle: z.string(),
-    targetPersona: z.string(),
-    oneLineSummary: z.string(),
-  })),
+  marketDNA: z.array(z.object({ adId: z.string(), dna: creativeDNASchema })),
   clustering: z.object({
     clusters: z.array(z.object({
       concept: z.string(),
@@ -45,7 +37,7 @@ export async function POST(req: NextRequest) {
   const { vertical, winnerSummary, marketDNA, clustering } = parsed.data as {
     vertical: string;
     winnerSummary: string;
-    marketDNA: CreativeDNA[];
+    marketDNA: { adId: string; dna: CreativeDNA }[];
     clustering: ConceptClustering;
   };
 
@@ -68,7 +60,15 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    return NextResponse.json({ briefs: batch.briefs, fromSeed: false });
+    // Never trust model-cited ids: keep only evidenceAdIds that actually exist
+    // in the market set we gave it.
+    const validIds = new Set(marketDNA.map((m) => m.adId));
+    const briefs = batch.briefs.map((b) => ({
+      ...b,
+      evidenceAdIds: (b.evidenceAdIds ?? []).filter((id) => validIds.has(id)),
+    }));
+
+    return NextResponse.json({ briefs, fromSeed: false });
   } catch (err) {
     console.error("[generate] error:", err);
     return NextResponse.json({ error: "Failed to generate angle briefs" }, { status: 500 });

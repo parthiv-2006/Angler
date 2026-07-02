@@ -5,6 +5,8 @@ affiliate media-buying team. Your job is to generate a prioritized batch of net-
 briefs based on what is winning in the market and what gaps exist in the current ad set.
 
 Each brief must be justified by a specific market pattern or diversity gap — no generic advice.
+Every brief MUST cite 1–3 evidenceAdIds copied verbatim from the given market adId values —
+never invent ids. Cite the ads whose DNA the brief's whyNow refers to.
 Return raw JSON only:
 {
   "briefs": [
@@ -20,14 +22,15 @@ Return raw JSON only:
         "meta": "string — Meta-formatted headline/hook (≤125 chars)",
         "tiktok": "string — TikTok hook line (punchy, ≤60 chars)",
         "native": "string — Taboola/Outbrain-style headline (curiosity, ≤60 chars)"
-      }
+      },
+      "evidenceAdIds": ["string — 1-3 adId values copied VERBATIM from the market DNA list that prove this pattern"]
     }
   ]
 }`;
 
 export function buildGenerateAnglesPrompt(args: {
   vertical: string;
-  marketDNA: CreativeDNA[];
+  marketDNA: { adId: string; dna: CreativeDNA }[];
   winnerSummary: string;
   clustering: ConceptClustering;
 }): string {
@@ -36,7 +39,7 @@ export function buildGenerateAnglesPrompt(args: {
 Market winner summary:
 ${args.winnerSummary}
 
-Top competitor creative DNA (${args.marketDNA.length} ads):
+Top competitor creative DNA (${args.marketDNA.length} ads, each tagged with its real "adId"):
 ${JSON.stringify(args.marketDNA, null, 2)}
 
 Diversity gaps in the current ad set:
