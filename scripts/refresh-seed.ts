@@ -217,6 +217,9 @@ async function buildVerticalSeed(
 ): Promise<void> {
   const provider = getProvider();
   const marketDNA = marketAds.map((a) => state.dna[a.id]).filter(Boolean) as CreativeDNA[];
+  const marketDNAWithIds = marketAds
+    .map((a) => ({ adId: a.id, dna: state.dna[a.id] }))
+    .filter((x): x is { adId: string; dna: CreativeDNA } => Boolean(x.dna));
 
   if (!state.summary) {
     console.log(`  [summary] generating "what's winning" summary…`);
@@ -234,7 +237,7 @@ async function buildVerticalSeed(
 
   if (!state.briefs) {
     console.log(`  [briefs] clustering market DNA for gaps…`);
-    const marketClustering = await robustAI("market-cluster", () => provider.clusterConcepts(marketDNA));
+    const marketClustering = await robustAI("market-cluster", () => provider.clusterConcepts(marketDNAWithIds));
     await sleep(THROTTLE_MS);
 
     console.log(`  [briefs] generating net-new angle briefs…`);
@@ -320,10 +323,7 @@ async function buildSampleSet(
   if (!state.sampleClustering) {
     console.log(`  [sample] clustering ${sampleAds.length} ads against the market…`);
     state.sampleClustering = await robustAI("sample-cluster", () =>
-      getProvider().clusterConcepts(
-        sampleDNA.map((x) => x.dna),
-        marketDNA,
-      ),
+      getProvider().clusterConcepts(sampleDNA, marketDNA),
     );
     saveState(v.slug, state);
     await sleep(THROTTLE_MS);

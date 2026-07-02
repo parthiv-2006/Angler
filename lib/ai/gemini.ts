@@ -46,7 +46,7 @@ export class GeminiProvider implements AIProvider {
   }
 
   async clusterConcepts(
-    dna: CreativeDNA[],
+    dna: { adId: string; dna: CreativeDNA }[],
     marketDNA?: CreativeDNA[],
   ): Promise<ConceptClustering> {
     const model = this.client.getGenerativeModel({ model: MODEL_DEFAULT });

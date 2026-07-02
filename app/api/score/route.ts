@@ -22,7 +22,7 @@ const creativeDNASchema = z.object({
 });
 
 const requestSchema = z.object({
-  dna: z.array(creativeDNASchema).min(0),
+  dna: z.array(z.object({ adId: z.string(), dna: creativeDNASchema })).min(0),
   // Mined market winners (Modules 1–2) used to ground the gap analysis.
   marketDNA: z.array(creativeDNASchema).optional(),
   // When the user loads a pre-baked sample ad set, its clustering is served instantly.
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { dna, marketDNA, sampleSetId } = parsed.data as {
-    dna: CreativeDNA[];
+    dna: { adId: string; dna: CreativeDNA }[];
     marketDNA?: CreativeDNA[];
     sampleSetId?: string;
   };

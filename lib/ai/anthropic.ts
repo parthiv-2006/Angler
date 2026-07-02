@@ -57,7 +57,7 @@ export class AnthropicProvider implements AIProvider {
   }
 
   async clusterConcepts(
-    dna: CreativeDNA[],
+    dna: { adId: string; dna: CreativeDNA }[],
     marketDNA?: CreativeDNA[],
   ): Promise<ConceptClustering> {
     const message = await this.client.messages.create({
