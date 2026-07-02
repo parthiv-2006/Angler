@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
+import { briefToDNA } from "@/lib/ai/briefs";
 
 interface SampleSummary {
   slug: string;
@@ -26,6 +27,7 @@ interface AppState {
   budget: string;
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
+  briefClustering: ConceptClustering | null;
   loading: boolean;
   loadingStep: string;
   error: string | null;
@@ -67,6 +69,7 @@ const INITIAL: AppState = {
   budget: "",
   clustering: null,
   briefs: [],
+  briefClustering: null,
   loading: false,
   loadingStep: "",
   error: null,
@@ -74,6 +77,16 @@ const INITIAL: AppState = {
 
 function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+// Resolves a brief's evidenceAdIds to advertiser names for export/copy (ids not
+// found in the current ad set — e.g. a stale reference — are skipped silently).
+function evidenceAdvertisers(evidenceAdIds: string[], ads: Ad[]): string {
+  const byId = new Map(ads.map((a) => [a.id, a] as const));
+  return evidenceAdIds
+    .map((id) => byId.get(id)?.advertiser)
+    .filter((name): name is string => !!name)
+    .join(", ");
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -153,6 +166,7 @@ export default function Home() {
         selectedSample: null,
         clustering: null,
         briefs: [],
+        briefClustering: null,
         loading: false,
         loadingStep: "",
         error: null,
@@ -190,6 +204,7 @@ export default function Home() {
         winnerSummary: data.winnerSummary ?? s.winnerSummary,
         clustering: null,
         briefs: [],
+        briefClustering: null,
         loading: false,
         loadingStep: "",
       }));
@@ -223,6 +238,7 @@ export default function Home() {
         selectedSample: slug,
         clustering: data.clustering,
         briefs: [],
+        briefClustering: null,
         loading: false,
         loadingStep: "",
       }));
@@ -273,6 +289,7 @@ export default function Home() {
         selectedSample: null,
         clustering: data.clustering,
         briefs: [],
+        briefClustering: null,
         loading: false,
         loadingStep: "",
       }));
@@ -326,11 +343,30 @@ export default function Home() {
         selectedSample: null,
         clustering: data.clustering,
         briefs: [],
+        briefClustering: null,
         loading: false,
         loadingStep: "",
       }));
     } catch {
       setError("Network error — please try again");
+    }
+  }
+
+  // Non-blocking "dog food" self-score of a generated brief batch's own
+  // diversity — fired after live-path briefs render (seed path already has
+  // briefClustering baked in). Failure is silent: never block or error the demo.
+  async function scoreBriefBatch(briefs: AngleBrief[]) {
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: jsonHeaders,
+        body: JSON.stringify({ dna: briefs.map(briefToDNA) }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.clustering) setState((s) => ({ ...s, briefClustering: data.clustering }));
+    } catch {
+      // silent — the integrity panel just doesn't render
     }
   }
 
@@ -353,7 +389,9 @@ export default function Home() {
       if (!data.briefs || data.briefs.length === 0) {
         return setError("No angle briefs were generated — please try again.");
       }
-      setState((s) => ({ ...s, briefs: data.briefs, loading: false, loadingStep: "" }));
+      const briefClustering: ConceptClustering | null = data.briefClustering ?? null;
+      setState((s) => ({ ...s, briefs: data.briefs, briefClustering, loading: false, loadingStep: "" }));
+      if (!briefClustering) void scoreBriefBatch(data.briefs);
     } catch {
       setError("Network error — please try again");
     }
@@ -413,7 +451,10 @@ export default function Home() {
       });
       const g = await gRes.json();
       if (!gRes.ok) return setError(g.error ?? "Demo failed while generating angles");
-      setState((s) => ({ ...s, briefs: g.briefs ?? [], loading: false, loadingStep: "" }));
+      const demoBriefs: AngleBrief[] = g.briefs ?? [];
+      const demoBriefClustering: ConceptClustering | null = g.briefClustering ?? null;
+      setState((s) => ({ ...s, briefs: demoBriefs, briefClustering: demoBriefClustering, loading: false, loadingStep: "" }));
+      if (!demoBriefClustering && demoBriefs.length) void scoreBriefBatch(demoBriefs);
       await sleep(500);
       scrollToStep("step-briefs");
     } catch {
@@ -422,6 +463,7 @@ export default function Home() {
   }
 
   function handleCopyBrief(brief: AngleBrief) {
+    const evidence = evidenceAdvertisers(brief.evidenceAdIds, state.ads);
     const text = [
       `Angle: ${brief.angleName}`,
       `Driver: ${brief.emotionalDriver}`,
@@ -432,16 +474,19 @@ export default function Home() {
       `Meta: ${brief.variants.meta}`,
       `TikTok: ${brief.variants.tiktok}`,
       `Native: ${brief.variants.native}`,
-    ].join("\n");
+      evidence ? `Evidence: ${evidence}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
     void navigator.clipboard.writeText(text);
   }
 
   function handleExportCSV() {
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
-    const headers = ["Priority", "Angle Name", "Emotional Driver", "Why Now", "Hook Line", "Format", "Persona", "Meta Copy", "TikTok Copy", "Native Copy"];
+    const headers = ["Priority", "Angle Name", "Emotional Driver", "Why Now", "Hook Line", "Format", "Persona", "Meta Copy", "TikTok Copy", "Native Copy", "Evidence"];
     const rows = [...state.briefs]
       .sort((a, b) => a.priority - b.priority)
-      .map((b) => [b.priority, b.angleName, b.emotionalDriver, b.whyNow, b.hookLine, b.formatRecommendation, b.targetPersona, b.variants.meta, b.variants.tiktok, b.variants.native]
+      .map((b) => [b.priority, b.angleName, b.emotionalDriver, b.whyNow, b.hookLine, b.formatRecommendation, b.targetPersona, b.variants.meta, b.variants.tiktok, b.variants.native, evidenceAdvertisers(b.evidenceAdIds, state.ads)]
         .map((v) => esc(String(v)))
         .join(","));
     const csv = [headers.map((h) => esc(h)).join(","), ...rows].join("\n");
@@ -482,6 +527,11 @@ export default function Home() {
   // Module 3 derived values — the Entity-ID "collapse" math (Feature A).
   const clustering = state.clustering;
   const adById = new Map(state.userAds.map((a) => [a.id, a] as const));
+  const marketAdById = new Map(state.ads.map((a) => [a.id, a] as const));
+  const briefIntegrityRatio =
+    state.briefClustering && state.briefClustering.nAds > 0
+      ? state.briefClustering.kConcepts / state.briefClustering.nAds
+      : 0;
   const redundant = clustering ? clustering.nAds - clustering.kConcepts : 0;
   const wastePct = clustering && clustering.nAds > 0 ? Math.round((redundant / clustering.nAds) * 100) : 0;
   const budgetNum = parseFloat(state.budget);
@@ -943,9 +993,39 @@ export default function Home() {
                 <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
                   Format: {brief.formatRecommendation} · Persona: {brief.targetPersona}
                 </p>
+                {brief.evidenceAdIds.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginTop: 10 }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-muted)" }}>EVIDENCE</span>
+                    {brief.evidenceAdIds.map((id) => {
+                      const ad = marketAdById.get(id);
+                      return ad ? <EvidenceChip key={id} ad={ad} /> : null;
+                    })}
+                  </div>
+                )}
               </div>
             ))}
           </div>
+
+          {/* Batch integrity panel — the brief batch's own diversity (Feature A5) */}
+          {state.briefClustering && (
+            <div
+              style={{
+                ...calloutStyle,
+                marginTop: 16,
+                borderColor: briefIntegrityRatio >= 0.9 ? "rgba(16,185,129,0.4)" : "rgba(245,158,11,0.4)",
+                background: briefIntegrityRatio >= 0.9 ? "rgba(16,185,129,0.06)" : "rgba(245,158,11,0.06)",
+              }}
+            >
+              <p style={{ fontSize: 13, fontWeight: 600 }}>
+                {state.briefClustering.nAds} briefs → {state.briefClustering.kConcepts} distinct concepts
+              </p>
+              {state.clustering && (
+                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
+                  Your current set: {state.clustering.nAds} ads → {state.clustering.kConcepts} concepts.
+                </p>
+              )}
+            </div>
+          )}
         </section>
       )}
     </main>
@@ -966,6 +1046,40 @@ function Label({ step, text, badge }: { step: string; text: string; badge?: stri
           {badge}
         </span>
       )}
+    </div>
+  );
+}
+
+function EvidenceChip({ ad }: { ad: Ad }) {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "3px 9px 3px 3px",
+        borderRadius: 9999,
+        border: "1px solid var(--border)",
+        background: "var(--bg)",
+      }}
+    >
+      {ad.coverUrl && !imgError ? (
+        <img
+          src={ad.coverUrl}
+          alt=""
+          onError={() => setImgError(true)}
+          style={{ width: 32, height: 32, objectFit: "cover", borderRadius: "50%" }}
+        />
+      ) : (
+        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--surface)", border: "1px solid var(--border)" }} />
+      )}
+      <span style={{ fontSize: 11, color: "var(--text)", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {ad.advertiser}
+      </span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#10b981", borderRadius: 9999, padding: "1px 7px", whiteSpace: "nowrap" }}>
+        {ad.runDays}d
+      </span>
     </div>
   );
 }
