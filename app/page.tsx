@@ -22,6 +22,7 @@ interface AppState {
   userAds: Ad[];
   selectedSample: string | null;
   pasteText: string;
+  uploadedImages: { id: string; fileName: string; previewUrl: string; base64: string }[];
   budget: string;
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
@@ -62,6 +63,7 @@ const INITIAL: AppState = {
   userAds: [],
   selectedSample: null,
   pasteText: "",
+  uploadedImages: [],
   budget: "",
   clustering: null,
   briefs: [],
@@ -79,6 +81,35 @@ function scrollToStep(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 const jsonHeaders = { "Content-Type": "application/json" };
+
+const MAX_UPLOAD_DIMENSION = 1024;
+const MAX_UPLOADED_IMAGES = 10;
+
+// Resizes/re-encodes an image client-side so upload payloads stay well under
+// Vercel's ~4.5MB Route Handler body limit, regardless of the source file size.
+function compressImage(file: File): Promise<{ base64: string; previewUrl: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.onload = () => {
+        const scale = Math.min(1, MAX_UPLOAD_DIMENSION / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not supported"));
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const previewUrl = canvas.toDataURL("image/jpeg", 0.8);
+        resolve({ base64: previewUrl.split(",")[1] ?? "", previewUrl });
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 type DnaFilter = { angle: string | null; format: string | null; hookType: string | null };
 const NO_FILTER: DnaFilter = { angle: null, format: null, hookType: null };
@@ -180,7 +211,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sampleSetId: slug,
-          dna: sample.dna.map((d: { dna: CreativeDNA }) => d.dna),
+          dna: sample.dna,
           marketDNA: state.marketDna.map((r) => r.dna),
         }),
       });
@@ -221,7 +252,7 @@ export default function Home() {
       const dnaRes = await fetch("/api/deconstruct", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ads: userAds.map((a) => ({ id: a.id, copy: a.copy })) }),
+        body: JSON.stringify({ adKind: "uploaded", ads: userAds.map((a) => ({ id: a.id, copy: a.copy })) }),
       });
       const dnaData = await dnaRes.json();
       if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
@@ -230,7 +261,60 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          dna: dnaData.results.map((r: { dna: CreativeDNA }) => r.dna),
+          dna: dnaData.results,
+          marketDNA: state.marketDna.map((r) => r.dna),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return setError(data.error ?? "Failed to score diversity");
+      setState((s) => ({
+        ...s,
+        userAds,
+        selectedSample: null,
+        clustering: data.clustering,
+        briefs: [],
+        loading: false,
+        loadingStep: "",
+      }));
+    } catch {
+      setError("Network error — please try again");
+    }
+  }
+
+  // Module 3 — score uploaded ad images (live path; needs an AI key + vision).
+  async function handleScoreUpload() {
+    const images = state.uploadedImages;
+    if (images.length < 3) return setError("Upload at least 3 ad images.");
+    setLoading("Analyzing your ad creative…");
+    try {
+      const userAds: Ad[] = images.map((img, i) => ({
+        id: `upload_${i}`,
+        source: "uploaded",
+        advertiser: "Your Ad Set",
+        coverUrl: img.previewUrl,
+        copy: "",
+        firstSeen: "",
+        lastSeen: "",
+        runDays: 0,
+        rawMetrics: {},
+      }));
+
+      const dnaRes = await fetch("/api/deconstruct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adKind: "uploaded",
+          ads: images.map((img, i) => ({ id: `upload_${i}`, imageBase64: img.base64 })),
+        }),
+      });
+      const dnaData = await dnaRes.json();
+      if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
+
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dna: dnaData.results,
           marketDNA: state.marketDna.map((r) => r.dna),
         }),
       });
@@ -313,7 +397,7 @@ export default function Home() {
       const scoreRes = await fetch("/api/score", {
         method: "POST",
         headers: jsonHeaders,
-        body: JSON.stringify({ sampleSetId: sampleSlug, dna: sample.dna.map((x: { dna: CreativeDNA }) => x.dna), marketDNA: marketDna.map((r) => r.dna) }),
+        body: JSON.stringify({ sampleSetId: sampleSlug, dna: sample.dna, marketDNA: marketDna.map((r) => r.dna) }),
       });
       const score = await scoreRes.json();
       if (!scoreRes.ok) return setError(score.error ?? "Demo failed while scoring diversity");
@@ -367,6 +451,25 @@ export default function Home() {
     a.download = `angle-briefs-${slugify(state.vertical) || "export"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  async function handleFilesSelected(files: FileList | File[]) {
+    const remaining = MAX_UPLOADED_IMAGES - state.uploadedImages.length;
+    const toProcess = Array.from(files)
+      .filter((f) => f.type.startsWith("image/"))
+      .slice(0, Math.max(0, remaining));
+    if (toProcess.length === 0) return;
+    const compressed = await Promise.all(
+      toProcess.map(async (file) => {
+        const { base64, previewUrl } = await compressImage(file);
+        return { id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, fileName: file.name, previewUrl, base64 };
+      }),
+    );
+    setState((s) => ({ ...s, uploadedImages: [...s.uploadedImages, ...compressed].slice(0, MAX_UPLOADED_IMAGES) }));
+  }
+
+  function handleRemoveUploadedImage(id: string) {
+    setState((s) => ({ ...s, uploadedImages: s.uploadedImages.filter((img) => img.id !== id) }));
   }
 
   const currentSlug = slugify(state.vertical);
@@ -590,6 +693,81 @@ export default function Home() {
             </button>
           </details>
 
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              void handleFilesSelected(e.dataTransfer.files);
+            }}
+            onClick={() => document.getElementById("upload-input")?.click()}
+            style={{
+              border: "1px dashed var(--border)",
+              borderRadius: 8,
+              padding: 20,
+              textAlign: "center",
+              cursor: "pointer",
+              marginBottom: 8,
+            }}
+          >
+            <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+              Drag &amp; drop real ad screenshots here (min 3, max {MAX_UPLOADED_IMAGES}) — or click to browse
+            </p>
+            <input
+              id="upload-input"
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files) void handleFilesSelected(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </div>
+
+          {state.uploadedImages.length > 0 && (
+            <>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+                {state.uploadedImages.map((img) => (
+                  <div key={img.id} style={{ position: "relative" }}>
+                    <img
+                      src={img.previewUrl}
+                      alt={img.fileName}
+                      style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)" }}
+                    />
+                    <button
+                      onClick={() => handleRemoveUploadedImage(img.id)}
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -6,
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        border: "none",
+                        background: "#f87171",
+                        color: "#fff",
+                        fontSize: 11,
+                        lineHeight: "18px",
+                        cursor: "pointer",
+                        padding: 0,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleScoreUpload}
+                disabled={state.loading || state.uploadedImages.length < 3}
+                style={{ ...secondaryBtnStyle(state.loading), marginBottom: 8 }}
+              >
+                Score uploaded images →
+              </button>
+            </>
+          )}
+
           {state.userAds.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
@@ -597,7 +775,11 @@ export default function Home() {
               </p>
               {state.userAds.map((ad) => (
                 <div key={ad.id} style={{ ...cardStyle, padding: "8px 12px" }}>
-                  <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{ad.copy}</p>
+                  {!ad.copy && ad.coverUrl ? (
+                    <img src={ad.coverUrl} alt="" style={{ maxWidth: 120, borderRadius: 6, display: "block" }} />
+                  ) : (
+                    <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{ad.copy}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -663,12 +845,28 @@ export default function Home() {
                     )}
                   </div>
                   <p style={{ color: "var(--text-muted)", fontSize: 12, marginBottom: 10 }}>{cluster.reason}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {cluster.adIds.map((id) => (
-                      <div key={id} style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.45, padding: "7px 11px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)" }}>
-                        {adById.get(id)?.copy ?? id}
-                      </div>
-                    ))}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {cluster.adIds.map((id) => {
+                      const matchedAd = adById.get(id);
+                      if (matchedAd && !matchedAd.copy && matchedAd.coverUrl) {
+                        return (
+                          <img
+                            key={id}
+                            src={matchedAd.coverUrl}
+                            alt=""
+                            style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)" }}
+                          />
+                        );
+                      }
+                      return (
+                        <div
+                          key={id}
+                          style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.45, padding: "7px 11px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)", width: "100%" }}
+                        >
+                          {matchedAd?.copy ?? id}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
