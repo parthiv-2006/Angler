@@ -32,8 +32,10 @@ import { creativeDNASchema, winnerSummarySchema, angleBatchSchema } from "@/lib/
 import { ANALYZE_CREATIVE_SYSTEM } from "@/lib/ai/prompts/analyze";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 import { GENERATE_ANGLES_SYSTEM, buildGenerateAnglesPrompt } from "@/lib/ai/prompts/generate";
+import { PREFLIGHT_SYSTEM, buildPreflightPrompt } from "@/lib/ai/prompts/preflight";
 import { briefToDNA } from "@/lib/ai/briefs";
-import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
+import { preflightVerdictSchema } from "@/lib/ai/schemas";
+import type { Ad, CreativeDNA, ConceptClustering, AngleBrief, PreflightVerdict } from "@/lib/types";
 
 // ── Config ──────────────────────────────────────────────────────────────────────
 
@@ -101,6 +103,7 @@ interface VerticalState {
   briefs?: AngleBrief[];
   briefClustering?: ConceptClustering;
   sampleClustering?: ConceptClustering;
+  preflightVerdicts?: Record<string, PreflightVerdict>;
 }
 
 interface SeedFileShape {
@@ -292,6 +295,11 @@ async function buildVerticalSeed(
 
 // ── Stage 4: Module-3 sample set (the user's "own ad set") ───────────────────────
 
+// Two ads share a signature when they'd plausibly collapse into the same Entity ID.
+function dnaSignature(d: CreativeDNA): string {
+  return `${d.hookType}|${d.angle}|${d.format}`;
+}
+
 // Pick ads whose DNA signature repeats, so the "N ads → K concepts" collapse stays
 // visible — a real selection from real ads, not fabricated redundancy.
 function pickSampleAds(pool: Ad[], dna: Record<string, CreativeDNA>): Ad[] {
@@ -299,7 +307,7 @@ function pickSampleAds(pool: Ad[], dna: Record<string, CreativeDNA>): Ad[] {
   for (const ad of pool) {
     const d = dna[ad.id];
     if (!d) continue;
-    const sig = `${d.hookType}|${d.angle}|${d.format}`;
+    const sig = dnaSignature(d);
     (buckets.get(sig) ?? buckets.set(sig, []).get(sig)!).push(ad);
   }
   const ordered = [...buckets.values()].sort((a, b) => b.length - a.length);
@@ -350,6 +358,8 @@ async function buildSampleSet(
     await sleep(THROTTLE_MS);
   }
 
+  const preflightExamples = await buildPreflightExamples(v, state, pool, picked, sampleDNA, abbr);
+
   const sampleFile = {
     slug: existing.slug,
     label: existing.label,
@@ -357,11 +367,105 @@ async function buildSampleSet(
     ads: sampleAds,
     dna: sampleDNA,
     clustering: state.sampleClustering,
+    preflightExamples,
   };
   writeJSON(existingPath, sampleFile);
   console.log(
-    `  [sample] wrote ${v.sampleSlug}.json (${sampleAds.length} ads → ${state.sampleClustering.kConcepts} concepts)`,
+    `  [sample] wrote ${v.sampleSlug}.json (${sampleAds.length} ads → ${state.sampleClustering.kConcepts} concepts, ${preflightExamples.length} pre-flight examples)`,
   );
+}
+
+// ── Stage 4b: Module-3.5 pre-flight examples (two per sample set) ────────────────
+
+interface PreflightExampleOut {
+  id: string;
+  label: string;
+  ad: Ad;
+  dna: CreativeDNA;
+  verdict: PreflightVerdict;
+}
+
+// Builds one "would collapse" and one "would be distinct" candidate from ads NOT
+// already in the sample, scores each live against the sample's real clustering,
+// and re-keys them as "planned" ads so the UI can present them as unsent creative.
+async function buildPreflightExamples(
+  v: VerticalConfig,
+  state: VerticalState,
+  pool: Ad[],
+  picked: Ad[],
+  sampleDNA: { adId: string; dna: CreativeDNA }[],
+  abbr: string,
+): Promise<PreflightExampleOut[]> {
+  if (!state.sampleClustering) return [];
+
+  const pickedIds = new Set(picked.map((ad) => ad.id));
+  const remaining = pool.filter((ad) => !pickedIds.has(ad.id) && state.dna[ad.id]);
+  if (remaining.length === 0) return [];
+
+  const sampleSigCounts = new Map<string, number>();
+  const sampleSigs = new Set<string>();
+  for (const { dna } of sampleDNA) {
+    const sig = dnaSignature(dna);
+    sampleSigCounts.set(sig, (sampleSigCounts.get(sig) ?? 0) + 1);
+    sampleSigs.add(sig);
+  }
+  const dominantSig = [...sampleSigCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+  // Collapse candidate: a remaining ad whose signature matches the sample's
+  // dominant (most-repeated) bucket.
+  const collapseCandidate =
+    remaining.find((ad) => dominantSig && dnaSignature(state.dna[ad.id]) === dominantSig) ?? remaining[0];
+
+  // Distinct candidate: a remaining ad whose angle is named in a proven gap,
+  // falling back to any ad whose signature is absent from the sample entirely.
+  const gapsLower = state.sampleClustering.gaps.map((g) => g.toLowerCase());
+  const distinctCandidate =
+    remaining.find(
+      (ad) => ad.id !== collapseCandidate.id && gapsLower.some((g) => g.includes(state.dna[ad.id].angle.toLowerCase())),
+    ) ??
+    remaining.find((ad) => ad.id !== collapseCandidate.id && !sampleSigs.has(dnaSignature(state.dna[ad.id]))) ??
+    remaining.find((ad) => ad.id !== collapseCandidate.id) ??
+    null;
+
+  const picks: { kind: "collapse" | "distinct"; ad: Ad }[] = [{ kind: "collapse", ad: collapseCandidate }];
+  if (distinctCandidate) picks.push({ kind: "distinct", ad: distinctCandidate });
+
+  state.preflightVerdicts ??= {};
+  const examples: PreflightExampleOut[] = [];
+
+  for (let i = 0; i < picks.length; i++) {
+    const { kind, ad } = picks[i];
+    const dna = state.dna[ad.id];
+    const pfId = `pf_${abbr}_${String(i + 1).padStart(2, "0")}`;
+
+    if (!state.preflightVerdicts[pfId]) {
+      console.log(`  [preflight] scoring ${kind} candidate ${pfId}…`);
+      state.preflightVerdicts[pfId] = await robustAI(`preflight-${pfId}`, () =>
+        getProvider().generateJSON({
+          system: PREFLIGHT_SYSTEM,
+          prompt: buildPreflightPrompt({
+            clustering: state.sampleClustering!,
+            candidate: dna,
+            gaps: state.sampleClustering!.gaps,
+          }),
+          schema: preflightVerdictSchema,
+        }),
+      );
+      saveState(v.slug, state);
+      await sleep(THROTTLE_MS);
+    }
+
+    const label = kind === "collapse" ? `Another ${dna.format.toLowerCase()}` : `New angle: ${dna.angle}`;
+    examples.push({
+      id: pfId,
+      label,
+      ad: { ...ad, id: pfId, source: "planned" },
+      dna,
+      verdict: state.preflightVerdicts[pfId],
+    });
+  }
+
+  return examples;
 }
 
 // ── Orchestration ─────────────────────────────────────────────────────────────
