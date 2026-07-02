@@ -13,6 +13,8 @@ interface SeedFile {
   winnerSummary: string;
   // Pre-baked Module 4 output so the seed demo path never calls the live AI.
   briefs?: AngleBrief[];
+  // Self-scored diversity of the generated brief batch itself ("dog food").
+  briefClustering?: ConceptClustering;
 }
 
 // A user's "own" ad set for the diversity scorer (Module 3). Deliberately
@@ -61,6 +63,10 @@ export function getSeedWinnerSummary(slug: string): string | null {
 
 export function getSeedBriefs(slug: string): AngleBrief[] | null {
   return loadSeedFile(slug)?.briefs ?? null;
+}
+
+export function getSeedBriefClustering(slug: string): ConceptClustering | null {
+  return loadSeedFile(slug)?.briefClustering ?? null;
 }
 
 export function listSeedSlugs(): string[] {

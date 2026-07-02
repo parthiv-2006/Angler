@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
-import { getSeedBriefs } from "@/lib/cache/seed";
+import { getSeedBriefs, getSeedBriefClustering } from "@/lib/cache/seed";
 import { angleBatchSchema, creativeDNASchema } from "@/lib/ai/schemas";
 import { GENERATE_ANGLES_SYSTEM, buildGenerateAnglesPrompt } from "@/lib/ai/prompts/generate";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
@@ -46,7 +46,11 @@ export async function POST(req: NextRequest) {
   // Seed-first: a pre-baked seed vertical returns its briefs instantly (no live call).
   const seedBriefs = getSeedBriefs(slug);
   if (seedBriefs) {
-    return NextResponse.json({ briefs: seedBriefs, fromSeed: true });
+    return NextResponse.json({
+      briefs: seedBriefs,
+      briefClustering: getSeedBriefClustering(slug),
+      fromSeed: true,
+    });
   }
 
   const provider = getProvider();

@@ -32,6 +32,7 @@ import { creativeDNASchema, winnerSummarySchema, angleBatchSchema } from "@/lib/
 import { ANALYZE_CREATIVE_SYSTEM } from "@/lib/ai/prompts/analyze";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 import { GENERATE_ANGLES_SYSTEM, buildGenerateAnglesPrompt } from "@/lib/ai/prompts/generate";
+import { briefToDNA } from "@/lib/ai/briefs";
 import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
 
 // ── Config ──────────────────────────────────────────────────────────────────────
@@ -98,6 +99,7 @@ interface VerticalState {
   dna: Record<string, CreativeDNA>;
   summary?: string;
   briefs?: AngleBrief[];
+  briefClustering?: ConceptClustering;
   sampleClustering?: ConceptClustering;
 }
 
@@ -107,6 +109,7 @@ interface SeedFileShape {
   dna: { adId: string; dna: CreativeDNA }[];
   winnerSummary: string;
   briefs?: AngleBrief[];
+  briefClustering?: ConceptClustering;
 }
 
 function statePath(slug: string): string {
@@ -127,7 +130,9 @@ function loadState(slug: string): VerticalState {
   if (seed && isReal) {
     for (const { adId, dna } of seed.dna) state.dna[adId] ??= dna;
     state.summary ??= seed.winnerSummary;
-    if (seed.briefs?.length) state.briefs ??= seed.briefs;
+    // Old-format briefs (pre evidenceAdIds) are auto-invalidated so a re-run
+    // regenerates them instead of reusing briefs with no evidence citations.
+    if (seed.briefs?.length && seed.briefs[0].evidenceAdIds?.length) state.briefs ??= seed.briefs;
   }
   return state;
 }
@@ -264,12 +269,22 @@ async function buildVerticalSeed(
     await sleep(THROTTLE_MS);
   }
 
+  if (!state.briefClustering) {
+    console.log(`  [briefs] self-scoring batch diversity…`);
+    state.briefClustering = await robustAI("brief-cluster", () =>
+      provider.clusterConcepts(state.briefs!.map(briefToDNA)),
+    );
+    saveState(v.slug, state);
+    await sleep(THROTTLE_MS);
+  }
+
   const seedFile: SeedFileShape = {
     vertical: { slug: v.slug, display_name: v.display, is_seed: true },
     ads: marketAds,
     dna: marketAds.map((a) => ({ adId: a.id, dna: state.dna[a.id] })),
     winnerSummary: state.summary!,
     briefs: state.briefs!,
+    briefClustering: state.briefClustering!,
   };
   writeJSON(join(SEED_DIR, `${v.slug}.json`), seedFile);
   console.log(`  [seed] wrote data/seed/${v.slug}.json (${marketAds.length} ads, ${state.briefs!.length} briefs)`);
