@@ -11,6 +11,7 @@ export const maxDuration = 60;
 const adInputSchema = z.object({
   id: z.string(),
   coverUrl: z.string().optional(),
+  imageBase64: z.string().optional(),
   copy: z.string().optional(),
   metadata: z.record(z.unknown()).optional(),
 });
@@ -19,6 +20,7 @@ const requestSchema = z.object({
   ads: z.array(adInputSchema).min(1).max(30),
   vertical: z.string().optional(), // slug used to hit seed DNA cache
   generateSummary: z.boolean().optional(), // synthesize a "what's winning" summary (novel verticals)
+  adKind: z.enum(["competitor", "uploaded"]).optional().default("competitor"),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
   }
 
-  const { ads, vertical = "", generateSummary = false } = parsed.data;
+  const { ads, vertical = "", generateSummary = false, adKind } = parsed.data;
   const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const provider = getProvider();
 
@@ -39,11 +41,12 @@ export async function POST(req: NextRequest) {
         const dna = await getOrAnalyzeDNA(
           ad.id,
           slug,
-          "competitor",
+          adKind,
           () =>
             withRetry(() =>
               provider.analyzeCreative({
                 imageUrl: ad.coverUrl,
+                imageBase64: ad.imageBase64,
                 copy: ad.copy,
                 metadata: ad.metadata,
               }),
