@@ -51,3 +51,10 @@ export interface AngleBrief {
   };
   evidenceAdIds: string[];
 }
+
+export interface PreflightVerdict {
+  verdict: "collapses" | "distinct";
+  collidesWith: string | null;
+  reason: string;
+  fixes: string[];
+}

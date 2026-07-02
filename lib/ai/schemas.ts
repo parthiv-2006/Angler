@@ -48,3 +48,10 @@ export const angleBatchSchema = z.object({
 export const winnerSummarySchema = z.object({
   summary: z.string(),
 });
+
+export const preflightVerdictSchema = z.object({
+  verdict: z.enum(["collapses", "distinct"]),
+  collidesWith: z.string().nullable(), // concept name from the existing clustering, or null
+  reason: z.string(),                  // one sentence, Entity-ID framing
+  fixes: z.array(z.string()),          // 2-3 concrete changes to earn a new Entity ID
+});

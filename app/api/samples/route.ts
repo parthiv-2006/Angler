@@ -21,5 +21,6 @@ export async function GET(req: NextRequest) {
     vertical: set.vertical,
     ads: set.ads,
     dna: set.dna,
+    preflightExamples: (set.preflightExamples ?? []).map((e) => ({ id: e.id, label: e.label })),
   });
 }

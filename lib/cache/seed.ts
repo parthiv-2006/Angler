@@ -1,6 +1,6 @@
 import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
-import type { Ad, CreativeDNA, ConceptClustering, AngleBrief } from "@/lib/types";
+import type { Ad, CreativeDNA, ConceptClustering, AngleBrief, PreflightVerdict } from "@/lib/types";
 
 interface SeedFile {
   vertical: {
@@ -20,6 +20,16 @@ interface SeedFile {
 // A user's "own" ad set for the diversity scorer (Module 3). Deliberately
 // redundant so the "N ads → K concepts" collapse is visible. Clustering is
 // pre-baked so the seed demo path is instant and deterministic.
+// A pre-baked "planned ad" the pre-flight check (Module 3.5) can score instantly
+// against this sample set's clustering — real ad copy, real model verdict.
+interface PreflightExample {
+  id: string;
+  label: string;
+  ad: Ad;
+  dna: CreativeDNA;
+  verdict: PreflightVerdict;
+}
+
 interface SampleSetFile {
   slug: string;
   label: string;
@@ -27,6 +37,7 @@ interface SampleSetFile {
   ads: Ad[];
   dna: { adId: string; dna: CreativeDNA }[];
   clustering: ConceptClustering;
+  preflightExamples?: PreflightExample[];
 }
 
 const SEED_DIR = join(process.cwd(), "data", "seed");
@@ -83,6 +94,7 @@ export interface SampleSetSummary {
   label: string;
   vertical: string;
   adCount: number;
+  preflightExamples: { id: string; label: string }[];
 }
 
 export function getSampleClustering(slug: string): ConceptClustering | null {
@@ -91,6 +103,14 @@ export function getSampleClustering(slug: string): ConceptClustering | null {
 
 export function getSampleSet(slug: string): SampleSetFile | null {
   return loadSampleFile(slug);
+}
+
+export function getPreflightExample(
+  sampleSlug: string,
+  candidateId: string,
+): { ad: Ad; verdict: PreflightVerdict } | null {
+  const example = loadSampleFile(sampleSlug)?.preflightExamples?.find((e) => e.id === candidateId);
+  return example ? { ad: example.ad, verdict: example.verdict } : null;
 }
 
 export function listSampleSets(): SampleSetSummary[] {
@@ -104,5 +124,6 @@ export function listSampleSets(): SampleSetSummary[] {
       label: s.label,
       vertical: s.vertical,
       adCount: s.ads.length,
+      preflightExamples: (s.preflightExamples ?? []).map((e) => ({ id: e.id, label: e.label })),
     }));
 }
