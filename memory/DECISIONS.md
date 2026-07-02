@@ -98,6 +98,41 @@ the "grounded in what's actually winning in THIS vertical" promise.
 broken links in a repo the judge reads. Cross-doc references between them are bare filenames,
 so they still resolve now that all 5 share `docs/`.
 
+## Image upload reuses `/api/deconstruct` → `/api/score`; no new endpoints
+
+**Decision:** The Module 3 image-upload feature adds one optional field
+(`imageBase64` on `adInputSchema`) and one optional field (`adKind` on the top-level
+request) to the existing `/api/deconstruct` route, plus a `handleScoreUpload` client
+handler that mirrors `handleScorePaste`. No new API route, no new AI-provider methods —
+both providers already accepted `imageBase64` in `analyzeCreative()`.
+**Why:** The vision pipeline (image → `CreativeDNA`) already existed for competitor ads;
+the only gap was that the user's *own* ad set could only be scored via typed captions.
+Minimum-diff additive change over a parallel code path.
+**Files:** `app/api/deconstruct/route.ts`, `app/page.tsx`
+
+## Client-side image compression, not a server body-size workaround
+
+**Decision:** Uploaded images are resized to ≤1024px longest edge and re-encoded as
+JPEG quality 0.8 via an off-screen `<canvas>` in the browser before upload, capped at 10
+images per batch.
+**Why:** Vercel's Route Handler body limit (~4.5MB) isn't configurable in the App Router
+(no `bodyParser.sizeLimit` equivalent). Compressing client-side keeps every request well
+under that limit by construction, regardless of the source photo's size, with no server
+config needed.
+**Files:** `app/page.tsx` (`compressImage`)
+
+## `clusterConcepts` takes `{adId, dna}[]`, not bare `CreativeDNA[]`
+
+**Decision:** Changed the clustering call's DNA parameter from `CreativeDNA[]` to
+`{ adId: string; dna: CreativeDNA }[]` across `AIProvider`, both provider implementations,
+`/api/score`, the cluster prompt, and every caller (`app/page.tsx`, `scripts/refresh-seed.ts`).
+**Why:** Discovered while verifying the image-upload feature end-to-end: without a real id
+in the prompt payload, the model had nothing to anchor `adIds` to and fabricated its own
+labels, so Step 5's ad-thumbnail/copy lookup (`adById.get(id)`) silently failed on every
+non-seed clustering call. See [[gotchas#clustering-pipeline]] for the full symptom.
+**Files:** `lib/ai/provider.ts`, `lib/ai/prompts/cluster.ts`, `lib/ai/anthropic.ts`,
+`lib/ai/gemini.ts`, `app/api/score/route.ts`, `app/page.tsx`, `scripts/refresh-seed.ts`
+
 ## Ad longevity (`run_days`) as the winning signal, not CTR/views
 
 **Decision:** Ads are ranked by `run_days` (how long the ad has been running), not by raw view counts or CTR.

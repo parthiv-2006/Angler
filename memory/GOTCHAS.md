@@ -69,6 +69,31 @@ All callers must pass all 5 args. Check `app/api/deconstruct/route.ts` if you se
 
 ---
 
+## Clustering pipeline
+
+### `clusterConcepts` DNA had no ad ID — the model invented `adIds` from nothing
+**Symptom:** After scoring an ad set, Step 5's collapsed concept buckets showed raw
+placeholder text (`ad_1`, `ad_2`, `own_wls_01`-style strings that didn't match any real
+`Ad.id`) instead of the real ad copy/thumbnail — `adById.get(id)` always missed.
+**Cause:** `app/page.tsx` sent `dna: dnaData.results.map(r => r.dna)` to `/api/score`,
+stripping the real `adId` before it ever reached the model. `creativeDNASchema` (and
+`CreativeDNA` itself) has no id field, so `clusterConcepts`'s prompt had nothing to anchor
+`adIds` to — the model hallucinated its own labels every time. This affected **both** the
+live paste path and `scripts/refresh-seed.ts`'s sample-set generation (which is why the
+pre-baked `data/seed/samples/*.json` files also ship with `adIds` that don't match `ads[].id`).
+**Fix:** `clusterConcepts` now takes `{ adId: string; dna: CreativeDNA }[]` instead of
+`CreativeDNA[]`; the cluster prompt embeds each real `adId` and instructs the model to copy
+it verbatim into `adIds`. `/api/score`'s `dna` field is now `{adId, dna}[]`. All 4 call
+sites in `app/page.tsx` (paste, sample, upload, full-demo) and both call sites in
+`scripts/refresh-seed.ts` now pass the id-ful shape through instead of `.map(r => r.dna)`.
+**Files:** `lib/ai/provider.ts`, `lib/ai/prompts/cluster.ts`, `lib/ai/anthropic.ts`,
+`lib/ai/gemini.ts`, `app/api/score/route.ts`, `app/page.tsx`, `scripts/refresh-seed.ts`
+**Not fixed:** the already-generated `data/seed/samples/*.json` files still have the old
+mismatched ids baked in (regenerating them costs live AI credits and is out of scope here —
+the live/uploaded/pasted paths are what this fix targets, and they render correctly now).
+
+---
+
 ## Tooling
 
 ### `npm run lint` (`next lint`) prompts interactively and hangs

@@ -61,7 +61,7 @@
 - [x] Sample ad sets loadable with one click (`/api/samples`, `data/seed/samples/*.json`)
 - [x] Paste-your-own-captions flow (live path)
 - [x] Diversity report rendered in UI (N ads → K concepts + amber gap callout)
-- [ ] Drag-and-drop **image** upload (deferred — sample sets + paste chosen instead)
+- [x] Drag-and-drop **image** upload — 3–10 real ad screenshots → client-side compressed → `/api/deconstruct` (`adKind:"uploaded"`, `imageBase64`) → `/api/score`, rendering as real thumbnails in "YOUR AD SET" and inside Step 5's collapsed concept buckets
 
 ---
 
@@ -93,7 +93,7 @@
 - [x] **Waste quantification**: headline (`N ads → K concepts`, redundant count, `~X%`) + optional budget input → labelled `$` estimate
 - [x] **Market-vs-you coverage panel**: proven market angles (by frequency) beside the gap list
 - [x] **One-click "Run the full demo"** button (orchestrates mine→DNA→score→generate on the weight-loss seed with smooth scroll)
-- [ ] Drag-and-drop upload for Module 3
+- [x] Drag-and-drop upload for Module 3
 - [ ] Loading / partial / empty / error states on every module
 
 ---

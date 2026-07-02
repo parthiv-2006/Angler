@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-07-02 — Drag-and-drop image upload for Module 3 + clustering ad-ID fix
+
+**What:** Closed the last flagged gap in Module 3 — the demo's climax (scoring the user's
+*own* ad set for Andromeda Entity-ID collapse) could only take pasted text captions, even
+though the vision pipeline already existed for competitor ads in Module 1/2.
+- **Backend:** `app/api/deconstruct/route.ts` — added optional `imageBase64` per-ad and
+  `adKind: "competitor" | "uploaded"` at the request level, threaded into `getOrAnalyzeDNA`
+  (fixing a pre-existing bug where every DNA record was cached as `"competitor"` regardless
+  of source). No AI-provider changes needed — both `AnthropicProvider` and `GeminiProvider`
+  already handled `imageBase64` correctly.
+- **Frontend:** `app/page.tsx` — new always-visible drag-and-drop zone in Step 4 (3–10 image
+  cap), client-side `compressImage()` (canvas resize ≤1024px + JPEG 0.8) to stay under
+  Vercel's ~4.5MB body limit, new `handleScoreUpload()` mirroring `handleScorePaste`, and
+  thumbnail rendering (instead of blank/id text) in both the "YOUR AD SET" list and Step 5's
+  collapsed concept buckets.
+- **Bug found + fixed during verification:** `/api/score`'s clustering call sent bare
+  `CreativeDNA[]` with no id, so the model invented its own `adIds` (`ad_1`, `ad_2`…) that
+  never matched real ad ids — Step 5 silently fell back to raw id text for every non-seed
+  clustering (paste flow, and now upload flow too). Fixed by threading `{adId, dna}[]`
+  through `AIProvider.clusterConcepts`, both providers, the cluster prompt, `/api/score`,
+  every `app/page.tsx` call site, and `scripts/refresh-seed.ts`. See `GOTCHAS.md`.
+
+**Verified live (Playwright, port 3000, real Anthropic key):** uploaded 3 tiny PNGs (2
+red + 1 blue) through the full flow — drop zone → thumbnails → remove button (disables
+Score button below 3) → re-add → Score. Confirmed the `/api/deconstruct` request body
+carried `adKind:"uploaded"` + `imageBase64` with no `copy`; the response held real
+distinguishing vision DNA per image (correctly told red from blue apart). Confirmed
+`/api/score`'s `clustering.clusters[].adIds` now echo the exact `upload_0/1/2` ids sent,
+and the "YOUR AD SET" + Step 5 bucket sections both render `<img>` thumbnails with a
+"3× collapsed" badge — zero raw-id fallback text anywhere. `npm run typecheck` and
+`npm run build` both clean.
+
+**Branch state:** `main`, uncommitted at time of writing. **What's next:** commit in small
+batches, push; README + Vercel deploy are still the open submission items. The already-baked
+`data/seed/samples/*.json` clustering ids are still stale (not regenerated — would cost live
+AI credits) but this doesn't block the demo, since the seed path serves them as pre-baked
+JSON without going through the (now-fixed) live clustering code.
+
+---
+
 ## 2026-07-01 — Concurrency guard + empty/error state polish
 
 **What:** Closed two items from the demo-hardening checklist.
