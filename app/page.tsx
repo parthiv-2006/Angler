@@ -46,6 +46,7 @@ const SEED_VERTICALS = [
   { label: "Weight-Loss Supplement", value: "weight-loss supplement" },
   { label: "Debt Relief", value: "debt relief" },
   { label: "ED Telehealth", value: "ed telehealth" },
+  { label: "Investing Newsletter", value: "investing newsletter" },
 ];
 
 // Date the seed verticals were last refreshed from the live ad libraries. Shown to
