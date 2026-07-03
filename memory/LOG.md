@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-07-03 — Real Anthropic Console API key added; live path now actually runs on Claude
+
+**What:** User replaced the placeholder/OAuth `ANTHROPIC_API_KEY` in `.env.local` with a real
+Console key (`sk-ant-api03-...`) and set `AI_PROVIDER=anthropic`, then added $5 in Anthropic
+credits. This closes a gap flagged in the previous session: the app's live AI path had been
+silently running entirely on Gemini because the previous key (`sk-ant-oat01-...`, a Claude
+Code OAuth token) 401'd against the real API.
+
+**Verification performed:** Two direct `curl` calls against `api.anthropic.com/v1/messages`
+(key read from `.env.local` into a shell var, never echoed) — one with a generic model
+(`claude-haiku-4-5-20251001`), one with the exact model string `lib/ai/anthropic.ts` calls
+(`claude-sonnet-4-6`, `MODEL_DEFAULT`). Both returned real `200` completions. This confirms
+the key is valid and the specific model the app depends on is live and reachable.
+
+**Not yet done:** Only the raw Anthropic API was tested, not the app's own routes. Before
+the demo, run the live paste/upload flow once end-to-end through `/api/deconstruct`,
+`/api/score`, `/api/generate` to confirm the switch works inside the app itself — the
+image-upload/vision path in Module 3 in particular has only ever been verified against
+Gemini, never Anthropic, even though `analyzeCreative` has always accepted `imageBase64` in
+both provider implementations.
+
+**Cost assessment:** At `claude-sonnet-4-6` standard pricing, each `analyzeCreative` call
+(image + prompt in, ≤1024 tokens out) runs roughly a cent or two; `clusterConcepts` and
+`generateJSON` (2048–4096 max tokens) a few cents each. A full live "novel vertical" run
+(~10–15 ads deconstructed + 1 cluster + 1 generate) lands under $0.50, so $5 covers 10+ full
+live demo runs — judged sufficient for the contest deadline with margin for the user's own
+pre-demo testing.
+
+**Files:** `.env.local`, `memory/PROGRESS.md`.
+
+---
+
 ## 2026-07-03 — Fixed live-path outage: Supabase uuid bug + stale Gemini model override
 
 **What:** A feature-verification pass (deep dive + live browser testing) found the live AI
