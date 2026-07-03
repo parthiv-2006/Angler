@@ -22,7 +22,9 @@
 - [x] `/api/score` validation fix: `dna` schema changed to `.min(0)` so seed path accepts empty array
 - [ ] Supabase env vars added to Vercel project settings
 - [x] **Live AI path working** via Gemini `gemini-2.5-flash` (free tier). The earlier "quota exhausted" was actually a dead model (`gemini-2.0-flash` → 429 `limit:0`); switching `MODEL_DEFAULT` fixed it. All three entry points verified on a novel vertical.
-- [ ] (Optional) Anthropic Console API key (`sk-ant-api03-...`) for a non-Gemini provider — current `ANTHROPIC_API_KEY` is an unusable `sk-ant-oat` token; not needed while Gemini works
+- [x] **Supabase `creative_dna.ad_id` uuid→text fix (2026-07-03)** — every live DNA cache write was silently failing (`22P02 invalid input syntax for type uuid`) because the app's own ad ids (`paste_*`, `upload_*`, `preflight_*`, `fb_*`, `tiktok_*`) are never real UUIDs. Migration `002` applied to the live project; see [[GOTCHAS]].
+- [ ] **`.env.local` `GEMINI_MODEL` override caused a real outage (found + fixed 2026-07-03)** — it was pinned to `gemini-2.5-flash-lite`, whose 20-req/day free quota was exhausted, so every live AI call (`/api/deconstruct`, live score/generate) 429'd with `Failed to analyze creatives`. Removed the override so the provider default (`gemini-2.5-flash`, confirmed working) applies. **Not yet re-verified live after this change** — re-run the paste-your-own-ads flow to confirm before relying on it.
+- [ ] Anthropic Console API key (`sk-ant-api03-...`) for a non-Gemini provider — current `ANTHROPIC_API_KEY` in `.env.local` is a `sk-ant-oat01-...` token (Claude Code's own OAuth credential, confirmed 401 `invalid x-api-key` against the real API). App runs fine on Gemini as long as its quota holds, but Anthropic is the project's documented primary provider ([[CLAUDE.md]] "AI provider" decision) — get a real Console key before the demo if "built on Claude" matters to the pitch.
 - [x] README written (3 contest questions, data provenance, cost/limits, MCP usage section)
 - [ ] Vercel deploy
 

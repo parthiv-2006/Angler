@@ -25,6 +25,27 @@
 **Fix:** Use dynamic imports (`await import("@/lib/db/queries")`) inside `lib/cache/index.ts` and guard with `hasSupabase()` check. The seed path works with zero credentials as a result.
 **File:** `lib/cache/index.ts`
 
+### `creative_dna.ad_id` was `uuid` but the app never generates real UUIDs (fixed 2026-07-03)
+**Symptom:** Every live (non-seed) `/api/deconstruct` call spammed the server log with
+`{ code: '22P02', message: 'invalid input syntax for type uuid: "paste_1"' }` and the equivalent
+for `paste_0`, `upload_0`, `preflight_<timestamp>`, and even live-mined `fb_<archiveId>` /
+`tiktok_<id>` ads.
+**Cause:** `supabase/migrations/001_initial_schema.sql` typed `creative_dna.ad_id` as `uuid`, but
+`cacheDNA()` in `lib/db/queries.ts` always writes the app's own string id, none of which are
+UUIDs. Because that write is wrapped in `.catch(console.error)` in `lib/cache/index.ts`, the
+failure was **silent** to the end user — the request itself succeeded or failed based on the AI
+call, not this write — but it meant Supabase never actually persisted a single live-analyzed DNA
+record, and the "write-through cache" claim in ARCHITECTURE.md didn't hold for anything but seed
+data.
+**Fix:** Migration `002_creative_dna_ad_id_text.sql` — `alter table creative_dna alter column
+ad_id type text using ad_id::text` (table was empty, zero data loss) — applied directly to the
+live project (`xtigqcoogbraorwhmshw`) via the Supabase MCP `apply_migration` tool. `ARCHITECTURE.md`
+and `lib/db/queries.ts` updated to reflect `ad_id text`. **Note:** `competitor_ads` was not
+affected — its `id` is a DB-generated `uuid` PK the app never supplies directly, so that table was
+never at risk.
+**Files:** `supabase/migrations/002_creative_dna_ad_id_text.sql`, `lib/db/queries.ts`,
+`docs/ARCHITECTURE.md`
+
 ---
 
 ## Anthropic / AI Keys

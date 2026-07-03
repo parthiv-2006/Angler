@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-07-03 — Fixed live-path outage: Supabase uuid bug + stale Gemini model override
+
+**What:** A feature-verification pass (deep dive + live browser testing) found the live AI
+path completely broken — pasting/uploading your own ads returned `500 Failed to analyze
+creatives` — plus a separate, silent Supabase bug. Both are fixed and re-verified.
+
+**Bug 1 — Supabase `creative_dna.ad_id` was `uuid`, app never generates real UUIDs.**
+Every live DNA cache write failed with `22P02 invalid input syntax for type uuid` for
+`paste_*`/`upload_*`/`preflight_*`/`fb_*`/`tiktok_*` ids, silently swallowed by
+`.catch(console.error)` in `lib/cache/index.ts` — so Supabase never actually persisted any
+non-seed DNA despite the architecture doc's "write-through cache" claim. Fixed by migration
+`002_creative_dna_ad_id_text.sql` (`alter column ad_id type text`), applied directly to the
+live project `xtigqcoogbraorwhmshw` via Supabase MCP (table was empty, zero data loss).
+Verified: pasted 2 test ads → both rows landed in `creative_dna` with correct `ad_id` strings,
+then deleted the test rows.
+
+**Bug 2 — `.env.local` had a stale `GEMINI_MODEL=gemini-2.5-flash-lite` override.**
+That model's 20-req/day free quota was exhausted (429 on every call). Memory already showed
+(same day, earlier) that the provider's own default (`gemini-2.5-flash`) works with a separate
+quota bucket — the override was a leftover workaround that should have been removed. Deleted
+the override; provider now falls back to its healthy default.
+
+**Also found but NOT fixed (needs a decision from the user):** the `ANTHROPIC_API_KEY` in
+`.env.local` is a `sk-ant-oat01-...` token — Claude Code's own OAuth credential, not a Console
+API key — confirmed 401 `invalid x-api-key` against the real Anthropic API. App runs fine on
+Gemini, but Anthropic is the project's documented primary provider. Get a real
+`sk-ant-api03-...` key from console.anthropic.com before the demo if "built on Claude" matters
+to the pitch.
+
+**Verified after fix:** `npm run typecheck` clean, `npm run build` clean (fresh `.next`),
+direct `curl POST /api/deconstruct` with 2 pasted ads → `200` with real DNA + confirmed
+Supabase rows, then cleaned up.
+
+**Files:** `supabase/migrations/002_creative_dna_ad_id_text.sql` (new), `lib/db/queries.ts`,
+`docs/ARCHITECTURE.md`, `.env.local`, `memory/GOTCHAS.md`, `memory/PROGRESS.md`.
+
+---
+
 ## 2026-07-03 — P4 shipped: investing-newsletter seed vertical (all 5 polish features done)
 
 **What:** Completed P4, the last and only quota/money-spending polish item, at the user's
