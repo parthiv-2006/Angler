@@ -5,6 +5,53 @@
 
 ---
 
+## 2026-07-03 — P4 shipped: investing-newsletter seed vertical (all 5 polish features done)
+
+**What:** Completed P4, the last and only quota/money-spending polish item, at the user's
+explicit direction (the deploy/Loom priority gate is still open but was overridden for this
+task). Added a 4th pre-baked seed vertical surfaced as an "Investing Newsletter" chip —
+chosen because the judge spent ~5 years at Agora/Money Map Press (financial newsletters).
+
+**The query hunt (3 paid Apify runs; plan budgeted 2, user authorized the 3rd):**
+- `investing newsletter` → 16 usable ads but ~6/15 winners off-topic (Tree of Life
+  Ministries, a Portuguese shoe factory, AARP grants, health/wellness coaches). Too noisy
+  to show this judge his own market.
+- `stock picks` → 21 usable but **worse**: matched "in **stock**"/"**picks**" in
+  e-commerce (BBQ, Ford dealer, dance supplies, HVAC, home decor, audiobooks). ~3/15 finance.
+- `financial newsletter` → 16 usable, ~11/15 genuinely finance with marquee names:
+  **Timothy Sykes** (stock-trading newsletter), **Junkbondinvest**, **Money Machine
+  Newsletter**, **Condor Capital**, three fiduciary/economic-trends newsletters. **Shipped.**
+
+**Briefs quality fix:** the first `financial newsletter` bake gave `briefClustering.kConcepts
+= 5` (redundant — bad look for a *diversity* tool). Per plan step 3, deleted `briefs` +
+`briefClustering` from `scripts/.cache/state-investing-newsletter.json` and re-ran once
+(cached DNA+summary reused → zero Apify, ~3 Gemini calls) → `kConcepts = 11`.
+
+**Gemini 503 handling:** the first bake died after 7 retries of transient `503 high demand`
+on the `gemini-2.5-flash-lite` bucket (NOT a `limit:0` quota death). Re-ran with
+`GEMINI_MODEL=gemini-2.5-flash` (separate capacity pool) → clean, no retries. All bakes
+after used that bucket.
+
+**Config:** `scripts/refresh-seed.ts` VERTICALS gained
+`{ slug: "investing-newsletter", display: "Investing Newsletter", query: "financial newsletter" }`
+(no `sampleSlug`). `app/page.tsx` SEED_VERTICALS gained
+`{ label: "Investing Newsletter", value: "investing newsletter" }`.
+
+**Verified:** integrity (15 ads `facebook_ad_library`, 15 DNA 0 mismatches, 11 briefs w/
+valid evidence, kConcepts 11); `typecheck` + `build` green; **zero-cred in a real browser**
+(`.env.local` moved aside, `next start` on :3111) — Investing Newsletter chip → Find Ads
+renders 15 finance winners + finance summary + green `instant` badge, only console error is
+a benign favicon 404; MCP `list_verticals` → 4 verticals, `get_market_winners` → 15,
+`get_angle_briefs` → 11. `.env.local` restored, server stopped, artifacts cleaned.
+
+**Commits (both pushed to main):** `feat(seed): investing-newsletter seed vertical`
+(061598f), `feat(ui): investing-newsletter seed chip` (cd7bd9a).
+
+**Next:** Vercel deploy + fill README live URL + record fallback Loom — the real remaining
+submission blockers (deadline 2026-07-04 11:59 PM ET).
+
+---
+
 ## 2026-07-03 — Polish features P1–P3 shipped (docs/POLISH_FEATURES_PLAN.md)
 
 **What:** P5 (sample-set adId fix) was already done in the prior session. This session

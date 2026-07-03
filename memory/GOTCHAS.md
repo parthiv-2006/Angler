@@ -46,6 +46,45 @@
 **Diagnose which model works:** `curl -s -o /dev/null -w "%{http_code}" -X POST "https://generativelanguage.googleapis.com/v1beta/models/<MODEL>:generateContent?key=$GEMINI_API_KEY" -H "Content-Type: application/json" -d '{"contents":[{"parts":[{"text":"ok"}]}]}'`
 **Note:** `withRetry` still amplifies a genuine per-minute throttle 3×, but that is unrelated to the `limit: 0` case above.
 
+### Gemini `503 high demand` is transient load — switch model buckets, don't just wait
+**Symptom:** During a `refresh-seed` bake, the batch-DNA call 503s repeatedly and `robustAI`
+exhausts all 7 retries (backoff to ~60s each) and the whole run throws `503 Service
+Unavailable: This model is currently experiencing high demand`.
+**Cause:** Distinct from `limit: 0` (dead model / no free allocation). A `503` is a
+server-side capacity spike on that specific model bucket. A trivial probe (`curl ...
+:generateContent`) can return 200 at the same moment the big batched call 503s, because load
+is per-model and per-moment.
+**Fix:** Re-run with a different bucket via `GEMINI_MODEL`. Verified 2026-07-03:
+`gemini-2.5-flash-lite` sustained 503s through 7 retries; immediately re-running with
+`GEMINI_MODEL=gemini-2.5-flash` completed clean with **zero** retries. The per-stage state
+cache + cached raw scrape mean the re-run re-spends nothing already done (the failed
+batch-DNA had saved nothing, and Apify raw was cached → zero Apify spend).
+
+### `npm run ... | tee logfile` masks a script failure — `tee`'s exit 0 hides it
+**Symptom:** A background `npm run refresh-seed ... | tee bake.log` reports **exit code 0**
+even though the script threw and printed `refresh-seed FAILED:` in the log.
+**Cause:** In a pipeline, `$?` is the **last** command's exit — `tee` almost always exits 0,
+so the failing `npm`/`tsx` exit is discarded. The `completed (exit code 0)` notification is
+therefore meaningless for piped commands.
+**Fix:** Don't pipe a command whose exit code you care about through `tee`. Redirect instead
+(`> bake.log 2>&1; echo "EXIT=$?"`) so `$?` reflects the real process, or check
+`${PIPESTATUS[0]}`. Always grep the log for `FAILED`/`Error` regardless of the reported code.
+
+### Ad Library keyword search matches ad COPY TEXT — broad terms return heavy noise
+**Symptom:** Seed-baking a new vertical from an obvious keyword returns a market full of
+off-topic "winners". `investing newsletter` surfaced a ministry / a shoe factory / AARP
+grants; `stock picks` was worse — it matched "in **stock**" and "**picks**" across
+e-commerce (BBQ, car dealers, home decor, audiobooks).
+**Cause:** Apify's Meta Ad Library actor keyword-matches against the ad's body copy, not a
+curated category. Generic multi-sense words ("stock", "picks", "investing", "newsletter")
+pull in every advertiser who happens to use them.
+**Fix:** Prefer a specific, single-sense phrase that appears in the target niche's copy but
+not elsewhere. For the finance-newsletter vertical, `financial newsletter` won (~11/15
+on-topic incl. Timothy Sykes / Junkbondinvest / Money Machine) over both alternatives. Always
+eyeball `data/seed/<slug>.json` advertisers before shipping — count genuinely on-topic
+winners, don't trust the ad count alone (see [[decisions]] "P4 investing vertical ships on
+the `financial newsletter` query"). Each retry is a paid Apify run, so budget them.
+
 ---
 
 ## TikTok Creative Center

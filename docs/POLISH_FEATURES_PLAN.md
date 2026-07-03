@@ -20,12 +20,16 @@
 | P1 — judge tour strip | ✅ Done | `feat(ui): 60-second guided tour strip`. Verified in browser: renders, hides once `hasAds`, no console errors. |
 | P2 — shareable seed-report URL | ✅ Done | `feat(ui): shareable seed-report links`. Verified: full round-trip replay, garbage-param safety, share-link copy content, CSV/build regressions all clean. |
 | P3 — production-handoff JSON export | ✅ Done | `feat(ui): production-handoff JSON export for angle briefs`. Verified: downloaded file inspected — sorted, evidence redacted to advertiser+runDays, matches `batchIntegrity`. |
-| P4 — investing-newsletter seed vertical | ⬜ Not started | Explicitly cuttable/quota-spending item. Only attempt once Vercel deploy + Loom are locked in and `.env.local` has working `APIFY_TOKEN` + `GEMINI_API_KEY`. |
+| P4 — investing-newsletter seed vertical | ✅ Done | `feat(seed): investing-newsletter seed vertical` + `feat(ui): investing-newsletter seed chip`. Shipped on the **`financial newsletter`** query (see P4 section). Verified zero-cred in-browser: chip serves 15 real finance-newsletter winners with the green `instant` badge; MCP `list_verticals` lists 4. |
 
 `npm run typecheck` and `npm run build` both clean on the final state; global regression
 checklist below fully passed via Playwright against a running dev server plus a clean
 production build with zero env vars. See memory/LOG.md (2026-07-03 entry) for full
 verification detail.
+
+**ALL FIVE POLISH FEATURES SHIPPED (2026-07-03).** P4 was completed at the user's
+explicit direction despite the deploy/Loom priority gate still being open — those remain
+the top submission blockers (memory/PROGRESS.md § Submission).
 
 ## Model routing (per CLAUDE.md Engineering Rule 1)
 
@@ -274,7 +278,30 @@ assembly-line story told in the README.
 
 ---
 
-## P4 — Fourth seed vertical: investing/financial newsletter (OPTIONAL — cut first) ⬜ NOT STARTED
+## P4 — Fourth seed vertical: investing/financial newsletter (OPTIONAL — cut first) ✅ DONE
+
+**Shipped 2026-07-03.** Final query: **`financial newsletter`** (NOT the originally
+suggested `investing newsletter`). Outcome summary — see memory/DECISIONS.md and
+memory/GOTCHAS.md for full detail:
+- Three paid Apify runs were spent finding a clean-enough market (the plan budgeted 2; the
+  3rd was explicitly authorized by the user after the first two came back too noisy):
+  1. `investing newsletter` → ~9/15 finance, ~6 off-topic (a ministry, a shoe factory, AARP).
+  2. `stock picks` → ~3/15 finance (matched "in **stock**" / "**picks**" in e-commerce).
+     **Worse.**
+  3. `financial newsletter` → ~11/15 finance incl. marquee names (Timothy Sykes,
+     Junkbondinvest, Money Machine, fiduciary/economic-trends newsletters). **Shipped.**
+- Config query in `scripts/refresh-seed.ts` is now `financial newsletter`; slug/display
+  stay `investing-newsletter` / "Investing Newsletter" (only the Apify search term changed).
+- First `financial newsletter` bake produced `briefClustering.kConcepts = 5` (weak/redundant
+  for a diversity tool). Fixed per plan step 3: deleted `briefs`+`briefClustering` from the
+  state cache and re-ran once (cached DNA/summary reused, zero Apify) → `kConcepts = 11`.
+- Integrity verified: 15 ads (`facebook_ad_library`), 15 DNA (0 id mismatches), 11 briefs
+  (2 valid evidence ids each, 0 zero-evidence), `kConcepts 11`.
+- Zero-cred verified in-browser + via MCP (list_verticals → 4, get_market_winners → 15,
+  get_angle_briefs → 11). `get_diversity_report` needs a sample-set slug, which this vertical
+  intentionally has none of (no `sampleSlug`) — expected, not a bug.
+
+Original plan text preserved below for reference.
 
 **Why:** the judge spent ~5 years at Agora/Money Map Press (financial newsletters).
 Seeing his own market pre-analyzed lands personally. **Only attempt if: deploy + Loom

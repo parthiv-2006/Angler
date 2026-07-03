@@ -33,7 +33,7 @@
 - [x] TikTok Creative Center source (`lib/sources/tiktok-creative-center.ts`)
 - [x] Apify source stub (`lib/sources/apify.ts`)
 - [x] Ad normalizer (`lib/sources/normalize.ts`) — `normalizeTikTokAd`, `normalizeApifyAd`, `sortByRunDays`
-- [x] 3 seed verticals with 15 ads each: `weight-loss-supplement`, `debt-relief`, `ed-telehealth`
+- [x] 4 seed verticals: `weight-loss-supplement`, `debt-relief`, `ed-telehealth`, `investing-newsletter` (15 market ads each, from real Apify scrapes)
 - [x] `/api/mine` route — validates input, returns ranked ads + winner summary + `fromSeed` flag
 - [x] Seed path works with zero credentials (seed JSON → skip Supabase → skip live fetch)
 - [x] Winner summary served from seed for the 3 pre-baked verticals
@@ -84,6 +84,7 @@
 - [x] Token-trimmed payloads (no coverUrl/rawMetrics, copy capped at 200 chars); friendly unknown-slug responses listing valid slugs
 - [x] `listSeedVerticals()` added to `lib/cache/seed.ts` (display names + ad counts for the listing tool)
 - [x] Verified via raw JSON-RPC on a production build: initialize + tools/list + all 5 tools/call; existing `/api/*` routes unaffected
+- [x] Re-verified zero-cred after P4: `list_verticals` now returns **4** verticals (incl. `investing-newsletter`, adCount 15); `get_market_winners`/`get_angle_briefs` serve it
 - [x] README "Use it from Claude (MCP)" section + ARCHITECTURE.md MCP note
 - [ ] Post-deploy: re-run the MCP check against the live Vercel URL
 
@@ -115,6 +116,8 @@
 - [x] **Production-handoff JSON export** (P3): "Export for production (JSON)" button in
       Step 6 beside CSV — sorted briefs, evidence as `{advertiser, runDays}`, optional
       `batchIntegrity`
+- [x] **Fourth seed chip** (P4): "Investing Newsletter" added to `SEED_VERTICALS`
+      (`value: "investing newsletter"` → slug `investing-newsletter`)
 - [ ] Loading / partial / empty / error states on every module
 
 ---
@@ -139,7 +142,9 @@
 - [ ] Fallback Loom recorded
 - [ ] Submitted before July 4, 2026, 11:59 PM ET
 
-**`docs/POLISH_FEATURES_PLAN.md` status:** P5 ✅ (verified in a prior session), P1 ✅, P2 ✅,
-P3 ✅ (all this session). P4 (investing-newsletter seed vertical) is **not started** — it's
-the plan's explicitly cuttable, quota-spending item; only attempt it once the Vercel deploy
-and Loom are done and time/quota allow.
+**`docs/POLISH_FEATURES_PLAN.md` status:** **ALL FIVE SHIPPED.** P5 ✅, P1 ✅, P2 ✅, P3 ✅,
+and **P4 ✅ (2026-07-03)** — investing-newsletter seed vertical shipped on the
+`financial newsletter` query (after `investing newsletter` and `stock picks` came back too
+noisy). Verified zero-cred in-browser + MCP. The remaining submission blockers are the
+**Vercel deploy + fallback Loom** (§ Submission below), which outrank everything in the
+polish plan.

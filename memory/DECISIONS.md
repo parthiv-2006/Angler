@@ -6,6 +6,40 @@
 
 ---
 
+## P4 investing vertical ships on the `financial newsletter` query, not `investing newsletter`
+
+**Decision:** The 4th seed vertical (`investing-newsletter` slug, "Investing Newsletter"
+chip) was baked from the Apify keyword **`financial newsletter`**, after `investing
+newsletter` and `stock picks` both produced too-noisy markets. Slug and display name stay
+`investing-newsletter` / "Investing Newsletter"; only the scrape query differs.
+**Why:** Meta Ad Library keyword search matches ad **copy text**, so broad terms pull in
+unrelated ads that merely contain the word. `investing newsletter` surfaced a ministry, a
+shoe factory, and AARP grants (~6/15 off-topic); `stock picks` was far worse — it matched
+"in **stock**" and "**picks**" across e-commerce (BBQ, car dealers, home decor; ~3/15
+finance). `financial newsletter` returned ~11/15 genuinely finance with marquee names
+(Timothy Sykes, Junkbondinvest, Money Machine, fiduciary advisors) — the judge's actual
+world (ex-Agora/Money Map Press). For a tool whose pitch is "we read *your* market," a noisy
+vertical is worse than none, so query quality was the gating criterion, not ad count.
+**Cost note:** this took 3 paid Apify runs; the plan budgeted 2. The user explicitly
+authorized the 3rd after seeing the first two fail the quality bar.
+**Files:** `scripts/refresh-seed.ts` (VERTICALS query), `data/seed/investing-newsletter.json`
+
+---
+
+## P4 briefs regenerated once to lift `kConcepts` from 5 → 11
+
+**Decision:** After the `financial newsletter` bake, the generated angle batch clustered to
+only `kConcepts = 5` (11 briefs collapsing to 5 concepts). Deleted just the `briefs` +
+`briefClustering` keys from `scripts/.cache/state-investing-newsletter.json` and re-ran the
+baker once; cached DNA + summary were reused (zero Apify, ~3 Gemini calls) and the new batch
+clustered to `kConcepts = 11`.
+**Why:** This is a *creative-diversity* tool — shipping a seed batch that self-scores as
+redundant (11 → 5) undercuts the whole pitch. The plan (step 3) explicitly sanctions a
+one-time briefs-only re-run for weak briefs, and the per-stage state cache makes it cheap.
+**Files:** `data/seed/investing-newsletter.json`, `scripts/.cache/state-investing-newsletter.json`
+
+---
+
 ## Shareable seed-report links resolve `window.location.search` in an effect, never `useSearchParams`
 
 **Decision:** `app/page.tsx`'s replay logic reads `new URLSearchParams(window.location.search)`
