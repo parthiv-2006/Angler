@@ -87,6 +87,23 @@ export function listSeedSlugs(): string[] {
     .map((f) => f.replace(".json", ""));
 }
 
+export interface SeedVerticalSummary {
+  slug: string;
+  displayName: string;
+  adCount: number;
+}
+
+export function listSeedVerticals(): SeedVerticalSummary[] {
+  return listSeedSlugs()
+    .map((slug) => loadSeedFile(slug))
+    .filter((seed): seed is SeedFile => seed !== null)
+    .map((seed) => ({
+      slug: seed.vertical.slug,
+      displayName: seed.vertical.display_name,
+      adCount: seed.ads.length,
+    }));
+}
+
 // ── Sample ad sets (Module 3) ───────────────────────────────────────────────────
 
 export interface SampleSetSummary {
