@@ -76,6 +76,8 @@ export async function cacheAds(verticalId: string, ads: Ad[]): Promise<void> {
 // ── Creative DNA (cache layer for Module 2) ───────────────────────────────────
 
 export async function getCachedDNA(adId: string): Promise<CreativeDNA | null> {
+  // adId is an app-generated string (fb_*, tiktok_*, paste_*, upload_*,
+  // preflight_*), not a UUID — creative_dna.ad_id is `text` (see migration 002).
   const db = getDbClient();
 
   const { data } = await db

@@ -190,7 +190,9 @@ competitor_ads (
 -- structured DNA for an ad (Module 2). Works for competitor AND uploaded ads.
 creative_dna (
   id uuid pk,
-  ad_id uuid,                  -- competitor_ads.id OR an uploaded_ads.id
+  ad_id text,                  -- app-generated id: competitor_ads.id, uploaded_ads.id,
+                                -- or a client string (paste_*/upload_*/preflight_*) —
+                                -- not a uuid, since not every ad has a DB row
   ad_kind text,                -- "competitor" | "uploaded"
   hook_type text,
   angle text,
