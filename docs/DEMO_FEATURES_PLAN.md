@@ -7,7 +7,7 @@
 
 ---
 
-## STATUS (as of 2026-07-02)
+## STATUS (as of 2026-07-03) — ALL FEATURES DONE
 
 **Feature A — DONE.** All of A1–A8 shipped and verified (commits 1–4 in the sequence
 below). Evidence chips + batch integrity panel confirmed working end-to-end in a real
@@ -18,12 +18,19 @@ pre-flight chips confirmed returning opposite verdicts (one collapse/red, one
 distinct/green) with real thumbnails and fix lists; live paste/upload paths wired
 but not exercised against a live key this session.
 
-**Feature C (MCP server) — NOT STARTED.** C1–C4 and the README/docs work (commits
-8–9) are still pending. Stopped intentionally after Feature B per instruction — do
-not start C without being told to.
+**Feature C (MCP server) — DONE.** C1–C4 shipped and verified (commits 8–9).
+`app/api/[transport]/route.ts` via `mcp-handler@1.1.0` + `@modelcontextprotocol/sdk@1.26.0`,
+stateless streamable HTTP at `/api/mcp` (`disableSse: true`, no Redis), five seed-first
+tools, zero AI calls. Verified by raw JSON-RPC against a production build: `initialize`
+(serverInfo `creative-strategist`), `tools/list` (all 5), `tools/call` on every tool with
+real seed output, friendly unknown-slug handling, and natural-language input slugification
+("Debt Relief" → `debt-relief`). All existing `/api/*` routes re-checked and unaffected.
+README "Use it from Claude (MCP)" section + ARCHITECTURE.md MCP note added.
+Remaining (deploy-gated, tracked under Submission in memory/PROGRESS.md): re-run the
+inspector check against the live Vercel URL once deployed.
 
-**Global regression checklist and `memory/` file updates (commit 10) — NOT DONE.**
-Still pending; only run after Feature C (or if told to run it standalone).
+**Global regression checklist and `memory/` file updates (commit 10) — DONE 2026-07-03.**
+Zero-credential full-demo re-verified in a real browser after Feature C (see checklist).
 
 ### Gotchas hit this session (not yet resolved)
 
@@ -340,7 +347,7 @@ Run `npm run refresh-seed` again (everything else is cached) and commit the JSON
 
 ---
 
-## Feature C — MCP server (seed-first, zero-cost) ⬜ NOT STARTED
+## Feature C — MCP server (seed-first, zero-cost) ✅ DONE
 
 **What the judge sees:** a README snippet they paste into Claude Code/Desktop; then in
 Claude: *"What angles should I test for debt relief?"* — and this tool answers from the
@@ -422,16 +429,21 @@ map section (inspect before editing).
 5. [x] `feat(api): pre-flight Entity-ID check route + prompt + schema` (B1–B3)
 6. [x] `feat(seed): bake pre-flight example candidates into sample sets` (B4 script + JSON)
 7. [x] `feat(ui): pre-flight check card` (B5)
-8. [ ] `feat(mcp): expose seed-first MCP server at /api/mcp` (C1–C2)
-9. [ ] `docs(readme): MCP usage + feature notes` (C3)
-10. [ ] Update `memory/PROGRESS.md`, `memory/LOG.md`, `memory/DECISIONS.md` (`docs(memory): …`)
+8. [x] `feat(mcp): expose seed-first MCP server at /api/mcp` (C1–C2)
+9. [x] `docs(readme): MCP usage + feature notes` (C3)
+10. [x] Update `memory/PROGRESS.md`, `memory/LOG.md`, `memory/DECISIONS.md` (`docs(memory): …`)
 
 ## Global regression checklist (run before calling the work done)
 
 - [x] Incognito, zero env vars: full demo button end-to-end — verified through Step 6
       (evidence chips + integrity panel) and the pre-flight card (both seed chips,
-      opposite verdicts) via a real browser this session, no console errors. Not yet
-      re-verified after Feature C lands.
+      opposite verdicts) via a real browser this session, no console errors.
+      **Re-verified 2026-07-03 after Feature C** on a production build with no
+      `.env.local`: 12 briefs each with an EVIDENCE row, integrity panel
+      "12 briefs → 10 distinct concepts" + "Your current set: 8 ads → 5 concepts"
+      contrast line, both pre-flight chips returning opposite verdicts through the UI.
+      Only console errors were fbcdn.net thumbnail loads blocked by the sandbox's
+      egress proxy (environment artifact; the UI hides broken thumbnails).
 - [~] `npm run lint`, `npm run typecheck`, `npm run build` all green. **`lint` is not
       runnable** — no ESLint config exists in this repo (confirmed via git history);
       `npm run lint` opens an interactive setup wizard. Used `typecheck` + `build` as

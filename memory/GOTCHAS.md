@@ -94,6 +94,39 @@ the live/uploaded/pasted paths are what this fix targets, and they render correc
 
 ---
 
+## MCP server (`app/api/[transport]/route.ts`)
+
+### mcp-handler ships a default server name — pass `serverInfo` explicitly
+**Symptom:** MCP `initialize` reports `serverInfo.name: "mcp-typescript server on vercel"`.
+**Fix:** `createMcpHandler`'s **second** argument takes `{ serverInfo: { name, version } }`
+(it's `ServerOptions` from the SDK plus a `serverInfo` extension). The route passes
+`{ serverInfo: { name: "creative-strategist", version: "0.1.0" } }`.
+
+### Curling the streamable-HTTP endpoint: responses are SSE-framed
+**Behavior:** `POST /api/mcp` answers with `event: message\ndata: {...jsonrpc...}` framing,
+not bare JSON — send `Accept: application/json, text/event-stream` and parse the `data:`
+line. `registerTool` (not the older `server.tool`) is the current mcp-handler@1.1.0 API;
+`inputSchema` is a bare zod raw shape (`{ vertical: z.string() }`), not `z.object(...)`.
+
+---
+
+## Remote sandbox (Claude Code on the web)
+
+### Playwright npm install expects a newer browser than the pre-installed one
+**Symptom:** `browserType.launch` fails: `Executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1228/...`.
+**Fix:** Don't run `playwright install`; launch with
+`chromium.launch({ executablePath: "/opt/pw-browsers/chromium" })` (symlink to the
+pre-installed build).
+
+### fbcdn.net thumbnails are blocked by the sandbox egress proxy
+**Symptom:** Browser console shows `net::ERR_TUNNEL_CONNECTION_FAILED` for
+`scontent*.fbcdn.net` image loads during Playwright verification — looks like an app bug.
+**Cause:** The remote sandbox's HTTPS proxy blocks those hosts. The UI already hides broken
+thumbnails via `onError`, so this is cosmetic and environment-only; ignore it when judging
+"no console errors".
+
+---
+
 ## Tooling
 
 ### `npm run lint` (`next lint`) prompts interactively and hangs

@@ -23,7 +23,7 @@
 - [ ] Supabase env vars added to Vercel project settings
 - [x] **Live AI path working** via Gemini `gemini-2.5-flash` (free tier). The earlier "quota exhausted" was actually a dead model (`gemini-2.0-flash` → 429 `limit:0`); switching `MODEL_DEFAULT` fixed it. All three entry points verified on a novel vertical.
 - [ ] (Optional) Anthropic Console API key (`sk-ant-api03-...`) for a non-Gemini provider — current `ANTHROPIC_API_KEY` is an unusable `sk-ant-oat` token; not needed while Gemini works
-- [ ] README written
+- [x] README written (3 contest questions, data provenance, cost/limits, MCP usage section)
 - [ ] Vercel deploy
 
 ---
@@ -77,6 +77,18 @@
 
 ---
 
+## MCP server — `/api/mcp` ✅ (Feature C, DEMO_FEATURES_PLAN.md)
+
+- [x] `app/api/[transport]/route.ts` via `mcp-handler` — stateless streamable HTTP only (`disableSse: true`, no Redis)
+- [x] 5 seed-first tools: `list_verticals`, `get_market_winners`, `get_market_dna`, `get_diversity_report`, `get_angle_briefs` — zero AI calls, zero credentials
+- [x] Token-trimmed payloads (no coverUrl/rawMetrics, copy capped at 200 chars); friendly unknown-slug responses listing valid slugs
+- [x] `listSeedVerticals()` added to `lib/cache/seed.ts` (display names + ad counts for the listing tool)
+- [x] Verified via raw JSON-RPC on a production build: initialize + tools/list + all 5 tools/call; existing `/api/*` routes unaffected
+- [x] README "Use it from Claude (MCP)" section + ARCHITECTURE.md MCP note
+- [ ] Post-deploy: re-run the MCP check against the live Vercel URL
+
+---
+
 ## UI — `app/page.tsx` 🔄
 
 - [x] Stepped flow: Mine → Deconstruct → Score → Generate
@@ -111,9 +123,9 @@
 
 ---
 
-## Submission ⬜
+## Submission 🔄
 
-- [ ] README written (3 contest questions + cost/limits note)
+- [x] README written (3 contest questions + cost/limits note + MCP usage section; the live-URL placeholder still needs the real Vercel domain filled in after deploy)
 - [ ] Live Vercel URL stable
 - [ ] Fallback Loom recorded
 - [ ] Submitted before July 4, 2026, 11:59 PM ET

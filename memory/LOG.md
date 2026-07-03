@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-07-03 — Feature C shipped: MCP server at /api/mcp + final regression pass
+
+**What:** Finished the last open item in `docs/DEMO_FEATURES_PLAN.md` — the plan is now
+fully done (A ✅ B ✅ C ✅ + global regression ✅).
+- **MCP server:** `app/api/[transport]/route.ts` via `mcp-handler@1.1.0` +
+  `@modelcontextprotocol/sdk@1.26.0`. Five seed-first tools (`list_verticals`,
+  `get_market_winners`, `get_market_dna`, `get_diversity_report`, `get_angle_briefs`),
+  stateless streamable HTTP only (`disableSse: true`), zero AI calls, token-trimmed
+  payloads, friendly unknown-slug handling. Added `listSeedVerticals()` to
+  `lib/cache/seed.ts`. Server identifies as `creative-strategist` via `serverInfo`.
+- **Docs:** README gained the "Use it from Claude (MCP)" section (config snippet + 3
+  example prompts) and its "what's next" MCP item now reflects that a v1 ships;
+  ARCHITECTURE.md app map notes the MCP surface.
+
+**Verified:** raw JSON-RPC against a production build (`next start`, no `.env.local`):
+initialize + tools/list (5 tools) + tools/call on all five with real seed output;
+natural-language inputs slugify ("Debt Relief" → `debt-relief`); all existing `/api/*`
+routes re-checked on the seed path. Full zero-credential demo re-run in headless Chromium:
+12 briefs with EVIDENCE rows, integrity panel ("12 briefs → 10 distinct concepts" +
+"Your current set: 8 ads → 5 concepts"), both pre-flight chips returning opposite verdicts
+through the UI. Only console errors were sandbox-blocked fbcdn.net thumbnails (see
+GOTCHAS.md). `npm run typecheck` + `npm run build` clean (`lint` still not runnable — no
+ESLint config).
+
+**Branch state:** pushed to `main` (and `claude/docs-demo-features-finish-tct0w5`).
+Commits: `feat(mcp): expose seed-first MCP server at /api/mcp`, `docs(readme): MCP usage
++ feature notes`, `docs(memory): …`.
+
+**What's next:** Vercel deploy (env vars in project settings, fill the README's live-URL
+placeholder, re-run the MCP check against the prod URL), fallback Loom, submit before
+July 4, 11:59 PM ET.
+
+---
+
 ## 2026-07-02 — Drag-and-drop image upload for Module 3 + clustering ad-ID fix
 
 **What:** Closed the last flagged gap in Module 3 — the demo's climax (scoring the user's

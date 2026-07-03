@@ -138,3 +138,18 @@ non-seed clustering call. See [[gotchas#clustering-pipeline]] for the full sympt
 **Decision:** Ads are ranked by `run_days` (how long the ad has been running), not by raw view counts or CTR.
 **Why:** In affiliate marketing, advertisers kill losing ads fast. An ad that has been running for 30+ days is almost certainly profitable — the advertiser has proven it. `run_days` is a free, public, reliable proxy for profitability. This is a key insight the README should highlight.
 **Files:** `lib/sources/normalize.ts`, `app/api/mine/route.ts`
+
+## MCP server: seed-only tools, no AI calls, streamable HTTP without SSE
+
+**Decision:** The MCP endpoint (`app/api/[transport]/route.ts`, Feature C) exposes only the
+pre-baked seed data — five read-only tools, zero provider calls — over mcp-handler's
+stateless streamable-HTTP transport with `disableSse: true`.
+**Why:** (1) SSE transport requires Redis for resumability; the demo has no such
+infrastructure and doesn't need server-initiated streams. (2) Keeping AI calls out means the
+endpoint can never rack up spend, rate-limit, or hang from anonymous public traffic — the
+same "seed path first" reliability rule as the web UI. Live pulls stay in the web app.
+(3) Payloads are trimmed (no `coverUrl`/`rawMetrics`, ad copy capped at 200 chars) because
+tool results land in an LLM context window — full fidelity is the web UI's job.
+Unknown verticals/sample sets return a helpful text listing of valid slugs instead of a
+JSON-RPC error, so an agent can self-correct in one turn.
+**Files:** `app/api/[transport]/route.ts`, `lib/cache/seed.ts` (`listSeedVerticals`)
