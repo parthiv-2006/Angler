@@ -60,7 +60,8 @@ app/
    ├─ mine/route.ts         # Module 1
    ├─ deconstruct/route.ts  # Module 2 (vision)
    ├─ score/route.ts        # Module 3
-   └─ generate/route.ts     # Module 4
+   ├─ generate/route.ts     # Module 4
+   └─ [transport]/route.ts  # MCP server (streamable HTTP at /api/mcp)
 lib/
 ├─ ai/
 │  ├─ provider.ts           # interface + factory (selects impl by AI_PROVIDER)
@@ -82,6 +83,12 @@ data/seed/                  # pre-analyzed verticals + sample ad sets (real cach
 
 Keep `app/page.tsx` thin — push logic into `lib/`. The judge reads this code; module
 boundaries should be obvious.
+
+**MCP surface:** `app/api/[transport]/route.ts` (via `mcp-handler`) exposes the seed
+data as five MCP tools at `/api/mcp` — stateless streamable HTTP only (no SSE/Redis),
+no AI calls, payloads trimmed for tokens. Next.js static API routes take precedence
+over the dynamic `[transport]` segment, so the four module routes are unaffected.
+Live pulls stay in the web app; MCP serves the pre-analyzed verticals.
 
 ---
 

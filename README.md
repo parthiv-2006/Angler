@@ -20,6 +20,8 @@ Creative Strategist is a four-module AI tool for affiliate media buyers that ans
 
 Runs entirely on **public data and user-uploaded ad copy** — no ad-account credentials required. The judge (or anyone else) can open the URL and use the full tool in under 60 seconds.
 
+Two extras layered on top: a **pre-flight check** that scores a single planned ad against your set *before* you spend on production ("this collapses into Concept 2 — here's what to change"), and an **MCP server** so the whole intelligence layer is callable from Claude (see [Use it from Claude](#use-it-from-claude-mcp)).
+
 ---
 
 ## Why did you build this one?
@@ -47,8 +49,8 @@ In priority order, as I'd actually sequence it for a lean affiliate team:
 **1. Close the performance feedback loop.**
 Wire the angle briefs to actual CPA/ROAS outcomes — after a campaign runs, tag which generated angles converted and at what cost. The tool learns which creative patterns predict winners in this specific vertical, for this specific audience. The strategy layer becomes self-improving rather than just sourcing from the market.
 
-**2. Expose it as an MCP server.**
-The team is already building an MCP-based ad creation and upload workflow. Exposing Creative Strategist as an MCP server means the full chain — strategy → generation → upload — becomes callable as a single agent pipeline from Claude. New vertical in, live campaign brief out, with no manual handoffs.
+**2. Extend the MCP server to the live path.**
+A first MCP server already ships — the deployed app exposes the pre-analyzed verticals as five tools at `/api/mcp` (see [Use it from Claude](#use-it-from-claude-mcp)). Next: add live-pull and scoring tools so the full chain — strategy → generation → upload — becomes callable as a single agent pipeline from Claude, alongside the MCP-based ad creation and upload workflow the team is already building. New vertical in, live campaign brief out, with no manual handoffs.
 
 **3. Quantitative diversity scoring + broader data.**
 Layer embeddings-based cosine similarity alongside the explained clusters, so teams get a concrete diversity score per ad set (not just a narrative). Add a paid Apify tier for deeper coverage (~$0.40/1k ads via ScrapeCreators) and Meta Ad Library access for first-party brand data. The free-tier demo gives a sample; production gives the full picture.
@@ -70,6 +72,30 @@ Everything the demo shows is **real**. The competitor ads are genuine, currently
 **AI cost:** Seed verticals (weight-loss supplement, debt relief, ED telehealth) are pre-analyzed and served from cache — zero API calls for the demo path. A full live run on a novel vertical (15 ads → DNA → clustering → 10 briefs) costs roughly $0.03–0.05 at Anthropic's Sonnet pricing. Gemini Flash is a one-env-var fallback at effectively $0 on free tier.
 
 **Stack:** Next.js 15 App Router + TypeScript + Supabase + Anthropic API (Claude Sonnet), deployed on Vercel. Mirrors the It's Today Media frontend stack exactly.
+
+---
+
+## Use it from Claude (MCP)
+
+The deployed app doubles as an **MCP server** at `/api/mcp`. Add it to Claude Code, Claude Desktop, or any MCP client that supports streamable HTTP:
+
+```json
+{
+  "mcpServers": {
+    "creative-strategist": {
+      "url": "https://<prod-domain>/api/mcp"
+    }
+  }
+}
+```
+
+Five tools are exposed: `list_verticals`, `get_market_winners`, `get_market_dna`, `get_diversity_report`, and `get_angle_briefs`. Then ask Claude things like:
+
+- *"What angles should I test for debt relief?"*
+- *"Which ads in the weight-loss sample set collapse into the same concept, and what's missing?"*
+- *"Show me the creative DNA of the longest-running ED telehealth ads."*
+
+The MCP tools serve the **pre-analyzed seed verticals** — instant, zero credentials, zero AI spend. Live pulls on novel verticals stay in the web app. For local development, point the client at `http://localhost:3000/api/mcp`.
 
 ---
 
