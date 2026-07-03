@@ -703,6 +703,22 @@ export default function Home() {
         </p>
       </header>
 
+      {/* ── Judge tour strip — first-60-seconds guidance (hidden once a run exists) ─ */}
+      {!hasAds && (
+        <div style={{ ...calloutStyle, marginBottom: 32 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>
+            NEW HERE? 60-SECOND TOUR
+          </p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
+            1. Pick a vertical → 2. Load a sample ad set → 3. See what Meta really thinks of it —
+            then generate the angles you&apos;re missing.
+          </p>
+          <button onClick={handleRunFullDemo} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
+            ▶ Run the full demo (~15 s)
+          </button>
+        </div>
+      )}
+
       {/* ── Step 1: Mine ───────────────────────────────────────────────────── */}
       <section style={{ marginBottom: 40 }}>
         <Label step="1" text="Enter a vertical or offer" />
