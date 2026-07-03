@@ -88,9 +88,17 @@ sites in `app/page.tsx` (paste, sample, upload, full-demo) and both call sites i
 `scripts/refresh-seed.ts` now pass the id-ful shape through instead of `.map(r => r.dna)`.
 **Files:** `lib/ai/provider.ts`, `lib/ai/prompts/cluster.ts`, `lib/ai/anthropic.ts`,
 `lib/ai/gemini.ts`, `app/api/score/route.ts`, `app/page.tsx`, `scripts/refresh-seed.ts`
-**Not fixed:** the already-generated `data/seed/samples/*.json` files still have the old
-mismatched ids baked in (regenerating them costs live AI credits and is out of scope here —
-the live/uploaded/pasted paths are what this fix targets, and they render correctly now).
+**Fixed (verified 2026-07-03):** the two `data/seed/samples/*.json` files were re-baked
+(P5). Deleted only the `sampleClustering` + `preflightVerdicts` keys from
+`scripts/.cache/state-weight-loss-supplement.json` and `state-debt-relief.json` (leaving
+`dna`/`summary`/`briefs`/`briefClustering` cached → zero re-spend), then re-ran
+`npm run refresh-seed <slug>` for both — 6 Gemini calls, zero Apify spend (raw cached).
+Every `clustering.clusters[].adId` now ∈ `ads[].id`, every preflight `collidesWith` is
+null-or-real-concept. Confirmed on the running app: `POST /api/score {sampleSetId}` returns
+`fromSeed:true` with matching ids, so Step 5 buckets render real ad copy on the seed path.
+(The seed path routes the baked clustering through `/api/score`'s `getSampleClustering`
+short-circuit — [app/api/score/route.ts:47](../app/api/score/route.ts) — so these ids DO
+reach the UI; they are not dead data.)
 
 ---
 
