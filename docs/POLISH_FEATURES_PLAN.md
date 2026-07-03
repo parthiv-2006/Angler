@@ -12,6 +12,21 @@
 > spends money/quota and is the only cuttable item — skip it without hesitation if
 > time or quota is tight.
 
+## Status (as of 2026-07-03)
+
+| Feature | Status | Notes |
+|---|---|---|
+| P5 — sample-set adId integrity | ✅ Done | Verified mismatched, re-baked both sample files (see memory/GOTCHAS.md "Clustering pipeline"). Prior session. |
+| P1 — judge tour strip | ✅ Done | `feat(ui): 60-second guided tour strip`. Verified in browser: renders, hides once `hasAds`, no console errors. |
+| P2 — shareable seed-report URL | ✅ Done | `feat(ui): shareable seed-report links`. Verified: full round-trip replay, garbage-param safety, share-link copy content, CSV/build regressions all clean. |
+| P3 — production-handoff JSON export | ✅ Done | `feat(ui): production-handoff JSON export for angle briefs`. Verified: downloaded file inspected — sorted, evidence redacted to advertiser+runDays, matches `batchIntegrity`. |
+| P4 — investing-newsletter seed vertical | ⬜ Not started | Explicitly cuttable/quota-spending item. Only attempt once Vercel deploy + Loom are locked in and `.env.local` has working `APIFY_TOKEN` + `GEMINI_API_KEY`. |
+
+`npm run typecheck` and `npm run build` both clean on the final state; global regression
+checklist below fully passed via Playwright against a running dev server plus a clean
+production build with zero env vars. See memory/LOG.md (2026-07-03 entry) for full
+verification detail.
+
 ## Model routing (per CLAUDE.md Engineering Rule 1)
 
 | Features | Recommended executor | Why |
@@ -62,7 +77,7 @@ Seed data shapes (must not change except where P4/P5 say so):
 
 ---
 
-## P5 — Sample-set adId integrity check & fix (bug risk; do FIRST)
+## P5 — Sample-set adId integrity check & fix (bug risk; do FIRST) ✅ DONE
 
 **Why:** memory/GOTCHAS.md ("Clustering pipeline") records that `data/seed/samples/*.json`
 may still contain `clustering.clusters[].adIds` baked before the id-threading fix — ids
@@ -125,7 +140,7 @@ re-run only spends what's missing — do NOT commit a partially re-baked sample 
 
 ---
 
-## P1 — "How to judge this" strip (zero AI, `app/page.tsx` only)
+## P1 — "How to judge this" strip (zero AI, `app/page.tsx` only) ✅ DONE
 
 **What the judge sees:** directly under the header, a slim callout that removes all
 friction from the first 60 seconds: three numbered micro-steps and the one button that
@@ -154,7 +169,7 @@ does everything.
 
 ---
 
-## P2 — Shareable report URL (zero AI, `app/page.tsx` only)
+## P2 — Shareable report URL (zero AI, `app/page.tsx` only) ✅ DONE
 
 **What the judge sees:** after a seed-path run, a "Copy share link" button; opening that
 link on another machine replays the same report instantly. Signals "team tool", costs
@@ -215,7 +230,7 @@ nothing.
 
 ---
 
-## P3 — Production-handoff export (zero AI, `app/page.tsx` only)
+## P3 — Production-handoff export (zero AI, `app/page.tsx` only) ✅ DONE
 
 **What the judge sees:** next to "Export CSV" in Step 6, an "Export for production
 (JSON)" button producing a machine-readable brief package — the literal input format
@@ -259,7 +274,7 @@ assembly-line story told in the README.
 
 ---
 
-## P4 — Fourth seed vertical: investing/financial newsletter (OPTIONAL — cut first)
+## P4 — Fourth seed vertical: investing/financial newsletter (OPTIONAL — cut first) ⬜ NOT STARTED
 
 **Why:** the judge spent ~5 years at Agora/Money Map Press (financial newsletters).
 Seeing his own market pre-analyzed lands personally. **Only attempt if: deploy + Loom

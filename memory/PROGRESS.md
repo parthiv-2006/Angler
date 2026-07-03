@@ -106,6 +106,15 @@
 - [x] **Market-vs-you coverage panel**: proven market angles (by frequency) beside the gap list
 - [x] **One-click "Run the full demo"** button (orchestrates mine→DNA→score→generate on the weight-loss seed with smooth scroll)
 - [x] Drag-and-drop upload for Module 3
+- [x] **Judge tour strip** (P1): "NEW HERE? 60-SECOND TOUR" callout under the header with
+      the 3-step happy path + one-click demo button; hidden once `hasAds`
+- [x] **Shareable seed-report links** (P2): full-demo runner extracted to
+      `runSeedDemo(vertical, sampleSlug)`; successful seed runs encode `?v=&s=` via
+      `history.replaceState`; mount effect validates + replays; garbage params ignored;
+      "Copy share link" button in Step 5 (seed path only)
+- [x] **Production-handoff JSON export** (P3): "Export for production (JSON)" button in
+      Step 6 beside CSV — sorted briefs, evidence as `{advertiser, runDays}`, optional
+      `batchIntegrity`
 - [ ] Loading / partial / empty / error states on every module
 
 ---
@@ -129,3 +138,8 @@
 - [ ] Live Vercel URL stable
 - [ ] Fallback Loom recorded
 - [ ] Submitted before July 4, 2026, 11:59 PM ET
+
+**`docs/POLISH_FEATURES_PLAN.md` status:** P5 ✅ (verified in a prior session), P1 ✅, P2 ✅,
+P3 ✅ (all this session). P4 (investing-newsletter seed vertical) is **not started** — it's
+the plan's explicitly cuttable, quota-spending item; only attempt it once the Vercel deploy
+and Loom are done and time/quota allow.

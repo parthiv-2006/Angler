@@ -153,6 +153,18 @@ running overwrites dev's webpack chunks, so dev can no longer resolve them at ru
 poisoned server: stop it, `rm -rf .next`, restart `npm run dev`. (During Playwright/Preview
 verification, don't run `npm run build` against the same tree — typecheck is enough mid-session.)
 
+### `git checkout` makes a plain `diff` against a pre-checkout backup show every line as changed
+**Symptom:** Backed up a file, `git checkout -- <file>` to revert it, reapplied edits, then
+`diff` against the backup shows the entire file as different even though the content is
+identical.
+**Cause:** This repo's `core.autocrlf` normalizes line endings on checkout (LF → CRLF), so
+the checked-out file's line endings differ from a backup made before the checkout even when
+every character of content is the same.
+**Fix:** Use `diff --strip-trailing-cr` (or compare with `dos2unix`/normalize both sides)
+before concluding content actually diverged. Useful when splitting a multi-feature edit pass
+into separate atomic commits by reverting to HEAD and reapplying each feature's edits in
+stages — see [[decisions]] "Reconstructing atomic commits from a single edit pass".
+
 ### `next build` rewrites `tsconfig.json`
 **Symptom:** After `npm run build`, `tsconfig.json` shows a diff (reformatted arrays + added
 `"target": "ES2017"`). This is Next.js auto-reconfiguring TS; it's benign — keep it.

@@ -6,6 +6,47 @@
 
 ---
 
+## Shareable seed-report links resolve `window.location.search` in an effect, never `useSearchParams`
+
+**Decision:** `app/page.tsx`'s replay logic reads `new URLSearchParams(window.location.search)`
+inside the existing mount `useEffect` and writes with `history.replaceState` — it never
+imports `useSearchParams` from `next/navigation`.
+**Why:** In Next 15, any component that calls `useSearchParams` must be wrapped in a
+`<Suspense>` boundary or the production build fails. The page is a single client component
+with no existing Suspense boundary, so introducing `useSearchParams` would require
+restructuring the tree just to read two query params. Plain `window.location` access inside
+a `"use client"` effect avoids that entirely and was verified to build clean.
+**Files:** `app/page.tsx`
+
+---
+
+## `runSeedDemo` resolves the sample slug via a fresh fetch, not `state.sampleSets`
+
+**Decision:** When `runSeedDemo(vertical, sampleSlugParam)` is called with `sampleSlugParam
+=== null`, it fetches `/api/samples` itself to resolve the fallback slug, instead of reading
+the component's `state.sampleSets`.
+**Why:** The mount-time replay path calls `runSeedDemo` from inside the same effect that
+populates `state.sampleSets` — reading component state there would race the `setState` call
+and could resolve against an empty array. A fresh fetch makes `runSeedDemo` correct
+regardless of caller (button click after mount, or replay during mount).
+**Files:** `app/page.tsx`
+
+---
+
+## Reconstructing atomic commits from a single edit pass: diff with `--strip-trailing-cr`
+
+**Decision:** When splitting a multi-feature edit session (P1–P3, all in `app/page.tsx`)
+into separate commits, the file was reverted to HEAD and each feature's edits reapplied in
+stages. To confirm the reconstructed final state matched the originally-verified version
+byte-for-byte, `diff --strip-trailing-cr` was used instead of plain `diff`.
+**Why:** `git checkout` re-normalizes line endings per `core.autocrlf` (this repo converts
+LF → CRLF on checkout), so a plain `diff` against a pre-checkout backup shows every line as
+changed even when content is identical — a false positive that would otherwise force an
+unnecessary re-verification (rebuild + re-test in browser) of already-verified code.
+**Files:** N/A (workflow note, not a code change)
+
+---
+
 ## Single-flight in-memory dedup for concurrent live calls
 
 **Decision:** `getOrFetchAds` and `getOrAnalyzeDNA` in `lib/cache/index.ts` wrap their live-call step in a `Map<string, Promise>`-based dedupe keyed by `ads:${verticalId}` / `dna:${adId}`. A second concurrent request for the same key awaits the first's in-flight promise instead of firing its own live fetch/analysis.

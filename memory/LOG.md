@@ -5,6 +5,60 @@
 
 ---
 
+## 2026-07-03 — Polish features P1–P3 shipped (docs/POLISH_FEATURES_PLAN.md)
+
+**What:** P5 (sample-set adId fix) was already done in the prior session. This session
+implemented P1, P2, P3 — all client-only, zero-AI-cost, in `app/page.tsx`.
+- **P1 — judge tour strip:** slim callout under the header ("NEW HERE? 60-SECOND TOUR")
+  with the 3-step happy path and a "▶ Run the full demo (~15 s)" button (reuses
+  `handleRunFullDemo`). Hidden once `hasAds` is true so it never nags mid-flow.
+- **P2 — shareable seed-report links:** extracted `handleRunFullDemo`'s body into
+  `runSeedDemo(verticalValue, sampleSlugParam)`; on success it writes
+  `?v=<slug>&s=<sampleSlug>` via `history.replaceState` (no `next/navigation`
+  `useSearchParams`, so no Suspense boundary needed). The mount effect (which already
+  fetches `/api/samples`) now also parses `window.location.search`, validates `v` against
+  `SEED_VERTICALS` and `s` against the fetched sample list, and replays via
+  `runSeedDemo` if both check out — unknown/garbage params are silently ignored (verified
+  no `/api/mine` call fires for `?v=garbage`). `runSeedDemo` resolves the sample slug via
+  a fresh `/api/samples` fetch when not passed in, rather than reading `state.sampleSets`,
+  to avoid the mount-replay race. `handleScorePaste`/`handleScoreUpload` clear the URL
+  params on start so stale links from a prior seed run aren't copied. Added
+  `ShareLinkButton` next to "Generate Angles →" (Step 5 header), shown only when
+  `state.fromSeed && state.selectedSample`.
+- **P3 — production-handoff JSON export:** `handleExportJSON` beside `handleExportCSV` in
+  Step 6, downloading `angle-briefs-<slug>.json` — briefs sorted by priority, evidence
+  resolved to `{advertiser, runDays}` only (no raw ad IDs or image data), optional
+  `batchIntegrity` from `state.briefClustering`. Caption added: "CSV for bulk sheets ·
+  JSON for the video-generation pipeline".
+
+**Verified (Playwright against the dev server, then a clean prod build):** tour strip
+renders and disappears after a run; full demo → URL gains `?v=weight-loss-supplement&s=
+weight-loss-redundant`; fresh navigation to that URL replays the whole report with zero
+clicks and zero console errors; `?v=garbage` renders the normal empty page and only calls
+`/api/samples` (no `/api/mine`); "Copy share link" writes the exact expected URL to the
+clipboard (verified by monkey-patching `navigator.clipboard.writeText`); JSON export
+downloads, sorted by priority, 12 briefs matching `batchIntegrity`, no adIds/images; CSV
+export unchanged. `npm run typecheck` and `npm run build` both clean (dev server stopped
+first per the known `.next/` corruption gotcha, then restarted after).
+
+**Commit hygiene note:** all three features touch the same file (`app/page.tsx`), and
+they were implemented in one pass before splitting into atomic commits — the file was
+reverted to HEAD and each feature's edits were reapplied and committed separately
+(`feat(ui): 60-second guided tour strip`, `feat(ui): shareable seed-report links`,
+`feat(ui): production-handoff JSON export for angle briefs`), then diffed against the
+originally-verified full version (`diff --strip-trailing-cr`, since `git checkout`
+re-normalizes CRLF/LF per `core.autocrlf`) to confirm byte-for-byte equivalence before
+trusting the earlier build/typecheck/browser verification for the split commits.
+
+**Branch state:** pushed to `main`. P4 (investing-newsletter seed vertical) remains
+**not started** — it's the explicitly cuttable, AI-quota-spending item; skip unless time
+and quota allow after the Vercel deploy + Loom are locked in.
+
+**What's next:** Vercel deploy, README live-URL fill-in, fallback Loom, submit before
+July 4, 11:59 PM ET. P4 only if time/quota remain after those.
+
+---
+
 ## 2026-07-03 — Feature C shipped: MCP server at /api/mcp + final regression pass
 
 **What:** Finished the last open item in `docs/DEMO_FEATURES_PLAN.md` — the plan is now
