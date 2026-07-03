@@ -1,0 +1,171 @@
+HIRING CONTEST
+
+$5,000 Build Challenge:
+Marketing Development Engineer
+Build a tool that solves a real problem for my media buying team. The best build wins $5,000 and a full-time job offer.
+
+Before You Build, Read This
+I want to pay $5,000 to one AI-first engineer who can build the coolest marketing tool, and convince me they're worth hiring into a full-time job.
+
+I made this build competition because my marketing team needs an AI-first engineer who can solve problems and bring massive value through AI-first building.
+
+I believe running a contest like this gives me the best shot at finding that person.
+
+It's Today Media is an affiliate marketing company. Our business has to stay on the cutting edge of marketing strategy and execution to survive. And right now, AI tools and agentic systems are becoming critical to staying on that edge.
+
+My team and I have built some cool stuff with AI that is changing the way we operate.
+
+But building these tools takes time and focus that is in short supply for a lean team like ours.
+
+So I'm hiring a full-time engineer to own the development and implementation of these tools, take my team to the next level, and unlock the most value possible for our business.
+
+I need someone who:
+
+Loves to get shit done.
+Gets genuinely fired up about the potential to develop killer, cutting-edge tools with AI.
+Can run with a project given incomplete direction.
+Will get genuinely excited about delivering an application or feature that helps our company make more money.
+Is comfortable operating in a highly dynamic environment and can deliver their best work under pressure.
+Wants to work hard, deliver massive value, and give us no choice but to reward you with both increased responsibility and financial upside.
+Is curious about the business side of the business — how technology supports it, what makes it grow, and whether their own work is moving the needle.
+And most importantly, I need someone who believes in working hard and standing behind their work.
+
+At our company that will open doors.
+
+You can read more about the job here.
+
+The ideal candidate for this role has deep experience with both marketing and agentic AI tools.
+But if you are not that person, don’t be discouraged…because there are not many of them.
+
+What will make you stand out?
+
+Contagious passion for marketing and/or AI…
+
+A willingness to fail fast…
+
+A desire to make a name for yourself through your work…
+
+Plus, at least enough relevant experience to actually do the job.
+
+This is a build contest.
+
+But it’s also an opportunity to convince me to hire you through your work.
+
+This contest is intended ONLY for applicants who fit the description above, and are ready to start a full-time job as soon as possible.
+
+Keep reading if you want to apply…
+
+The Contest: What to Build
+Build a real tool that delivers value to my media buying team.
+
+The scope is wide. You can build anything, as long as you genuinely believe it's a valuable tool for our media buying operation. Potential ideas include creative generation tools, MCP connectors to ad platforms, automation workflows, performance dashboards, landing page builders, or something else entirely. The bigger the better. Flex your muscles.
+
+The criteria:
+
+You believe it will solve a real problem for our business.
+You can convince me it will solve a real problem for our business.
+It actually works — or it's built to the highest level of functionality you could reasonably achieve.
+That's it. Build something.
+
+If you don't have direct experience with media buying, do the research. We advertise at scale across all major ad platforms — Google, Meta, Taboola, TikTok. We report on that data to optimize. We build landing pages to generate and collect leads. This simple process requires immense technical input, and there are dozens of ways to add value with AI tooling.
+
+How It Works
+01
+Register
+Tell us who you are, what you'd build, and link to something you've shipped. Takes 2 minutes.
+
+02
+We review
+Not every registration gets to submit. I read every one personally and approve the people who look like they fit what we're trying to build with this hire. Approved applicants get a private submission link by email.
+
+03
+Build + submit
+If approved, you get a private submission link by email. Build your tool and submit your entry by July 4, 2026 at 11:59 PM ET.
+
+04
+Finalists + winner
+Finalists will be notified by Friday, July 10, 2026. Interviews scheduled shortly after. Winner announced and offered the role once finalist interviews conclude.
+
+What to Submit
+01
+A working demo
+Live URL strongly preferred — a hosted URL through Vercel is fine (hint: real domains are cheap, easy to connect, and way cooler). Something I can click and use. A Loom walkthrough is acceptable as a fallback if a live URL genuinely isn't possible for what you built.
+
+02
+Code repo
+GitHub — public or private. We're going to read your code.
+
+03
+A README answering three questions
+What does this tool do?
+Why did you build THIS one?
+What would you build next if this were your full-time job?
+This is your chance to explain why what you built is cool.
+
+How We Judge
+01
+Problem selection
+Did you pick something that actually matters to a marketing team?
+
+02
+Does it work?
+Ugly and functional beats beautiful and broken.
+
+03
+Code quality
+Readable, sensible architecture, something another engineer could extend.
+
+04
+The README
+"Why this one?" and "What's next?" — these tell us how you think.
+
+Prize Structure
+Place	What You Get	When
+Finalists	$250 honorarium + guaranteed interview	After finalist interview
+Winner	$5,000 cash + full-time job offer	Upon accepting the offer
+Rules
+—
+Submissions close July 4, 2026 at 11:59 PM ET. Submit early if you want time to polish.
+
+—
+Register before submitting. Takes 2 minutes.
+
+—
+One submission per person.
+
+—
+AI tools encouraged. We care what you build, not how.
+
+—
+Solo submissions only.
+
+—
+Must be eligible to work in the US. Citizens, green card holders, and work-authorized residents.
+
+—
+You own your code. We don't claim IP on any submissions unless you accept the role. We also don't plan to use any submissions for anything outside of evaluating you, we are too busy.
+
+Timeline
+Now	Submissions open
+Jul 4, 2026	Submissions close 11:59 PM ET
+By Jul 10	Finalists notified
+After Jul 10	Finalist interviews + winner announced
+Requirements
+—
+Full-time availability (40+ hours/week)
+—
+East Coast business hours overlap
+—
+Open to accepting a full-time position
+—
+US-based strongly preferred (open to exceptional non-US applicants — see registration)
+Compensation
+Compensation will be competitive and based on experience and capabilities.
+
+The winner could be a senior engineer making $200K+ somewhere else who's tired of building products that don't matter. It could be a marketer making $75K who's been quietly shipping wild stuff with Claude and Cursor on the side and is ready for someone to bet on them.
+
+Or anything in between.
+
+So, while this contest does not include an explicit salary range, we can commit to this: the right person gets a competitive offer with strong base and real performance-driven upside. The whole point of hiring this role is to build things that make the company more money. When you do that, you share in the win.
+
+I'm not putting a number on the upside because I don't want to cap it. The cap is your output. The better you are, the more you make. That's how this works.

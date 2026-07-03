@@ -1,0 +1,23 @@
+What this app actually is, in plain terms
+Think of it as a "what ad should I make next?" advisor for an affiliate marketing team. It doesn't make ads or run them — it tells the media buyer what angle (the psychological hook) is worth trying, based on evidence.
+
+The business problem, simply
+It's Today Media makes money like this: run an ad → someone clicks → they give an email/phone number → sell that lead to an affiliate offer → profit. Their whole game depends on the ad being good, because a bad ad = no clicks = no leads = no revenue.
+
+Here's the twist that makes this valuable right now, in 2026: Facebook/Instagram's ad system (called "Andromeda") changed how it decides who sees your ad. It used to be about who you targeted. Now it's about what your creative looks and reads like — the algorithm scans your ad and decides the audience itself. So the ad's content is now the targeting. If your creative is weak or repetitive, no amount of targeting skill saves you.
+
+There's a specific, sneaky failure mode this causes: if you upload 10 ads that all feel different (different headline, different color) but are secretly the same underlying idea, Facebook's algorithm silently treats them as the same ad (it gives them the same "Entity ID"). You think you're testing 10 concepts. You're actually testing 3. The other 7 are wasted ad spend for nothing. Almost nobody checks for this.
+
+What the 4 modules do, one sentence each
+Miner — "Show me what's already winning." You type a niche (e.g. "weight-loss supplement"), it pulls real competitor ads from public ad libraries (TikTok/Meta) and ranks them by how long they've been running. Ads that run a long time are winners — bad ads get killed fast by advertisers, so longevity is a free proxy for "this makes money."
+
+Deconstructor — "Tell me why they're winning." It reads each winning ad with AI and breaks it down into its ingredients: what's the hook, what emotion is it playing on (fear/greed/urgency), what format, what persona is it talking to. Turns a pile of ad screenshots into a structured, searchable pattern library.
+
+Diversity Scorer — "Check my own ads for the hidden trap above." You paste in your own ad set (or use a sample), and it tells you: "You have 8 ads, but Meta really only sees 3 distinct concepts — 5 of your ads are wasted auction entries," plus which winning angles from step 1 you're not even trying yet.
+
+Angle Generator — "Now give me new ideas to fix the gap." It combines what's proven to work in the market (step 2) with what you're missing (step 3) and writes a prioritized list of brand-new ad angles — hook line, emotional driver, and ready-to-paste copy for Meta/TikTok/native — so a creative team can start making ads immediately.
+
+Why this specific idea, for this specific judge
+The judge (George, the CEO) already has tools in progress that make ads (video generator) and launch ads (upload automation). Nobody on his team has a tool that decides what to make in the first place. This slots in right before those tools — it's not a competing idea, it's the missing first step, which also makes for a strong answer to "what would you build next?" (feed this straight into his video generator).
+He built his career doing exactly this style of aggressive, ROI-first performance marketing — so "this finds and ships winning ad angles faster" is a pitch in his own language, not abstract tech-speak.
+Judging explicitly punishes fake data and dashboards that need his real ad-account login to mean anything. This tool only needs a public vertical name or the user's own pasted ad copy — zero credentials, so the judge can click a live link and use it immediately, which is the actual bar this contest is judged on.
