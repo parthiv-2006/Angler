@@ -147,7 +147,21 @@ export default function Home() {
   useEffect(() => {
     fetch("/api/samples")
       .then((r) => r.json())
-      .then((d) => setState((s) => ({ ...s, sampleSets: d.samples ?? [] })))
+      .then((d) => {
+        const samples: SampleSummary[] = d.samples ?? [];
+        setState((s) => ({ ...s, sampleSets: samples }));
+
+        // Replay a shared seed-report link (?v=<slug>&s=<sampleSlug>). Unknown
+        // values are ignored entirely — a URL param must never trigger a live scrape.
+        const params = new URLSearchParams(window.location.search);
+        const vParam = params.get("v");
+        if (!vParam) return;
+        const seed = SEED_VERTICALS.find((sv) => slugify(sv.value) === vParam);
+        if (!seed) return;
+        const sParam = params.get("s");
+        const validSample = sParam && samples.some((sm) => sm.slug === sParam) ? sParam : null;
+        void runSeedDemo(seed.value, validSample);
+      })
       .catch(() => {});
   }, []);
 
@@ -270,6 +284,7 @@ export default function Home() {
   async function handleScorePaste() {
     const lines = state.pasteText.split("\n").map((l) => l.trim()).filter(Boolean);
     if (lines.length < 3) return setError("Paste at least 3 ad captions (one per line).");
+    history.replaceState(null, "", location.pathname);
     setLoading("Analyzing & scoring your ad set…");
     try {
       const userAds: Ad[] = lines.map((copy, i) => ({
@@ -323,6 +338,7 @@ export default function Home() {
   async function handleScoreUpload() {
     const images = state.uploadedImages;
     if (images.length < 3) return setError("Upload at least 3 ad images.");
+    history.replaceState(null, "", location.pathname);
     setLoading("Analyzing your ad creative…");
     try {
       const userAds: Ad[] = images.map((img, i) => ({
@@ -524,10 +540,13 @@ export default function Home() {
     }
   }
 
-  // One-click guided demo — runs all four modules on a seed vertical, threading
-  // each step's result forward locally and scrolling the new section into view.
-  async function handleRunFullDemo() {
-    const vertical = "weight-loss supplement";
+  // Runs all four modules on a seed vertical, threading each step's result forward
+  // locally and scrolling the new section into view. Used by the one-click demo
+  // button and by shared-link replay on mount — sampleSlug is resolved fresh from
+  // the API rather than component state, since a mount-time replay races the
+  // sampleSets fetch.
+  async function runSeedDemo(verticalValue: string, sampleSlugParam: string | null) {
+    const vertical = verticalValue;
     const slug = slugify(vertical);
     setDnaFilter(NO_FILTER);
     setState((s) => ({ ...INITIAL, sampleSets: s.sampleSets, vertical, loading: true, loadingStep: "Pulling competitor ads…" }));
@@ -555,7 +574,13 @@ export default function Home() {
       scrollToStep("step-dna");
 
       // 3 — Score a pre-baked sample ad set
-      const sampleSlug = state.sampleSets.find((s) => s.vertical === slug)?.slug ?? "weight-loss-redundant";
+      let sampleSlug = sampleSlugParam;
+      if (!sampleSlug) {
+        const samplesRes = await fetch("/api/samples");
+        const samplesData = await samplesRes.json();
+        const samples: SampleSummary[] = samplesData.samples ?? [];
+        sampleSlug = samples.find((sm) => sm.vertical === slug)?.slug ?? "weight-loss-redundant";
+      }
       const setRes = await fetch(`/api/samples?slug=${encodeURIComponent(sampleSlug)}`);
       const sample = await setRes.json();
       if (!setRes.ok) return setError(sample.error ?? "Demo failed while loading the sample set");
@@ -591,9 +616,16 @@ export default function Home() {
       if (!demoBriefClustering && demoBriefs.length) void scoreBriefBatch(demoBriefs);
       await sleep(500);
       scrollToStep("step-briefs");
+
+      // Make the report replayable — encode the seed vertical + sample slug in the URL.
+      history.replaceState(null, "", `?v=${slug}&s=${sampleSlug}`);
     } catch {
       setError("Network error — please try again");
     }
+  }
+
+  async function handleRunFullDemo() {
+    return runSeedDemo("weight-loss supplement", null);
   }
 
   function handleCopyBrief(brief: AngleBrief) {
@@ -992,9 +1024,14 @@ export default function Home() {
         <section id="step-score" style={{ marginBottom: 40 }}>
           <div style={sectionHeaderStyle}>
             <Label step="5" text={`Meta likely sees these ${clustering.nAds} ads as ${clustering.kConcepts} concepts`} />
-            <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
-              {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
-            </button>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {state.fromSeed && state.selectedSample && (
+                <ShareLinkButton vertical={currentSlug} sample={state.selectedSample} />
+              )}
+              <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
+                {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
+              </button>
+            </div>
           </div>
 
           {/* Waste headline — the Entity-ID collapse, quantified (Feature A1) */}
@@ -1350,6 +1387,23 @@ function EvidenceChip({ ad }: { ad: Ad }) {
         {ad.runDays}d
       </span>
     </div>
+  );
+}
+
+function ShareLinkButton({ vertical, sample }: { vertical: string; sample: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    const url = `${location.origin}${location.pathname}?v=${vertical}&s=${sample}`;
+    void navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <button onClick={handleCopy} style={secondaryBtnStyle(false)}>
+      {copied ? "✓ Copied" : "Copy share link"}
+    </button>
   );
 }
 
