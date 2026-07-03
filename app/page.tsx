@@ -664,6 +664,40 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
+  function handleExportJSON() {
+    const adById = new Map(state.ads.map((a) => [a.id, a] as const));
+    const payload = {
+      tool: "creative-strategist",
+      vertical: state.vertical,
+      generatedAt: new Date().toISOString(),
+      briefs: [...state.briefs]
+        .sort((a, b) => a.priority - b.priority)
+        .map((b) => ({
+          priority: b.priority,
+          angleName: b.angleName,
+          emotionalDriver: b.emotionalDriver,
+          whyNow: b.whyNow,
+          hookLine: b.hookLine,
+          formatRecommendation: b.formatRecommendation,
+          targetPersona: b.targetPersona,
+          variants: { meta: b.variants.meta, tiktok: b.variants.tiktok, native: b.variants.native },
+          evidence: b.evidenceAdIds
+            .map((id) => adById.get(id))
+            .filter((ad): ad is Ad => !!ad)
+            .map((ad) => ({ advertiser: ad.advertiser, runDays: ad.runDays })),
+        })),
+      ...(state.briefClustering
+        ? { batchIntegrity: { briefs: state.briefClustering.nAds, distinctConcepts: state.briefClustering.kConcepts } }
+        : {}),
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `angle-briefs-${slugify(state.vertical) || "export"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleFilesSelected(files: FileList | File[]) {
     const remaining = MAX_UPLOADED_IMAGES - state.uploadedImages.length;
     const toProcess = Array.from(files)
@@ -1268,10 +1302,18 @@ export default function Home() {
         <section id="step-briefs">
           <div style={sectionHeaderStyle}>
             <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
-            <button onClick={handleExportCSV} style={secondaryBtnStyle(false)}>
-              Export CSV
-            </button>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <button onClick={handleExportCSV} style={secondaryBtnStyle(false)}>
+                Export CSV
+              </button>
+              <button onClick={handleExportJSON} style={secondaryBtnStyle(false)}>
+                Export for production (JSON)
+              </button>
+            </div>
           </div>
+          <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: -6, marginBottom: 12 }}>
+            CSV for bulk sheets · JSON for the video-generation pipeline
+          </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[...state.briefs].sort((a, b) => a.priority - b.priority).map((brief, i) => (
               <div key={i} style={cardStyle}>
