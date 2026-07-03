@@ -50,6 +50,7 @@ const VERTICALS: VerticalConfig[] = [
   { slug: "weight-loss-supplement", display: "Weight-Loss Supplement", query: "weight loss", sampleSlug: "weight-loss-redundant" },
   { slug: "debt-relief", display: "Debt Relief", query: "debt relief", sampleSlug: "debt-relief-redundant" },
   { slug: "ed-telehealth", display: "ED Telehealth", query: "erectile dysfunction" },
+  { slug: "investing-newsletter", display: "Investing Newsletter", query: "financial newsletter" },
 ];
 
 const SCRAPE_COUNT = 40; // raw ads to request from Apify (one run per vertical)
