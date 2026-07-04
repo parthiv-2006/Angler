@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
@@ -23,6 +24,18 @@ const requestSchema = z.object({
   adKind: z.enum(["competitor", "uploaded"]).optional().default("competitor"),
 });
 
+// Uploaded/pasted ads reuse client-side ids like "paste_0" across users, so caching
+// their DNA by ad id would serve one user's analysis for another user's caption.
+// Key those by a hash of the actual content instead; competitor ads keep their
+// stable library ids.
+type AdInput = z.infer<typeof adInputSchema>;
+
+function cacheKeyFor(ad: AdInput, adKind: "competitor" | "uploaded"): string {
+  if (adKind !== "uploaded") return ad.id;
+  const content = ad.copy ?? ad.imageBase64 ?? ad.coverUrl ?? ad.id;
+  return `upl_${createHash("sha256").update(content).digest("hex").slice(0, 24)}`;
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const parsed = requestSchema.safeParse(body);
@@ -39,7 +52,7 @@ export async function POST(req: NextRequest) {
     const results = await Promise.all(
       ads.map(async (ad) => {
         const dna = await getOrAnalyzeDNA(
-          ad.id,
+          cacheKeyFor(ad, adKind),
           slug,
           adKind,
           () =>
