@@ -25,7 +25,7 @@ export async function findOrCreateVertical(
     .single();
 
   if (error) {
-    // Unique-slug race: a concurrent request inserted it first — reuse that row.
+    // Unique-slug race: a concurrent request inserted it first; reuse that row.
     if (error.code === "23505") {
       const { data: raced } = await db.from("verticals").select("*").eq("slug", slug).single();
       if (raced) return raced as VerticalRow;
@@ -84,11 +84,11 @@ export async function cacheAds(verticalId: string, ads: Ad[]): Promise<void> {
 
 export async function getCachedDNA(adId: string): Promise<CreativeDNA | null> {
   // adId is an app-generated string (fb_*, tiktok_*, paste_*, upload_*,
-  // preflight_*), not a UUID — creative_dna.ad_id is `text` (see migration 002).
+  // preflight_*), not a UUID; creative_dna.ad_id is `text` (see migration 002).
   const db = getDbClient();
 
   // .single() would error (and read as a cache miss) if a write race ever
-  // produced two rows for one ad — take the newest instead.
+  // produced two rows for one ad; take the newest instead.
   const { data } = await db
     .from("creative_dna")
     .select("*")

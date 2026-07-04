@@ -1,4 +1,4 @@
--- Creative Strategist — initial schema
+-- Creative Strategist; initial schema
 -- Apply with: supabase db push  OR  paste into Supabase SQL editor
 
 create extension if not exists "pgcrypto";
@@ -29,7 +29,7 @@ create table if not exists competitor_ads (
 create index if not exists competitor_ads_vertical_id_idx on competitor_ads(vertical_id);
 create index if not exists competitor_ads_run_days_idx    on competitor_ads(run_days desc);
 
--- ── Creative DNA (Module 2 cache — works for competitor AND uploaded ads) ─────
+-- ── Creative DNA (Module 2 cache; works for competitor AND uploaded ads) ─────
 create table if not exists creative_dna (
   id               uuid primary key default gen_random_uuid(),
   ad_id            uuid not null,
@@ -81,7 +81,7 @@ create table if not exists angle_batches (
   created_at  timestamptz not null default now()
 );
 
--- ── RLS: single shared demo — all reads public, writes via service role ────────
+-- ── RLS: single shared demo; all reads public, writes via service role ────────
 alter table verticals      enable row level security;
 alter table competitor_ads enable row level security;
 alter table creative_dna   enable row level security;

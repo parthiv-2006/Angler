@@ -15,7 +15,7 @@ const adInputSchema = z
   .object({
     id: z.string().min(1).max(100),
     coverUrl: z.string().url().max(2_048).optional(),
-    // ~2MB of binary — client-side compression targets well under this.
+    // ~2MB of binary; client-side compression targets well under this.
     imageBase64: z.string().max(3_000_000).optional(),
     copy: z.string().max(10_000).optional(),
     metadata: z.record(z.unknown()).optional(),
@@ -33,7 +33,7 @@ const requestSchema = z.object({
 
 // Uploaded/pasted ads reuse client-side ids like "paste_0" across users, so caching
 // their DNA by ad id would serve one user's analysis for another user's caption.
-// Key those by a hash of the actual content instead — all provided fields, delimited,
+// Key those by a hash of the actual content instead; all provided fields, delimited,
 // so e.g. two ads with identical copy but different images can't collide. Competitor
 // ads keep their stable library ids.
 type AdInput = z.infer<typeof adInputSchema>;
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const { ads, vertical = "", generateSummary = false, adKind } = parsed.data;
   const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  // A request fully answerable from committed seed DNA costs nothing — keep the
+  // A request fully answerable from committed seed DNA costs nothing; keep the
   // judge's demo path unmetered and only rate-limit requests that can reach a
   // paid model call.
   const seedDNA = adKind === "competitor" && !generateSummary ? getSeedDNA(slug) : null;

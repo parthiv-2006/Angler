@@ -1,5 +1,5 @@
 /**
- * Build-time seed refresh — regenerates data/seed/<slug>.json (and the Module-3
+ * Build-time seed refresh; regenerates data/seed/<slug>.json (and the Module-3
  * sample sets) from REAL ads pulled via Apify's Facebook Ad Library actor.
  *
  * This is an offline tool. It is NEVER imported by a route. Cached *real* data is
@@ -15,7 +15,7 @@
  *  - Gemini free tier is ~10 RPM AND ~20 requests/day PER MODEL. To fit, all DNA for
  *    a vertical is extracted in ONE batched call, every AI artifact (DNA, summary,
  *    clustering, briefs) is cached to scripts/.cache/state-<slug>.json, and an
- *    already-real seed file pre-seeds that cache — so a re-run costs only what's
+ *    already-real seed file pre-seeds that cache; so a re-run costs only what's
  *    missing. Pick the model bucket with `GEMINI_MODEL=gemini-2.5-flash-lite`.
  */
 import dotenv from "dotenv";
@@ -69,7 +69,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Gemini's free tier throws transient 503 ("high demand") and RPM-429 spikes that
 // can last a minute. Retry those with long backoff. But a *daily* quota exhaustion
-// (or a model with no free allocation) can't be waited out within a run — bail fast.
+// (or a model with no free allocation) can't be waited out within a run; bail fast.
 async function robustAI<T>(label: string, fn: () => Promise<T>): Promise<T> {
   const maxAttempts = 7;
   for (let i = 0; i < maxAttempts; i++) {
@@ -81,7 +81,7 @@ async function robustAI<T>(label: string, fn: () => Promise<T>): Promise<T> {
       const dailyExhausted = /PerDay|GenerateRequestsPerDay|limit: 0/.test(msg);
       if (dailyExhausted || i === maxAttempts - 1) throw err;
       const wait = Math.min(5000 * 2 ** i, 60000) + Math.random() * 1000;
-      console.log(`  [retry] ${label} ${e.status ?? ""} — attempt ${i + 1}, waiting ${Math.round(wait / 1000)}s…`);
+      console.log(`  [retry] ${label} ${e.status ?? ""}; attempt ${i + 1}, waiting ${Math.round(wait / 1000)}s…`);
       await sleep(wait);
     }
   }
@@ -151,11 +151,11 @@ async function getRawAds(v: VerticalConfig): Promise<ApifyRawAd[]> {
   const cachePath = join(CACHE_DIR, `raw-${v.slug}.json`);
   const cached = readJSON<ApifyRawAd[]>(cachePath);
   if (cached) {
-    console.log(`  [scrape] using cached raw (${cached.length} items) — no Apify spend`);
+    console.log(`  [scrape] using cached raw (${cached.length} items); no Apify spend`);
     return cached;
   }
   console.log(`  [scrape] running Apify for "${v.query}" (count=${SCRAPE_COUNT})…`);
-  // Offline bake — allow up to 5 minutes of polling (routes default to ~45s).
+  // Offline bake; allow up to 5 minutes of polling (routes default to ~45s).
   const raw = await fetchMetaAdsRaw(v.query, SCRAPE_COUNT, 60);
   writeJSON(cachePath, raw);
   console.log(`  [scrape] got ${raw.length} raw items → cached`);
@@ -192,7 +192,7 @@ async function analyzeAll(slug: string, state: VerticalState, ads: Ad[]): Promis
   console.log(`  [dna] batch-analyzing ${missing.length} ads in one call…`);
   const prompt = `${ANALYZE_CREATIVE_SYSTEM}
 
-Analyze EACH ad below and return raw JSON only in this exact shape — one entry per
+Analyze EACH ad below and return raw JSON only in this exact shape; one entry per
 input id, no extra keys:
 { "results": [ { "id": "<id>", ...all DNA fields for that ad } ] }
 
@@ -303,7 +303,7 @@ function dnaSignature(d: CreativeDNA): string {
 }
 
 // Pick ads whose DNA signature repeats, so the "N ads → K concepts" collapse stays
-// visible — a real selection from real ads, not fabricated redundancy.
+// visible; a real selection from real ads, not fabricated redundancy.
 function pickSampleAds(pool: Ad[], dna: Record<string, CreativeDNA>): Ad[] {
   const buckets = new Map<string, Ad[]>();
   for (const ad of pool) {
@@ -333,7 +333,7 @@ async function buildSampleSet(
   const existingPath = join(SAMPLE_DIR, `${v.sampleSlug}.json`);
   const existing = readJSON<{ slug: string; label: string; vertical: string }>(existingPath);
   if (!existing) {
-    console.log(`  [sample] no existing ${v.sampleSlug}.json — skipping`);
+    console.log(`  [sample] no existing ${v.sampleSlug}.json; skipping`);
     return;
   }
 
@@ -479,7 +479,7 @@ async function refreshVertical(v: VerticalConfig): Promise<void> {
   const pool = usableAds(raw);
   console.log(`  [filter] ${pool.length} usable ads from ${raw.length} raw`);
   if (pool.length < SAMPLE_SIZE) {
-    console.warn(`  [warn] only ${pool.length} usable ads — thin vertical, consider swapping the query`);
+    console.warn(`  [warn] only ${pool.length} usable ads; thin vertical, consider swapping the query`);
   }
 
   await analyzeAll(v.slug, state, pool);

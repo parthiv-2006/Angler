@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Naive in-memory sliding-window limiter for the routes that spend money
 // (AI calls, Apify runs). Serverless instances don't share state, so this is
-// best-effort abuse protection — enough to stop a naive loop from draining
+// best-effort abuse protection; enough to stop a naive loop from draining
 // the API budget, generous enough that a judge clicking through the demo
 // never sees it. Seed-path short-circuits run before this check.
 const WINDOW_MS = 60_000;
@@ -21,7 +21,7 @@ export function rateLimited(req: NextRequest): NextResponse | null {
 
   if (recent.length <= MAX_REQUESTS) return null;
   return NextResponse.json(
-    { error: "Too many requests — please wait a minute and try again." },
+    { error: "Too many requests. Please wait a minute and try again." },
     { status: 429 },
   );
 }

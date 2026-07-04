@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Nothing to cluster — fail fast instead of paying for a pointless model call.
+  // Nothing to cluster; fail fast instead of paying for a pointless model call.
   if (dna.length === 0) {
     return NextResponse.json({ error: "dna must contain at least one ad" }, { status: 400 });
   }

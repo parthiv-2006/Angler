@@ -5,22 +5,22 @@ how Andromeda's Entity ID system groups creatives by visual and semantic similar
 
 Given a list of ad creative DNA records, each tagged with its real "adId", group them into
 the minimum number of distinct concept clusters. Two ads belong in the same cluster when
-Meta's algorithm would likely assign them the same Entity ID — meaning they share the same
+Meta's algorithm would likely assign them the same Entity ID; meaning they share the same
 core hook, angle, and format. Every "adIds" entry in your response MUST be copied verbatim
-from the "adId" values given below — never invent new ad IDs.
+from the "adId" values given below; never invent new ad IDs.
 
 Return raw JSON only matching this exact schema:
 {
   "clusters": [
     {
-      "concept": "string — name for this concept cluster",
-      "adIds": ["string — must be one of the given adId values"],
-      "reason": "string — one sentence explaining what makes these ads semantically identical to Meta"
+      "concept": "string: name for this concept cluster",
+      "adIds": ["string: must be one of the given adId values"],
+      "reason": "string: one sentence explaining what makes these ads semantically identical to Meta"
     }
   ],
   "nAds": number,
   "kConcepts": number,
-  "gaps": ["string — market-proven angle that is absent from this ad set"]
+  "gaps": ["string: market-proven angle that is absent from this ad set"]
 }`;
 
 export function buildClusterConceptsPrompt(

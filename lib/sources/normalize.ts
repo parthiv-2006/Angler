@@ -1,6 +1,6 @@
 import type { Ad } from "@/lib/types";
 
-// Raw shapes from each source — normalized into the common Ad before leaving this layer.
+// Raw shapes from each source; normalized into the common Ad before leaving this layer.
 
 export interface TikTokRawAd {
   id: string;
@@ -30,7 +30,7 @@ export interface ApifyRawAd {
 }
 
 // Meta's Ad Library returns dynamic-creative placeholders like "{{product.brand}}"
-// for some ads — useless as copy. Returns the best human-readable copy, or "".
+// for some ads; useless as copy. Returns the best human-readable copy, or "".
 function bestCopy(snapshot: ApifyRawAd["snapshot"]): string {
   const body =
     typeof snapshot?.body === "string" ? snapshot.body : snapshot?.body?.text;

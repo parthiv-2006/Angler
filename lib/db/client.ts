@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Server-side only — uses the service role key for writes.
+// Server-side only; uses the service role key for writes.
 // Never import this in client components.
 export function getDbClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

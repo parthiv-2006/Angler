@@ -21,7 +21,7 @@ interface SeedFile {
 // redundant so the "N ads → K concepts" collapse is visible. Clustering is
 // pre-baked so the seed demo path is instant and deterministic.
 // A pre-baked "planned ad" the pre-flight check (Module 3.5) can score instantly
-// against this sample set's clustering — real ad copy, real model verdict.
+// against this sample set's clustering; real ad copy, real model verdict.
 interface PreflightExample {
   id: string;
   label: string;

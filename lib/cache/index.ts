@@ -62,7 +62,7 @@ export async function getOrFetchAds(
   verticalId: string,
   fetcher: () => Promise<Ad[]>,
 ): Promise<Ad[]> {
-  // 1. Seed file (instant — always checked first for seed verticals)
+  // 1. Seed file (instant; always checked first for seed verticals)
   const seedAds = getSeedAds(slug);
   if (seedAds) return seedAds;
 
@@ -112,7 +112,7 @@ export async function withRetry<T>(
       return await fn();
     } catch (err) {
       lastError = err;
-      // 4xx (except throttling/timeout) means the request itself is bad —
+      // 4xx (except throttling/timeout) means the request itself is bad;
       // retrying burns budget without ever succeeding.
       const status = (err as { status?: number }).status;
       const retryable =

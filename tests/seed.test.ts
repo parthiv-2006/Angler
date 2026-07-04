@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { getSeedAds, getSampleSet, listSeedVerticals, listSampleSets } from "@/lib/cache/seed";
 
-// These run against the real committed seed data — the same files the demo serves.
+// These run against the real committed seed data, the same files the demo serves.
 
 test("a known seed vertical loads", () => {
   const ads = getSeedAds("weight-loss-supplement");

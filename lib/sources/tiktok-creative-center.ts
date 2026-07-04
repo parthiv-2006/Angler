@@ -2,7 +2,7 @@ import type { Ad } from "@/lib/types";
 import { normalizeTikTokAd, type TikTokRawAd } from "./normalize";
 
 // TikTok Creative Center top-ads endpoint. NOTE: this public endpoint no longer
-// works for anonymous traffic — it returns `code 40101 "no permission"` without a
+// works for anonymous traffic; it returns `code 40101 "no permission"` without a
 // signed/anonymous-user token issued by the Creative Center web app. It is retained
 // as a documented production integration (a real deployment would mint that token
 // via a headless session), NOT as a working zero-credential demo path. The live
@@ -35,7 +35,7 @@ export async function fetchTikTokAds(vertical: string): Promise<Ad[]> {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
     },
-    // Don't cache at the fetch level — the route's cache layer handles this
+    // Don't cache at the fetch level; the route's cache layer handles this
     cache: "no-store",
   });
 

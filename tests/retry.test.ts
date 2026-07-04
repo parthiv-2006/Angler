@@ -18,7 +18,7 @@ test("retries transient failures and eventually succeeds", async () => {
   assert.equal(calls, 2);
 });
 
-test("does not retry a 400 — the request will never succeed", async () => {
+test("does not retry a 400: the request will never succeed", async () => {
   let calls = 0;
   await assert.rejects(
     withRetry(async () => {

@@ -60,7 +60,7 @@ export async function fetchMetaAds(vertical: string, count = 30): Promise<Ad[]> 
 }
 
 // Route handlers cap at maxDuration=60s, so the default poll budget stays well
-// under that (~45s) — a slow run fails gracefully instead of being killed. The
+// under that (~45s); a slow run fails gracefully instead of being killed. The
 // offline seed-refresh script passes a larger budget.
 async function pollRunDataset(
   runId: string,
@@ -76,7 +76,7 @@ async function pollRunDataset(
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!statusRes.ok) {
-      // 4xx (bad/expired token, deleted run) is permanent — fail with the real
+      // 4xx (bad/expired token, deleted run) is permanent; fail with the real
       // cause instead of burning the poll budget and reporting a fake timeout.
       if (statusRes.status < 500 && statusRes.status !== 429) {
         throw new Error(`Apify run status check failed: HTTP ${statusRes.status}`);

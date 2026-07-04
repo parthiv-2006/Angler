@@ -30,7 +30,7 @@ async function getOrCreateVertical(slug: string, displayName: string) {
 // the primary source (real, public, no login). The TikTok Creative Center call is a
 // commented-out last resort: its public endpoint now requires a signed token and
 // returns 40101 for anonymous demo traffic (see tiktok-creative-center.ts).
-// Seed verticals never reach here — the cache layer serves them first.
+// Seed verticals never reach here; the cache layer serves them first.
 async function fetchLiveAds(vertical: string): Promise<Ad[]> {
   if (process.env.APIFY_TOKEN) {
     try {
@@ -43,7 +43,7 @@ async function fetchLiveAds(vertical: string): Promise<Ad[]> {
     }
   }
 
-  // Last resort — kept wired but expected to fail anonymously (signed-token guard):
+  // Last resort; kept wired but expected to fail anonymously (signed-token guard):
   try {
     return await withRetry(() => fetchTikTokAds(vertical));
   } catch (err) {

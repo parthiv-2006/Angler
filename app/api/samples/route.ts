@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Sample set not found" }, { status: 404 });
   }
 
-  // Clustering is intentionally omitted — /api/score is the source of truth for it.
+  // Clustering is intentionally omitted; /api/score is the source of truth for it.
   return NextResponse.json({
     slug: set.slug,
     label: set.label,

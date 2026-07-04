@@ -6,7 +6,7 @@ most-proven) competitor ads in a vertical, write a tight "what's winning right n
 summary for a media buyer.
 
 Call out the dominant angles, hooks, and formats, and explain WHY they convert in this
-vertical — concrete patterns, not generic advice. Two or three sentences, no preamble.
+vertical; concrete patterns, not generic advice. Two or three sentences, no preamble.
 Return raw JSON only:
 { "summary": "string" }`;
 

@@ -13,7 +13,7 @@ import {
 import { sortByRunDays } from "@/lib/sources/normalize";
 
 // MCP endpoint (streamable HTTP at /api/mcp). Serves the pre-analyzed seed
-// verticals and sample sets only — no AI calls, no credentials required.
+// verticals and sample sets only; no AI calls, no credentials required.
 // Payloads are trimmed for token-friendliness: no cover URLs, no raw metrics,
 // ad copy capped. Live pulls on novel verticals stay in the web app.
 
