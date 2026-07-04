@@ -1,0 +1,300 @@
+{
+  "slug": "investing-newsletter-redundant",
+  "label": "Investing Newsletter: 8 ads (looks diverse)",
+  "vertical": "investing-newsletter",
+  "ads": [
+    {
+      "id": "own_inv_01",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Want to stay up to date on the latest economic trends? \n\nThe Weekly Comment gives you a 5 minute breakdown of what's going on in the global economic world. Richard Vague provides non-biased, valuable insights through his digestible video series.\n\nSubscribe to see more!",
+      "firstSeen": "2024-08-16",
+      "lastSeen": "2026-07-03",
+      "runDays": 686,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_02",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/457157027_1206448424009056_7477364911171703210_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=103&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=Dw3dCc7PtKsQ7kNvwERqpeG&_nc_oc=AdpYiarjbvu78KHX9RjGAfmtEvW6aPlSKSCx698qHhm-6DLjrd1QTVcO5Y72TTeTj14uziHA37PmEf7rPOgNgIQT&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQCJ6DVX-zD71GAZUzx8sloIWNteKXl2aGU3naIUAYjuOg&oe=6A4D9224",
+      "copy": "Be the first to know about exclusive financial news, tips and updates by subscribing to our newsletter!",
+      "firstSeen": "2024-08-28",
+      "lastSeen": "2026-07-03",
+      "runDays": 674,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_03",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/457389999_1022519545832938_2522119365465008738_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=101&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=4ZKYRLkaQc4Q7kNvwGCsjM6&_nc_oc=Ado5vIKQTCEAmfVDRINv2keRjYPpjF-X8XQ0k1isivEOwd8Q-z2XvOA7BQy9K5uQotXC3BNRQ9afHr_YpLKnStGk&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQAlA9oGQg47XvEuvLSMZRuL9pWP6cVbduPNqWyQQOA-YA&oe=6A4DA2D2",
+      "copy": "Stay updated with financial news, tips, and exclusive FFE class details — straight to your inbox!",
+      "firstSeen": "2024-08-29",
+      "lastSeen": "2026-07-03",
+      "runDays": 673,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_04",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/558105693_1844669046462461_841448242543508485_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=101&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=m5uv1FYT3_wQ7kNvwEmQC-P&_nc_oc=Adp3s6bShhsHQN03JQFLb-VnRtcanYN0WVviJYjH9FBax5nqRdao0IPhnetCsppoxOoWwu7yOyhMnN2mv80EFPUR&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQDw53BT4QqTh8srD-E8_k36cVFi6GUWvvvd0Pz4-b5Y_w&oe=6A4D9C94",
+      "copy": "As a physician, you face financial challenges and opportunities that most professionals never encounter. Our free guide, Financial Strategies for Physicians, can help you take the first step toward building a long-term plan.",
+      "firstSeen": "2025-10-16",
+      "lastSeen": "2026-07-03",
+      "runDays": 260,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_05",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/604227175_1363829114753333_9005017639877471709_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=101&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=AV3ePzcLxi8Q7kNvwEsFyVV&_nc_oc=AdodiAng--rQpLjD0E63ZlxTS6tCnRWxm4qKTxNKEYuUsfMadd7N5Ltze851CR7ibS4JEvtOtfLWktrKZ-WFIeGu&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQAR9iypjk7JBQCvdeFxpWsVo3lkzv4AjaniePnz7ZXBnw&oe=6A4DBB6C",
+      "copy": "High-Yield Investors, This Is for You! \n\nTired of the same recycled insights from mainstream sources? Discover actionable, independent analysis designed for serious credit investors like you.\n\nHere’s what other savvy investors are saying:\n\n“Few cover actionable high-yield/distressed debt research like this. Excellent work!” – Capital Structure\n\n“I’ve been following your insights on Twitter, and the deep analysis is unmatched. Glad to subscribe!” – Craig\n\n“I like the focus on credit rather than equity—there’s enough equity research out there.” – Noah\n\nWhat You Get:\n✔️ Deep dives into undercovered companies with limited sell-side coverage\n✔️ In-depth analysis of high-yield and distressed opportunities\n✔️ Ad-free, unbiased insights from an expert focused on helping YOU make smarter investment decisions\n\nWhether you’re building a bond ladder, managing portfolios, or hunting for opportunities others overlook, this newsletter is your edge in the market.\n\nNo Fluff. Just Results. Join the growing community of investors relying on Junk Bond Investor for serious credit research.",
+      "firstSeen": "2025-12-21",
+      "lastSeen": "2026-07-03",
+      "runDays": 194,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_06",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "A lot of people are exhausted right now.\n\nWorking hard.\nDoing everything “right.”\nTrying to stay positive.\n\nAnd still feeling like they can’t fully get ahead financially.\n\nThe truth is:\nmost people were never taught how to build wealth, reduce financial stress, or make money work for them long term.\n\nSo they stay stuck in survival mode quietly.\n\nThe Wealthy Thinker is a free newsletter designed to help you think differently about money, wealth, and your future.\n\nSimple ideas.\nClear perspective.\nA calmer way to approach money.\n\nA place where you can finally start to breathe again financially.",
+      "firstSeen": "2026-05-25",
+      "lastSeen": "2026-07-03",
+      "runDays": 39,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_07",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/709035486_1929293661111345_4840801527886773775_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=110&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=4wQ4UKKYbDAQ7kNvwHdaAYt&_nc_oc=AdpgYml72gY1mA88z-HRp0_yTtP-OsPSaHsP8G7x8eJTYXvKkmZDzdDKZtNCMGEBzhaVCqwrKwonbW0KqDvKtlbg&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQAI4jiQdI04XCgTDOXDbwS3Wj8hvWE4_zbPRUmRC7RCgw&oe=6A4DB4FC",
+      "copy": "😳 You might regret missing these stock opportunities.\n\nSecure your financial future with Money Machine Newsletter today!",
+      "firstSeen": "2026-05-29",
+      "lastSeen": "2026-07-03",
+      "runDays": 35,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_inv_08",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/715406307_960777826996380_4326358814237811759_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=108&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=liOCleBcs7UQ7kNvwHVqYf6&_nc_oc=AdpBuwu1lh8dZTuZW9q3JNMyKoHgPpc2RLyr4-SD-k0FcBAUsHU1u8DgDoMx6UhKXM1h8tmEe3O6HM5QLxO4OQ7l&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQBRhmhSV1eKl2PjhQ_h-n4tLYJjFlwgjdCTMXvJ22BVZw&oe=6A4D9441",
+      "copy": "The market has never been this wild. That’s why every week I go through thousands of tickers looking for the same type of setup: stocks that are positioned for a big move.\n\nMost traders don't have 60 hours a week to do that research. \n\nThat's why I built the Monaco Letter.\n\nEach Monday you get my top 5 setups; which stocks I'm watching, what I'm looking for, and the entry price I'd consider. \n\nIt's designed to help you understand the patterns I look for so you can start recognizing them yourself over time.\n\nClick below to claim access now. \n\n*Trading involves significant risk of loss. This newsletter is for educational purposes only and does not constitute financial advice. Past performance is not indicative of future results.*",
+      "firstSeen": "2026-06-05",
+      "lastSeen": "2026-07-03",
+      "runDays": 28,
+      "rawMetrics": {}
+    }
+  ],
+  "dna": [
+    {
+      "adId": "own_inv_01",
+      "dna": {
+        "hookType": "question",
+        "angle": "curiosity",
+        "format": "other",
+        "offerFraming": "other",
+        "ctaStyle": "Subscribe to see more!",
+        "targetPersona": "Professionals and individuals interested in understanding global economic trends quickly and without bias.",
+        "oneLineSummary": "This ad uses a direct question hook and appeals to curiosity and the desire for valuable insights to attract individuals seeking quick, unbiased economic updates."
+      }
+    },
+    {
+      "adId": "own_inv_02",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Subscribe Now",
+        "targetPersona": "Individuals eager to gain an edge with early access to exclusive financial information and advice.",
+        "oneLineSummary": "This ad leverages a status-driven bold claim to entice financially-minded individuals to subscribe to a newsletter for exclusive news and tips, appealing to their desire for an informational advantage."
+      }
+    },
+    {
+      "adId": "own_inv_03",
+      "dna": {
+        "hookType": "callout",
+        "angle": "greed",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Subscribe Now",
+        "targetPersona": "Individuals looking for convenient, direct access to financial news, tips, and educational opportunities.",
+        "oneLineSummary": "This ad directly calls out individuals seeking financial updates and exclusive class information, using a simple, benefit-driven hook to encourage newsletter subscriptions."
+      }
+    },
+    {
+      "adId": "own_inv_04",
+      "dna": {
+        "hookType": "callout",
+        "angle": "greed",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Download Now",
+        "targetPersona": "Physicians seeking specialized financial advice and strategies tailored to their unique professional circumstances.",
+        "oneLineSummary": "This ad directly addresses physicians, acknowledging their unique financial challenges and offering a free guide to build a long-term plan, appealing to their desire for tailored financial security."
+      }
+    },
+    {
+      "adId": "own_inv_05",
+      "dna": {
+        "hookType": "callout",
+        "angle": "greed",
+        "format": "listicle",
+        "offerFraming": "social_proof",
+        "ctaStyle": "Join Now",
+        "targetPersona": "Serious high-yield and distressed debt investors who are dissatisfied with mainstream research and seek unbiased, deep, actionable insights.",
+        "oneLineSummary": "This ad directly calls out high-yield investors, agitating their frustration with generic insights and offering a niche newsletter filled with deep, unbiased analysis and social proof to help them gain a market edge."
+      }
+    },
+    {
+      "adId": "own_inv_06",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Subscribe Now",
+        "targetPersona": "Individuals feeling overwhelmed and stuck in financial stress, seeking a calmer, more effective approach to building wealth.",
+        "oneLineSummary": "This ad agitates the widespread exhaustion and financial stagnation many feel, then offers a free newsletter as a simple, clear, and calming solution to rethinking money and achieving financial relief."
+      }
+    },
+    {
+      "adId": "own_inv_07",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Subscribe Today",
+        "targetPersona": "Investors who are concerned about missing out on profitable stock market opportunities and want to secure their financial future.",
+        "oneLineSummary": "This ad employs the fear of missing out on stock opportunities to drive subscriptions to a financial newsletter, promising to help secure the reader's financial future."
+      }
+    },
+    {
+      "adId": "own_inv_08",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "fear",
+        "format": "listicle",
+        "offerFraming": "other",
+        "ctaStyle": "claim access now",
+        "targetPersona": "Active stock traders who lack the time for extensive market research but want expert-identified setups and educational insights to make informed decisions.",
+        "oneLineSummary": "This ad agitates the time-consuming nature of market research in a volatile market, offering a newsletter with expert-identified stock setups and educational insights to appeal to busy traders seeking an edge."
+      }
+    }
+  ],
+  "clustering": {
+    "clusters": [
+      {
+        "concept": "Curiosity-Driven Market Digest",
+        "adIds": [
+          "own_inv_01"
+        ],
+        "reason": "This ad uses a 'curiosity' angle with a 'question' hook in an 'other' format to draw in readers wanting quick, unbiased economic breakdowns."
+      },
+      {
+        "concept": "Status-Driven Exclusive Access",
+        "adIds": [
+          "own_inv_02"
+        ],
+        "reason": "This ad uses a 'status' angle with a 'bold_claim' hook in a 'static' format, promising an informational edge through early access to financial news."
+      },
+      {
+        "concept": "Greed-Driven Value Subscription",
+        "adIds": [
+          "own_inv_03",
+          "own_inv_04",
+          "own_inv_05"
+        ],
+        "reason": "These ads share a 'greed' angle and 'callout' hook in 'static' or 'listicle' formats, promising financial upside through free guides, niche research, or exclusive tips."
+      },
+      {
+        "concept": "Fear-Driven FOMO & Stress Relief",
+        "adIds": [
+          "own_inv_06",
+          "own_inv_07",
+          "own_inv_08"
+        ],
+        "reason": "These ads share a 'fear' angle with a 'problem_agitation' hook in 'static' or 'listicle' formats, agitating financial stress or missed opportunities to drive newsletter subscriptions."
+      }
+    ],
+    "nAds": 8,
+    "kConcepts": 4,
+    "gaps": [
+      "problem_agitation",
+      "other"
+    ]
+  },
+  "preflightExamples": [
+    {
+      "id": "pf_inv_01",
+      "label": "New angle: business dispute",
+      "ad": {
+        "id": "pf_inv_01",
+        "source": "planned",
+        "advertiser": "Liberty Legal Solutions, LLC",
+        "coverUrl": "https://scontent.fcpq17-1.fna.fbcdn.net/v/t39.35426-6/557636994_822114990498763_5742675379179440550_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=102&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=ITmCaUBpivUQ7kNvwE_bS8o&_nc_oc=AdoDINS_MklVlPI3uXskE4VL6VIGhXPiGR3O-b3PCaSLAPMW-Xb9utGF1UOQpPflQkPy2BC1zI8sKT8UZdptaSmi&_nc_zt=14&_nc_ht=scontent.fcpq17-1.fna&_nc_gid=hDgRosyzz3UVQxiDCgfmdw&_nc_ss=7f289&oh=00_AQAdnnULFyb340aOao2voDJXgqvsADD0kYen-k8WYL-PVg&oe=6A4D99AD",
+        "copy": "How should you handle a rogue business partner?  Find out in today's Freedom Friday blog https://www.libertylegalok.com/how-to-handle-a-rogue-business-partner",
+        "firstSeen": "2025-10-05",
+        "lastSeen": "2026-07-03",
+        "runDays": 271,
+        "rawMetrics": {}
+      },
+      "dna": {
+        "hookType": "question",
+        "angle": "problem_agitation",
+        "format": "other",
+        "offerFraming": "other",
+        "ctaStyle": "Read More",
+        "targetPersona": "Business owners or partners experiencing conflict or legal issues with a business associate.",
+        "oneLineSummary": "This ad uses a direct problem-based question to attract business partners facing conflict, offering a free blog post as a solution to their specific legal dilemma."
+      },
+      "verdict": {
+        "verdict": "distinct",
+        "collidesWith": null,
+        "reason": "This candidate's 'problem_agitation' angle addressing a specific legal dispute isn't represented anywhere in your set, so it would earn a genuinely new Entity ID.",
+        "fixes": []
+      }
+    },
+    {
+      "id": "pf_inv_02",
+      "label": "Another status-driven ad",
+      "ad": {
+        "id": "pf_inv_02",
+        "source": "planned",
+        "advertiser": "65Nation",
+        "coverUrl": "",
+        "copy": "This is the Only Newsletter Made for 60+ Year Olds!\nFinally, news that speaks our language and respects our wisdom. \n\n65Nation delivers:\n\n🇺🇸 U.S. news that matters to our generation\n💰 Financial insights for retirement and beyond\n🏥 Health updates tailored to our needs\n🌍 World events explained with clarity\n🎭 Entertainment and travel for active seniors\n\nAll this, wrapped up in a free 5-minute daily read. No fluff, no bias - just the news you need.\n\nWhy settle for news meant for everyone when you can have news crafted just for us?\n\nClick now to add your email. Join 65Nation - because our generation deserves news that understands us!",
+        "firstSeen": "2026-05-28",
+        "lastSeen": "2026-07-03",
+        "runDays": 36,
+        "rawMetrics": {}
+      },
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "status",
+        "format": "listicle",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Join 65Nation",
+        "targetPersona": "Individuals aged 60 and above who desire tailored, relevant news and insights without fluff or bias, specifically addressing their generation's interests.",
+        "oneLineSummary": "This ad uses a bold claim and calls out a specific age demographic, offering a tailored, free daily newsletter that addresses their unique interests and needs with respectful, unbiased content."
+      },
+      "verdict": {
+        "verdict": "collapses",
+        "collidesWith": "Status-Driven Exclusive Access",
+        "reason": "This candidate leans on the same 'status' angle and bold-claim positioning already running in your set, so Meta would likely fold it into that concept.",
+        "fixes": [
+          "Shift the angle toward the 'problem_agitation' or 'other' gap instead of status.",
+          "Change the hook away from a bold claim so it reads as a distinct concept."
+        ]
+      }
+    }
+  ]
+}

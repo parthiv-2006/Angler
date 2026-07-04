@@ -1,0 +1,306 @@
+{
+  "slug": "ed-telehealth-redundant",
+  "label": "ED Telehealth: 8 ads (looks diverse)",
+  "vertical": "ed-telehealth",
+  "ads": [
+    {
+      "id": "own_ed_01",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Don't let ED stop you.\n\nImprove your life with ED Treatment at Florida Men's Health. \n\nStart with a free and discrete consultation with our doctors.",
+      "firstSeen": "2024-07-29",
+      "lastSeen": "2026-07-02",
+      "runDays": 703,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_02",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/731112045_1598935202234022_834154504427809308_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=100&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=lI9JDkwaWqkQ7kNvwG-fNRV&_nc_oc=AdoFC4d1-QHUV_VB0nI8rDvjUEo91iSf_ZQZqV-2hdtnafRpRLlrYiDEVqLtPync4dM&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQCWqKVrUuFqzsttSpBYF-1Hwv1pRJk4ZxERlNJj1pDaag&oe=6A49C5A7",
+      "copy": "Erectile dysfunction can be an early warning of a heart attack, stroke, diabetes and dementia. It's time that patients and doctors alike started taking notice, according to researchers.",
+      "firstSeen": "2026-06-25",
+      "lastSeen": "2026-07-02",
+      "runDays": 7,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_03",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/474594541_3457458411226870_6435182915123727116_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=104&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=v23WrlM9gHMQ7kNvwF95Uuy&_nc_oc=AdpIbNBwWihiRhXPY-_i6Lrt-GH555dWVmLge2cURyk5VvDY1F0og_HFvipZ4xjsxs4&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQCJ8-oBLdCBTjR2gE1CQICFZsJGpLWRMjxjATuVIJQ6yA&oe=6A49F36D",
+      "copy": "🎁 Take charge and elevate your performance. Our advanced tools are engineered for men who demand real results, delivered discreetly to protect your privacy. No fluff - just power and confidence, straight to your door. 💪",
+      "firstSeen": "2025-01-20",
+      "lastSeen": "2026-07-02",
+      "runDays": 528,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_04",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Your health, your way. AlgoRX makes it simple to access advanced labs and performance-focused care with transparent pricing, quick delivery, and an easy online experience - no clinic visits.",
+      "firstSeen": "2026-05-26",
+      "lastSeen": "2026-07-02",
+      "runDays": 37,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_05",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "Shopping around for ED treatments, but not sure which one to pick? Here's the one that comes out on top...",
+      "firstSeen": "2025-05-20",
+      "lastSeen": "2026-07-02",
+      "runDays": 408,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_06",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/518376094_1376603583437489_6626527709960357256_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=101&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=h1UTR2mMTk4Q7kNvwEhxqmV&_nc_oc=Ado9c79enTayh-s3iM3S9W40pYfO_ZfNo0gGENprD9cl5XxrVus7ZkrfdhzJte_210I&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQDPZHFLbOOueiRnQfcN9aQyF3JRmmyrf0LDbiUHYIrtVA&oe=6A49CAB8",
+      "copy": "Not all ED treatments require ongoing costs or trips to the pharmacy. Keep learning and find a long-term treatment.",
+      "firstSeen": "2025-10-31",
+      "lastSeen": "2026-07-02",
+      "runDays": 244,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_07",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "",
+      "copy": "21 days to strengthen pelvic floor, restore control and boost performance. Premature ejaculation? Erectile dysfunction? Low libido? This challenge helps you reactivate pelvic strength, improve stamina and reduce back pressure — at home, in just 10–15 minutes a day.\n\nAccess to the course is not limited in time — start now and continue anytime you want. If for some reason you don't like the course, we will refund the full amount within 14 days after the purchase.\n\nGet the course today with a 90% discount — click the button below the video and start your journey.",
+      "firstSeen": "2026-06-01",
+      "lastSeen": "2026-07-02",
+      "runDays": 31,
+      "rawMetrics": {}
+    },
+    {
+      "id": "own_ed_08",
+      "source": "uploaded",
+      "advertiser": "Your Ad Set",
+      "coverUrl": "https://scontent.ffdo5-1.fna.fbcdn.net/v/t39.35426-6/632296644_1900064504235678_4121745139530300335_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=104&ccb=1-7&_nc_sid=c53f8f&_nc_ohc=neJH1JnzueIQ7kNvwGXlcqC&_nc_oc=Ado237NUjlLk63C5splGNA19N4BlACfq_avAM_dwA-P01clBX_wl6HKHgzLB_FjrkF4&_nc_zt=14&_nc_ht=scontent.ffdo5-1.fna&_nc_gid=V7jPapmMxYQ7-moguHHvrA&_nc_ss=7f289&oh=00_AQBqZPAYbcL_vy5O19xoj8KrbcXYJBBqj1zAAmjJVZjmaA&oe=6A49CEC8",
+      "copy": "BlueChew, an online telehealth service, offers chewable tablets to treat erectile dysfunction (ED). It's affordable, convenient, and delivered to your doorstep.",
+      "firstSeen": "2026-02-24",
+      "lastSeen": "2026-07-02",
+      "runDays": 128,
+      "rawMetrics": {}
+    }
+  ],
+  "dna": [
+    {
+      "adId": "own_ed_01",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "risk_reversal",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men experiencing erectile dysfunction who are concerned about their quality of life.",
+        "oneLineSummary": "Addresses the sensitive issue of ED by positioning medical consultation as a life-improving, risk-free solution."
+      }
+    },
+    {
+      "adId": "own_ed_02",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "fear",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men experiencing ED who may be unaware of its systemic health implications.",
+        "oneLineSummary": "Uses alarmist health facts to create immediate urgency around an otherwise ignored symptom."
+      }
+    },
+    {
+      "adId": "own_ed_03",
+      "dna": {
+        "hookType": "callout",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Shop Now",
+        "targetPersona": "High-performance men who value discretion and professional-grade results.",
+        "oneLineSummary": "Positions the product as an elite performance tool for men who prioritize privacy and efficacy."
+      }
+    },
+    {
+      "adId": "own_ed_04",
+      "dna": {
+        "hookType": "callout",
+        "angle": "status",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking premium, high-tech healthcare without the friction of doctors' offices.",
+        "oneLineSummary": "Markets medical care as an optimized, modern consumer experience."
+      }
+    },
+    {
+      "adId": "own_ed_05",
+      "dna": {
+        "hookType": "question",
+        "angle": "curiosity",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men researching ED solutions who are overwhelmed by market options.",
+        "oneLineSummary": "Uses the curiosity gap to position the product as the definitive winner in a crowded, confusing market."
+      }
+    },
+    {
+      "adId": "own_ed_06",
+      "dna": {
+        "hookType": "problem_agitation",
+        "angle": "greed",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking long-term, cost-effective alternatives to recurring medical expenses.",
+        "oneLineSummary": "Highlights the financial pain of ongoing pharmacy costs to sell a more permanent, economical solution."
+      }
+    },
+    {
+      "adId": "own_ed_07",
+      "dna": {
+        "hookType": "bold_claim",
+        "angle": "greed",
+        "format": "ugc",
+        "offerFraming": "discount",
+        "ctaStyle": "Get the course",
+        "targetPersona": "Men experiencing performance anxiety or dysfunction looking for a fast, DIY fix.",
+        "oneLineSummary": "Combines a fast-timeline promise with a heavy discount to drive impulse purchases for a home-based training course."
+      }
+    },
+    {
+      "adId": "own_ed_08",
+      "dna": {
+        "hookType": "other",
+        "angle": "urgency",
+        "format": "static",
+        "offerFraming": "other",
+        "ctaStyle": "Learn More",
+        "targetPersona": "Men seeking a modern, hassle-free way to manage ED prescriptions.",
+        "oneLineSummary": "Highlights convenience and door-to-door delivery to convert men frustrated by traditional clinic visits."
+      }
+    }
+  ],
+  "clustering": {
+    "clusters": [
+      {
+        "concept": "Fear-Based Health Risk Messaging",
+        "adIds": [
+          "own_ed_01",
+          "own_ed_02"
+        ],
+        "reason": "These ads share a 'fear' angle with 'problem_agitation' or 'bold_claim' hooks in a 'static' format, agitating health anxiety around untreated ED to push readers toward a consultation."
+      },
+      {
+        "concept": "Discreet Status & Performance Positioning",
+        "adIds": [
+          "own_ed_03",
+          "own_ed_04"
+        ],
+        "reason": "These ads share a 'status' angle and 'callout' hook in a 'static' format, positioning treatment as a discreet, high-performance lifestyle upgrade rather than a clinical necessity."
+      },
+      {
+        "concept": "Curiosity-Driven Market Comparison",
+        "adIds": [
+          "own_ed_05"
+        ],
+        "reason": "This ad uses a 'curiosity' angle with a 'question' hook in a 'static' format to position itself as the definitive pick among crowded ED treatment options."
+      },
+      {
+        "concept": "Cost-Savings Greed Appeal",
+        "adIds": [
+          "own_ed_06",
+          "own_ed_07"
+        ],
+        "reason": "These ads share a 'greed' angle with 'problem_agitation' or 'bold_claim' hooks, promising savings or fast results over recurring treatment costs."
+      },
+      {
+        "concept": "Convenience Urgency",
+        "adIds": [
+          "own_ed_08"
+        ],
+        "reason": "This ad uses an 'urgency' angle with an 'other' hook in a 'static' format to push same-day, no-clinic-visit convenience."
+      }
+    ],
+    "nAds": 8,
+    "kConcepts": 5,
+    "gaps": [
+      "novelty",
+      "social_proof"
+    ]
+  },
+  "preflightExamples": [
+    {
+      "id": "pf_ed_01",
+      "label": "New angle: social proof",
+      "ad": {
+        "id": "pf_ed_01",
+        "source": "planned",
+        "advertiser": "Rugiet",
+        "coverUrl": "",
+        "copy": "Men's health made easy. Discover why over 300,000 men have already made the switch to Rugiet Ready to treat ED.\n\nTake 15% off your first order using the code 5XFAST at the checkout.\n\n___________________________________________\n\nReady is a compounded prescription drug that contains sildenafil, tadalafil, and apomorphine and is used to treat erectile dysfunction (ED). Compounded drugs are permitted to be prescribed under federal law, but are not FDA-approved and do not undergo FDA safety, effectiveness, or manufacturing review. Only available if prescribed by after an online consultation with a healthcare provider. Do not take Ready more than once in any 24-hour period or within 24 hours of taking any other ED medications.",
+        "firstSeen": "2026-05-28",
+        "lastSeen": "2026-07-02",
+        "runDays": 35,
+        "rawMetrics": {}
+      },
+      "dna": {
+        "hookType": "social_proof",
+        "angle": "social_proof",
+        "format": "static",
+        "offerFraming": "discount",
+        "ctaStyle": "Get 15% Off",
+        "targetPersona": "Men looking for validated, popular solutions to ED.",
+        "oneLineSummary": "Uses the '300,000 men' social proof claim to lower purchase anxiety for a sensitive health product."
+      },
+      "verdict": {
+        "verdict": "distinct",
+        "collidesWith": null,
+        "reason": "The candidate's 'social_proof' angle isn't represented anywhere in this set, so it would earn its own Entity ID by filling a gap this set hasn't covered.",
+        "fixes": []
+      }
+    },
+    {
+      "id": "pf_ed_02",
+      "label": "Another fear-based ad",
+      "ad": {
+        "id": "pf_ed_02",
+        "source": "planned",
+        "advertiser": "Nads",
+        "coverUrl": "",
+        "copy": "What the %$&* is “organic underwear” and why should you care? 🤔⬇️\n\nFirst, let’s talk about the enormous issues with regular underwear that you’re probably unaware of…\n\nConventional underwear (and yes, this likely includes the pair you’re wearing right now…) is typically farmed and manufactured using:\n\n❌ Synthetic Pesticides & Herbicides\n❌ Phthalates & PFA’s \n❌ Toxic Dyes & Inks\n❌ Bisphenol A (BPA)\n❌ GMOs & Synthetic Fertilizers\n\nThese toxins and chemicals can lead to lower testosterone, decreased fertility, and a whole slew of other negative health effects. Not sure about you, but we were pretty alarmed when we realized those chemicals were surrounding our boys 24/7.\n\nOnce we became aware of this issue, we went on a frantic search to find an alternative that we could feel safe housing our most prized possession in.\n\nThe bad news?\n\nWe couldn’t find a single brand offering the solution we were looking for. \n\nWith every single “natural” underwear brand we tried, we kept running into the same issues:\n\n❌ Scratchy, uncomfortable material that felt like we were sandpapering our 🥜\n❌ Options that appeared “natural” but had a different story in the fine print\n❌ Designs that were flat-out tacky and ugly\n❌ Underwear that couldn’t hold up to the rigors of an active lifestyle\n\nWe realized that men NEEDED an alternative option that didn’t exist yet.\n\nThe good news? \n\nWe decided to create just that.\n\nEnter NADS Organic Underwear for Men: The Better-for-Balls Underwear made without the use of harsh chemicals & toxins too common in conventional underwear.\n\nThese first-of-their-kind boxers and briefs are not only better for the planet, they’re also the world’s most optimal home for your package.\n\nOur underwear features:\n\n🌱 Certified Organic Non-GMO Cotton\n🌳 Non Toxic Dyes & Eco-Inks\n💪🏼 Performance Focused Construction/Fit \n✅ An Insanely Comfortable Home For Your 🥜\n\nNow…you’re probably thinking to yourself, “Great…another thing to add to my never-ending ‘Get Healthy in 2024’ list.”\n\nBut, unlike the TikTok gurus who are insisting that to get healthy you need to:\n\n🥶 Cold plunge for 73 minutes per day\n😵‍💫 Only eat foods that start with the letter Z\n🥒 Drink your water upside down out of a hollowed-out cucumber\n\n…our solution is simple.\n\nJust make the switch.\n\nDitch the toxic underwear and give your boys the home they deserve. Grab your first pair today at nadsunder.com 🥜✅\n\nPS. Trust us. Your balls will thank you. 🤝",
+        "firstSeen": "2026-01-29",
+        "lastSeen": "2026-07-02",
+        "runDays": 154,
+        "rawMetrics": {}
+      },
+      "dna": {
+        "hookType": "question",
+        "angle": "fear",
+        "format": "other",
+        "offerFraming": "other",
+        "ctaStyle": "Grab your first pair",
+        "targetPersona": "Health-conscious men who worry about toxic chemical exposure in their daily clothing.",
+        "oneLineSummary": "Uses a long-form 'scare' narrative about chemical exposure to position organic underwear as a necessary wellness upgrade."
+      },
+      "verdict": {
+        "verdict": "collapses",
+        "collidesWith": "Fear-Based Health Risk Messaging",
+        "reason": "This candidate leans on the same 'fear' angle already driving your health-risk agitation ads, so Meta would likely fold it into that concept.",
+        "fixes": [
+          "Shift the angle to target a gap like 'social_proof' or 'novelty' instead of fear.",
+          "Change the hook and format away from health-anxiety agitation so it reads as a distinct concept."
+        ]
+      }
+    }
+  ]
+}
