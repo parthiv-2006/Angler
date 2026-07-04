@@ -162,9 +162,10 @@ The `memory/` folder is the living state of this project. The static design docs
 
 ### Read on every session start
 
-Before writing any code, read these two files:
-1. [`memory/PROGRESS.md`](memory/PROGRESS.md) — where we are in the 9-day build plan
-2. [`memory/GOTCHAS.md`](memory/GOTCHAS.md) — traps already discovered, so you don't re-hit them
+Before writing any code, read these three files instead of exploring the tree:
+1. [`docs/CODEMAP.md`](docs/CODEMAP.md) — terse index of every source file, "where to change X", core data shapes, and the request flow. Load this to orient without spending tokens on exploration.
+2. [`memory/PROGRESS.md`](memory/PROGRESS.md) — where we are in the 9-day build plan
+3. [`memory/GOTCHAS.md`](memory/GOTCHAS.md) — traps already discovered, so you don't re-hit them
 
 ### When the user says "update memory"
 
@@ -203,6 +204,11 @@ Keep entries concise. A future AI session needs enough to act, not a novel.
 6. **Clean, professional codebase at all times.** No dead code, no debug `console.log`
    left in, no commented-out blocks, no stray files. The repo must look production-ready
    on every commit.
+6a. **Keep `docs/CODEMAP.md` current in the same change.** Whenever you add, remove, rename,
+   or repurpose a file — or change a core type (`lib/types.ts`) or a request flow — update
+   `docs/CODEMAP.md` before you commit, and bump its "Last verified" date. A stale codemap
+   is worse than none: it sends the next session to the wrong file. This is the price of the
+   token savings the map buys us; do not skip it.
 7. **Seed path first, live path second.** When implementing any feature, make the
    seed/cached path work and verify it before touching the live API path. The demo judge
    clicks seed verticals first — a broken live path is recoverable; a broken seed path
