@@ -268,3 +268,50 @@ the exact class of bug that broke Step 5 rendering earlier).
 **Why:** vitest/jest would add config + dependencies for zero gain at this scale; tsx is
 already a devDependency (used by refresh-seed) and resolves the `@/` tsconfig paths.
 **Files:** `tests/*.test.ts`, `package.json`
+
+---
+
+## Angler redesign implemented from the local design handoff, not the design MCP
+
+**Decision:** Task said "import via the claude_design MCP (`/design-login`)", but that auth
+flow needs an interactive terminal that isn't available in this environment — and the exact
+bundle (`Angler - Final.dc.html` + spec README + mock data) was already seeded into the repo
+at `design_handoff_creative_strategist/`. Implemented from that local handoff instead.
+**Why:** Same artifact, zero auth friction. The handoff README explicitly says the prototype
+is a reference to *recreate in the codebase's own stack*, not code to port — so no fidelity
+was lost by skipping the MCP.
+
+## UI split: state in `page.tsx`, presentation in `app/components/*`
+
+**Decision:** The redesign kept every handler and all app state in `app/page.tsx` and moved
+markup into 8 presentational components (`theme.ts`, `Nav`, `Hero`, `Section`,
+`Catch/Dna/Audit/BriefsSection`). Per-card platform tabs and transient "COPIED ✓" state live
+inside `BriefsSection` (pure UI state, invisible to the pipeline).
+**Why:** The design tripled the markup; a single 3,000-line page.tsx would be unreviewable,
+and the judge reads this code. Inline styles + shared tokens (`theme.ts`) match the codebase's
+existing no-Tailwind styling approach; hover/focus states that inline styles can't express
+are small classes in `globals.css`.
+
+## Design's "emotion" DNA tag maps to `offerFraming`
+
+**Decision:** The prototype's Nº2 cards show a blue "emotion" tag, but `CreativeDNA` has no
+emotion field. The 4th (blue) tag shows `offerFraming` instead; section subtitle says
+"offer framing" honestly.
+**Why:** Adding `emotion` would mean re-baking 4 seed verticals + prompt/schema changes days
+before the deadline, for a cosmetic tag. Same visual role, real data, no fabrication.
+
+## Brand shown as "Angler" in the UI
+
+**Decision:** Page metadata, nav wordmark, footer, and JSON export `tool` field now say
+"Angler" (was "Creative Strategist"). Package name and repo docs unchanged.
+**Why:** The final design is branded Angler throughout (logo, reel-in progress bar, "cast the
+line" copy); CLAUDE.md says the working name is not load-bearing and renaming is trivial.
+
+## Hero "Cast the line" runs the full seed demo on seed verticals, live mine otherwise
+
+**Decision:** Casting a seed vertical triggers the same 4-module orchestration as the
+15-second demo button; a novel vertical runs only Module 1 live, then the user drives
+Extract DNA → score → generate through the sections.
+**Why:** The prototype only models the seed flow (everything appears at once). The real
+product needs the stepwise live path — mapping "seed = instant full story, novel = guided
+steps" preserves both without a mode switch the judge would have to understand.

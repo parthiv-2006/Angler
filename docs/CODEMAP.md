@@ -15,14 +15,16 @@ Last verified against the tree: **2026-07-04**.
 
 ## The 30-second model
 
-Single-page Next.js (App Router) demo. Four modules run left-to-right in the UI,
-each backed by one API route. Every route is **seed-first**: it serves real
-cached data with zero credentials, and only calls the live AI/scrape path when
-seed data is absent. All AI goes through one provider interface — feature code
-**never** imports a vendor SDK.
+Single-page Next.js (App Router) demo in the **"Angler — Final" design** (sticky
+reel-in nav, hero + sonar band, four numbered sections Nº1–Nº4; source-of-truth
+prototype in `design_handoff_creative_strategist/`). Four modules run top-to-
+bottom, each backed by one API route. Every route is **seed-first**: it serves
+real cached data with zero credentials, and only calls the live AI/scrape path
+when seed data is absent. All AI goes through one provider interface — feature
+code **never** imports a vendor SDK.
 
 ```
-UI (app/page.tsx)
+UI (app/page.tsx = state/handlers, app/components/* = presentation)
   └─ POST /api/{mine,deconstruct,score,generate,preflight}
        └─ lib/cache  ── seed hit? ──► return cached (no creds needed)
        └─ miss ──► lib/sources (scrape) + lib/ai/provider (Claude/Gemini)
@@ -38,7 +40,9 @@ that exposes the seed verticals as read-only tools — no AI calls.
 
 | I want to… | Go to |
 |---|---|
-| Change the UI / demo flow / panels | `app/page.tsx` (keep it thin) |
+| Change app state / API wiring / demo flow | `app/page.tsx` (all state + handlers live here) |
+| Change a section's look (nav, hero, Nº1–Nº4) | `app/components/<Section>.tsx` |
+| Change colors / fonts / shared style fragments | `app/components/theme.ts` + `app/globals.css` |
 | Add/adjust a module's API behavior | `app/api/<module>/route.ts` |
 | Change an AI prompt | `lib/ai/prompts/<name>.ts` |
 | Change the shape the model must return | `lib/ai/schemas.ts` (zod) + `lib/types.ts` (TS) |
@@ -58,8 +62,17 @@ that exposes the seed verticals as read-only tools — no AI calls.
 ### `app/` — UI + API routes
 | File | Responsibility |
 |---|---|
-| `page.tsx` | The entire demo experience: stepped UI (mine → DNA → score → generate). Hot path — keep logic in `lib/`. |
-| `layout.tsx` / `globals.css` | Root layout + Tailwind globals. |
+| `page.tsx` | Orchestrator: all app state, API handlers, scroll spy, sonar log, audit-reveal animation. Hot path — keep business logic in `lib/`, markup in `components/`. |
+| `layout.tsx` / `globals.css` | Root layout (next/font: Source Serif 4, IBM Plex Sans/Mono) + paper-theme CSS vars, keyframes, hover classes, reduced-motion. |
+| `icon.svg` | Fishhook favicon (Next serves it automatically). |
+| `components/theme.ts` | Design tokens from the handoff (colors, font helpers, avatar palette, shared style fragments). |
+| `components/Nav.tsx` | Sticky nav + reel-in scroll-progress bar with hook icon. |
+| `components/Hero.tsx` | Hero (input, chips, CTA), simulated ad-card collage, sonar status band (`LogLine`). |
+| `components/Section.tsx` | Shared Nº-watermark section shell with header rule. |
+| `components/CatchSection.tsx` | Nº1 — ranked ledger, desk note, sticky in-feed preview. |
+| `components/DnaSection.tsx` | Nº2 — filter pills + 3-col DNA card grid (4th tag = offerFraming). |
+| `components/AuditSection.tsx` | Nº3 — load-your-set controls (samples/paste/upload), marginalia + SVG marks, ink plate + merge diagram, clusters + gaps, pre-flight, generate CTA. |
+| `components/BriefsSection.tsx` | Nº4 — brief cards (platform tabs, copy, evidence chips), integrity strip, footer. |
 | `api/mine/route.ts` | **Module 1** Competitive Angle Miner. Ranked market ads + winner summary. `fromSeed` flag. |
 | `api/deconstruct/route.ts` | **Module 2** Creative-DNA extraction (vision). Hot path. |
 | `api/score/route.ts` | **Module 3** Diversity / concept-collapse scoring. |
@@ -127,6 +140,12 @@ that exposes the seed verticals as read-only tools — no AI calls.
 | `scripts/refresh-seed.ts` | Regenerate seed verticals from live scrapes (offline pre-compute). |
 | `scripts/.cache/` | Local scratch from seed refreshes — **not** part of the app. |
 | `tests/*.test.ts` | Unit tests: `json`, `normalize`, `rate-limit`, `retry`, `seed`. |
+
+### Repo root
+| Path | Purpose |
+|---|---|
+| `design_handoff_creative_strategist/` | The "Angler — Final" design handoff (prototype HTML + spec README + mock data). Source of truth for the UI's look; **reference only, never imported**. |
+| `.eslintrc.json` | Strict Next.js ESLint config (`next lint` scaffold). |
 
 ---
 

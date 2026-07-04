@@ -92,7 +92,27 @@
 
 ---
 
-## UI — `app/page.tsx` 🔄
+## UI — "Angler — Final" redesign ✅ (2026-07-04)
+
+- [x] Full visual redesign implemented from `design_handoff_creative_strategist/` (claude.ai/design
+      handoff): paper theme, Source Serif 4 / IBM Plex Sans / IBM Plex Mono via next/font,
+      sticky reel-in nav + scroll spy, hero with ad-wall collage, sonar status band with real
+      pipeline log lines, four Nº-watermarked sections (catch ledger + sticky in-feed preview,
+      DNA filter grid, entity-ID audit with ink plate + animated merge diagram + hand-drawn
+      SVG marks + count-up, brief cards with platform tabs), integrity strip, footer, fishhook favicon
+- [x] Markup split into `app/components/*` (Nav, Hero, Section, Catch/Dna/Audit/BriefsSection,
+      theme.ts); all state/handlers stay in `app/page.tsx`
+- [x] **Feature parity verified in-browser on a production build**: 15-second demo, seed chips,
+      live-mine path for novel verticals, DNA filters + clear, sample scoring, paste captions,
+      image upload (drag-drop, compress, remove), budget waste estimate, clusters + gaps +
+      market-angle pills, pre-flight (seed chips / paste / screenshot), briefs with per-variant
+      copy + COPY BRIEF, CSV + production-JSON export, brief-batch integrity self-score,
+      share links (?v=&s= replay re-verified cold), error pill + empty states, Enter-to-cast
+- [x] `npm run lint` now real: `.eslintrc.json` scaffolded (next/core-web-vitals + TS strict) — clean
+- [x] Fixed pre-existing 400: seed ads with >10k-char copy broke `/api/deconstruct` after the
+      security input caps; client now trims copy to the cap before sending (see GOTCHAS)
+
+## UI — `app/page.tsx` (pre-redesign history) 🔄
 
 - [x] Stepped flow: Mine → Deconstruct → Score → Generate
 - [x] Seed vertical chip buttons with active state
