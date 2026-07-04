@@ -7,7 +7,7 @@
 >
 > For *why* the system is shaped this way, read `docs/ARCHITECTURE.md`.
 
-Last verified against the tree: **2026-07-04** (post live-input removal).
+Last verified against the tree: **2026-07-04** (post live-input removal, README rewrite).
 
 ---
 
@@ -143,6 +143,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 |---|---|
 | `.eslintrc.json` | Strict Next.js ESLint config (`next lint` scaffold). |
 | `.github/workflows/ci.yml` | CI: typecheck, tests, build, audit. |
+| `docs/readme-banner.svg` | Static banner image for the root `README.md`, matches the app's paper/ink/accent theme. Decorative only, not part of the app build. |
 
 ---
 

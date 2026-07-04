@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" width="1200" height="260">
+  <defs>
+    <radialGradient id="g1" cx="18%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#97A3D6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#97A3D6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="82%" cy="6%" r="55%">
+      <stop offset="0%" stop-color="#DBA68A" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#DBA68A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EFECE3"/>
+      <stop offset="100%" stop-color="#F7F5F0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="260" fill="url(#paper)"/>
+  <rect width="1200" height="260" fill="url(#g1)"/>
+  <rect width="1200" height="260" fill="url(#g2)"/>
+  <rect x="1" y="1" width="1198" height="258" fill="none" stroke="#DED8CA" stroke-width="2"/>
+
+  <!-- fishhook mark -->
+  <g transform="translate(76,72)">
+    <rect width="56" height="56" rx="12" fill="#1C1917"/>
+    <path d="M33 13v26a11.5 11.5 0 0 1-23 0v-2.3" stroke="#C2410C" stroke-width="5.4" stroke-linecap="round" fill="none"/>
+    <circle cx="33" cy="14" r="4" fill="#C2410C"/>
+  </g>
+
+  <text x="150" y="106" font-family="Georgia, 'Source Serif 4', serif" font-size="58" font-weight="600" fill="#1C1917">Angler</text>
+
+  <text x="76" y="163" font-family="'Courier New', 'IBM Plex Mono', monospace" font-size="14" letter-spacing="2.5" fill="#C2410C" font-weight="600">CREATIVE STRATEGY, FROM EVIDENCE. NOT VIBES.</text>
+
+  <text x="76" y="200" font-family="Georgia, 'Source Serif 4', serif" font-size="25" fill="#443F35">
+    Which ads should you make <tspan font-style="italic" fill="#C2410C">at all?</tspan>
+  </text>
+
+  <text x="76" y="230" font-family="Arial, 'IBM Plex Sans', sans-serif" font-size="13.5" fill="#6B655A">Reads what is winning in your vertical, audits your ad set for hidden duplicates, writes the angles you are missing.</text>
+
+  <text x="1124" y="230" font-family="'Courier New', monospace" font-size="12" fill="#938D80" text-anchor="end">No¹ MINE · No² DECONSTRUCT · No³ AUDIT · No⁴ GENERATE</text>
+</svg>
