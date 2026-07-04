@@ -5,7 +5,7 @@
 /.next/
 /out/
 
-# env — NEVER commit secrets
+# env - NEVER commit secrets
 .env.local
 .env*.local
 
@@ -23,6 +23,11 @@ Thumbs.db
 # Local agent state (not part of the app)
 /.omc/
 /.playwright-mcp/
+
+# Local working notes and planning material (not part of the app)
+/notes/
+/memory/
+/CLAUDE.md
 
 # Build-time seed-refresh cache (raw scrapes + partial DNA; the derived
 # data/seed/*.json is committed, this intermediate cache is not)
