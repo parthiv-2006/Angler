@@ -3,8 +3,9 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
 import { getPreflightExample } from "@/lib/cache/seed";
-import { preflightVerdictSchema, creativeDNASchema, conceptClusteringSchema } from "@/lib/ai/schemas";
+import { preflightVerdictSchema, creativeDNAInputSchema, conceptClusteringInputSchema } from "@/lib/ai/schemas";
 import { PREFLIGHT_SYSTEM, buildPreflightPrompt } from "@/lib/ai/prompts/preflight";
+import { rateLimited } from "@/lib/rate-limit";
 import type { ConceptClustering, CreativeDNA } from "@/lib/types";
 
 // Live pre-flight scoring can run long on a cold model; raise above the 10s default.
@@ -12,11 +13,11 @@ export const maxDuration = 60;
 
 const requestSchema = z.object({
   // Seed path: a pre-baked example candidate on a known sample set.
-  sampleSetId: z.string().optional(),
-  candidateId: z.string().optional(),
+  sampleSetId: z.string().max(100).optional(),
+  candidateId: z.string().max(100).optional(),
   // Live path: candidate DNA (client obtains it via /api/deconstruct first).
-  clustering: conceptClusteringSchema.optional(),
-  candidate: creativeDNASchema.optional(),
+  clustering: conceptClusteringInputSchema.optional(),
+  candidate: creativeDNAInputSchema.optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -49,6 +50,9 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+
+  const limited = rateLimited(req);
+  if (limited) return limited;
 
   const provider = getProvider();
 

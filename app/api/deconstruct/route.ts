@@ -4,22 +4,28 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { getOrAnalyzeDNA, withRetry } from "@/lib/cache";
 import { winnerSummarySchema } from "@/lib/ai/schemas";
+import { rateLimited } from "@/lib/rate-limit";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 
 // Live vision analysis over a batch of ads can exceed the 10s default.
 export const maxDuration = 60;
 
-const adInputSchema = z.object({
-  id: z.string(),
-  coverUrl: z.string().optional(),
-  imageBase64: z.string().optional(),
-  copy: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
-});
+const adInputSchema = z
+  .object({
+    id: z.string().min(1).max(100),
+    coverUrl: z.string().url().max(2_048).optional(),
+    // ~2MB of binary — client-side compression targets well under this.
+    imageBase64: z.string().max(3_000_000).optional(),
+    copy: z.string().max(10_000).optional(),
+    metadata: z.record(z.unknown()).optional(),
+  })
+  .refine((ad) => ad.copy || ad.imageBase64 || ad.coverUrl, {
+    message: "Each ad needs copy, an image, or a cover URL to analyze",
+  });
 
 const requestSchema = z.object({
   ads: z.array(adInputSchema).min(1).max(30),
-  vertical: z.string().optional(), // slug used to hit seed DNA cache
+  vertical: z.string().max(100).optional(), // slug used to hit seed DNA cache
   generateSummary: z.boolean().optional(), // synthesize a "what's winning" summary (novel verticals)
   adKind: z.enum(["competitor", "uploaded"]).optional().default("competitor"),
 });
@@ -43,6 +49,9 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
   }
+
+  const limited = rateLimited(req);
+  if (limited) return limited;
 
   const { ads, vertical = "", generateSummary = false, adKind } = parsed.data;
   const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");

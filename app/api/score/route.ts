@@ -3,6 +3,8 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
 import { getSampleClustering } from "@/lib/cache/seed";
+import { creativeDNAInputSchema } from "@/lib/ai/schemas";
+import { rateLimited } from "@/lib/rate-limit";
 import type { CreativeDNA } from "@/lib/types";
 
 // Live clustering can run long on a cold model; raise above the 10s default.
@@ -11,22 +13,13 @@ export const maxDuration = 60;
 // Cap how many DNA records we cluster live so a novel set can't blow the budget.
 const LIVE_BATCH_CAP = 20;
 
-const creativeDNASchema = z.object({
-  hookType: z.string(),
-  angle: z.string(),
-  format: z.string(),
-  offerFraming: z.string(),
-  ctaStyle: z.string(),
-  targetPersona: z.string(),
-  oneLineSummary: z.string(),
-});
-
 const requestSchema = z.object({
-  dna: z.array(z.object({ adId: z.string(), dna: creativeDNASchema })).min(0),
+  // min(0) so the seed path can send an empty array alongside sampleSetId.
+  dna: z.array(z.object({ adId: z.string().max(100), dna: creativeDNAInputSchema })).min(0).max(50),
   // Mined market winners (Modules 1–2) used to ground the gap analysis.
-  marketDNA: z.array(creativeDNASchema).optional(),
+  marketDNA: z.array(creativeDNAInputSchema).max(50).optional(),
   // When the user loads a pre-baked sample ad set, its clustering is served instantly.
-  sampleSetId: z.string().optional(),
+  sampleSetId: z.string().max(100).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -50,6 +43,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ clustering: seedClustering, fromSeed: true });
     }
   }
+
+  // Nothing to cluster — fail fast instead of paying for a pointless model call.
+  if (dna.length === 0) {
+    return NextResponse.json({ error: "dna must contain at least one ad" }, { status: 400 });
+  }
+
+  const limited = rateLimited(req);
+  if (limited) return limited;
 
   const provider = getProvider();
 
