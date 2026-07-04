@@ -1,20 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Ad, CreativeDNA, ConceptClustering, AngleBrief, PreflightVerdict } from "@/lib/types";
 import { briefToDNA } from "@/lib/ai/briefs";
-
-interface SampleSummary {
-  slug: string;
-  label: string;
-  vertical: string;
-  adCount: number;
-}
-
-interface PreflightExampleSummary {
-  id: string;
-  label: string;
-}
+import Nav from "./components/Nav";
+import Hero, { type LogLine } from "./components/Hero";
+import CatchSection from "./components/CatchSection";
+import DnaSection, { type DnaFilter } from "./components/DnaSection";
+import AuditSection, { type SampleSummary, type PreflightExampleSummary } from "./components/AuditSection";
+import BriefsSection from "./components/BriefsSection";
+import { C, MONO, SANS, font } from "./components/theme";
 
 interface AppState {
   vertical: string;
@@ -23,10 +18,12 @@ interface AppState {
   fromSeed: boolean;
   unavailable: string | null;
   marketDna: { adId: string; dna: CreativeDNA }[];
+  selectedAd: number;
   // Module 3 — the user's own ad set
   sampleSets: SampleSummary[];
   userAds: Ad[];
   selectedSample: string | null;
+  sampleLabel: string | null;
   pasteText: string;
   uploadedImages: { id: string; fileName: string; previewUrl: string; base64: string }[];
   budget: string;
@@ -43,10 +40,10 @@ interface AppState {
 }
 
 const SEED_VERTICALS = [
-  { label: "Weight-Loss Supplement", value: "weight-loss supplement" },
-  { label: "Debt Relief", value: "debt relief" },
-  { label: "ED Telehealth", value: "ed telehealth" },
-  { label: "Investing Newsletter", value: "investing newsletter" },
+  { label: "weight-loss", value: "weight-loss supplement" },
+  { label: "debt relief", value: "debt relief" },
+  { label: "ED telehealth", value: "ed telehealth" },
+  { label: "investing newsletter", value: "investing newsletter" },
 ];
 
 // Date the seed verticals were last refreshed from the live ad libraries. Shown to
@@ -72,9 +69,11 @@ const INITIAL: AppState = {
   fromSeed: false,
   unavailable: null,
   marketDna: [],
+  selectedAd: 0,
   sampleSets: [],
   userAds: [],
   selectedSample: null,
+  sampleLabel: null,
   pasteText: "",
   uploadedImages: [],
   budget: "",
@@ -104,8 +103,16 @@ function evidenceAdvertisers(evidenceAdIds: string[], ads: Ad[]): string {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// /api/deconstruct caps `copy` at 10k chars (security bound) — some real
+// library ads carry longer stories, so trim before sending or the batch 400s.
+const MAX_COPY_CHARS = 10_000;
+const trimCopy = (copy: string) => copy.slice(0, MAX_COPY_CHARS);
+
+// Scrolls a section under the sticky nav (~60px tall).
 function scrollToStep(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const el = document.getElementById(id);
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: "smooth" });
 }
 const jsonHeaders = { "Content-Type": "application/json" };
 
@@ -138,12 +145,30 @@ function compressImage(file: File): Promise<{ base64: string; previewUrl: string
   });
 }
 
-type DnaFilter = { angle: string | null; format: string | null; hookType: string | null };
 const NO_FILTER: DnaFilter = { angle: null, format: null, hookType: null };
 
 export default function Home() {
   const [state, setState] = useState<AppState>(INITIAL);
   const [dnaFilter, setDnaFilter] = useState<DnaFilter>(NO_FILTER);
+  const [log, setLog] = useState<LogLine[]>([]);
+  const [progress, setProgress] = useState(0);
+  const [activeNav, setActiveNav] = useState(-1);
+  const [marksOn, setMarksOn] = useState(false);
+  const [countT, setCountT] = useState(0);
+
+  const catchRef = useRef<HTMLElement | null>(null);
+  const dnaRef = useRef<HTMLElement | null>(null);
+  const auditRef = useRef<HTMLElement | null>(null);
+  const briefsRef = useRef<HTMLElement | null>(null);
+  const auditStarted = useRef(false);
+
+  // ── Sonar-band log ────────────────────────────────────────────────────
+  function pushLog(text: string) {
+    setLog((l) => [...l.map((x) => (x.tone === "current" ? { ...x, tone: "past" as const } : x)), { text, tone: "current" }]);
+  }
+  function doneLog(text: string) {
+    setLog((l) => [...l.map((x) => (x.tone === "current" ? { ...x, tone: "past" as const } : x)), { text, tone: "done" }]);
+  }
 
   useEffect(() => {
     fetch("/api/samples")
@@ -164,34 +189,102 @@ export default function Home() {
         void runSeedDemo(seed.value, validSample);
       })
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Scroll spy: page progress + active section (rAF-throttled) ────────
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - window.innerHeight;
+        setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+        let active = -1;
+        [catchRef, dnaRef, auditRef, briefsRef].forEach((r, i) => {
+          if (r.current && r.current.getBoundingClientRect().top < window.innerHeight * 0.45) active = i;
+        });
+        setActiveNav(active);
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // ── Audit reveal: hand-drawn marks + N→K count-up, once per scoring, the
+  // first time Nº3 scrolls into view (18% threshold, 9s fallback) ─────────
+  const clustering = state.clustering;
+  useEffect(() => {
+    auditStarted.current = false;
+    setMarksOn(false);
+    setCountT(0);
+    if (!clustering) return;
+
+    let rafId = 0;
+    const start = () => {
+      if (auditStarted.current) return;
+      auditStarted.current = true;
+      obs.disconnect();
+      clearTimeout(fallback);
+      setMarksOn(true);
+      const t0 = performance.now();
+      const dur = 1200;
+      const tick = (now: number) => {
+        const x = Math.min(1, (now - t0) / dur);
+        setCountT(1 - Math.pow(1 - x, 3));
+        if (x < 1) rafId = requestAnimationFrame(tick);
+      };
+      rafId = requestAnimationFrame(tick);
+    };
+    const obs = new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && start()), { threshold: 0.18 });
+    if (auditRef.current) obs.observe(auditRef.current);
+    const fallback = setTimeout(start, 9000);
+    return () => {
+      obs.disconnect();
+      clearTimeout(fallback);
+      cancelAnimationFrame(rafId);
+    };
+  }, [clustering]);
 
   function setLoading(step: string) {
     setState((s) => ({ ...s, loading: true, error: null, loadingStep: step }));
   }
   function setError(error: string) {
     setState((s) => ({ ...s, loading: false, loadingStep: "", error }));
+    setLog((l) => (l.length && l.some((x) => x.tone === "current") ? [...l.map((x) => (x.tone === "current" ? { ...x, tone: "past" as const } : x)), { text: error, tone: "error" as const }] : l));
   }
 
+  // ── Module 1: mine a vertical (seed or live) ──────────────────────────
   async function handleMine() {
+    setLog([]);
+    pushLog(`casting into ${state.vertical.trim()}…`);
     setLoading("Pulling competitor ads…");
     try {
       const res = await fetch("/api/mine", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({ vertical: state.vertical }),
       });
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Something went wrong");
+      const ads: Ad[] = data.ads ?? [];
       setState((s) => ({
         ...s,
-        ads: data.ads ?? [],
+        ads,
         winnerSummary: data.winnerSummary ?? null,
         fromSeed: !!data.fromSeed,
         unavailable: data.unavailable ? data.message : null,
         marketDna: [],
+        selectedAd: 0,
         userAds: [],
         selectedSample: null,
+        sampleLabel: null,
         clustering: null,
         briefs: [],
         briefClustering: null,
@@ -201,17 +294,25 @@ export default function Home() {
         loadingStep: "",
         error: null,
       }));
+      setDnaFilter(NO_FILTER);
+      if (ads.length) {
+        const maxDays = Math.max(...ads.map((a) => a.runDays));
+        pushLog(`${ads.length} ads hooked · longest runner ${maxDays} days`);
+        doneLog("done — extract the DNA below to read why they win");
+        setTimeout(() => scrollToStep("step-ads"), 150);
+      }
     } catch {
       setError("Network error — please try again");
     }
   }
 
+  // ── Module 2: creative-DNA extraction ─────────────────────────────────
   async function handleDeconstruct() {
     setLoading("Extracting creative DNA…");
     try {
       const res = await fetch("/api/deconstruct", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           vertical: state.vertical,
           // Synthesize a summary only when we don't already have a seed one (novel verticals).
@@ -219,7 +320,7 @@ export default function Home() {
           ads: state.ads.slice(0, 15).map((ad) => ({
             id: ad.id,
             coverUrl: ad.coverUrl || undefined,
-            copy: ad.copy || undefined,
+            copy: ad.copy ? trimCopy(ad.copy) : undefined,
           })),
         }),
       });
@@ -240,12 +341,13 @@ export default function Home() {
         loading: false,
         loadingStep: "",
       }));
+      setTimeout(() => scrollToStep("step-dna"), 150);
     } catch {
       setError("Network error — please try again");
     }
   }
 
-  // Module 3 — score a pre-baked sample ad set (instant, seed path).
+  // ── Module 3: score a pre-baked sample ad set (instant, seed path) ────
   async function handleScoreSample(slug: string) {
     setLoading("Scoring your ad set…");
     try {
@@ -255,7 +357,7 @@ export default function Home() {
 
       const res = await fetch("/api/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           sampleSetId: slug,
           dna: sample.dna,
@@ -268,6 +370,7 @@ export default function Home() {
         ...s,
         userAds: sample.ads,
         selectedSample: slug,
+        sampleLabel: sample.label ?? slug,
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
@@ -281,7 +384,7 @@ export default function Home() {
     }
   }
 
-  // Module 3 — score pasted ad copy (live path; needs an AI key).
+  // ── Module 3: score pasted ad copy (live path; needs an AI key) ───────
   async function handleScorePaste() {
     const lines = state.pasteText.split("\n").map((l) => l.trim()).filter(Boolean);
     if (lines.length < 3) return setError("Paste at least 3 ad captions (one per line).");
@@ -302,15 +405,15 @@ export default function Home() {
 
       const dnaRes = await fetch("/api/deconstruct", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adKind: "uploaded", ads: userAds.map((a) => ({ id: a.id, copy: a.copy })) }),
+        headers: jsonHeaders,
+        body: JSON.stringify({ adKind: "uploaded", ads: userAds.map((a) => ({ id: a.id, copy: trimCopy(a.copy) })) }),
       });
       const dnaData = await dnaRes.json();
       if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
 
       const res = await fetch("/api/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           dna: dnaData.results,
           marketDNA: state.marketDna.map((r) => r.dna),
@@ -322,6 +425,7 @@ export default function Home() {
         ...s,
         userAds,
         selectedSample: null,
+        sampleLabel: "your pasted captions",
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
@@ -335,7 +439,7 @@ export default function Home() {
     }
   }
 
-  // Module 3 — score uploaded ad images (live path; needs an AI key + vision).
+  // ── Module 3: score uploaded ad images (live path; needs an AI key + vision) ─
   async function handleScoreUpload() {
     const images = state.uploadedImages;
     if (images.length < 3) return setError("Upload at least 3 ad images.");
@@ -356,7 +460,7 @@ export default function Home() {
 
       const dnaRes = await fetch("/api/deconstruct", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           adKind: "uploaded",
           ads: images.map((img, i) => ({ id: `upload_${i}`, imageBase64: img.base64 })),
@@ -367,7 +471,7 @@ export default function Home() {
 
       const res = await fetch("/api/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           dna: dnaData.results,
           marketDNA: state.marketDna.map((r) => r.dna),
@@ -379,6 +483,7 @@ export default function Home() {
         ...s,
         userAds,
         selectedSample: null,
+        sampleLabel: "your uploaded screenshots",
         clustering: data.clustering,
         briefs: [],
         briefClustering: null,
@@ -410,13 +515,14 @@ export default function Home() {
     }
   }
 
+  // ── Module 4: generate angle briefs ───────────────────────────────────
   async function handleGenerate() {
     if (!state.clustering) return;
     setLoading("Generating angle briefs…");
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonHeaders,
         body: JSON.stringify({
           vertical: state.vertical,
           winnerSummary: state.winnerSummary ?? "",
@@ -432,12 +538,13 @@ export default function Home() {
       const briefClustering: ConceptClustering | null = data.briefClustering ?? null;
       setState((s) => ({ ...s, briefs: data.briefs, briefClustering, loading: false, loadingStep: "" }));
       if (!briefClustering) void scoreBriefBatch(data.briefs);
+      setTimeout(() => scrollToStep("step-briefs"), 150);
     } catch {
       setError("Network error — please try again");
     }
   }
 
-  // Module 3.5 — pre-flight check on a pre-baked example candidate (seed path).
+  // ── Module 3.5: pre-flight checks ─────────────────────────────────────
   async function handlePreflightSeed(exampleId: string) {
     if (!state.selectedSample) return;
     setLoading("Running pre-flight check…");
@@ -460,7 +567,6 @@ export default function Home() {
     }
   }
 
-  // Module 3.5 — pre-flight check on pasted ad copy (live path; needs an AI key).
   async function handlePreflightPaste() {
     if (!state.clustering) return;
     const copy = state.preflightPasteText.trim();
@@ -471,7 +577,7 @@ export default function Home() {
       const dnaRes = await fetch("/api/deconstruct", {
         method: "POST",
         headers: jsonHeaders,
-        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, copy }] }),
+        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, copy: trimCopy(copy) }] }),
       });
       const dnaData = await dnaRes.json();
       if (!dnaRes.ok || !dnaData.results?.[0]) return setError(dnaData.error ?? "Failed to analyze your planned ad");
@@ -501,7 +607,6 @@ export default function Home() {
     }
   }
 
-  // Module 3.5 — pre-flight check on an uploaded ad image (live path; needs an AI key + vision).
   async function handlePreflightImage(file: File) {
     if (!state.clustering) return;
     setLoading("Analyzing your planned ad…");
@@ -542,15 +647,17 @@ export default function Home() {
   }
 
   // Runs all four modules on a seed vertical, threading each step's result forward
-  // locally and scrolling the new section into view. Used by the one-click demo
-  // button and by shared-link replay on mount — sampleSlug is resolved fresh from
-  // the API rather than component state, since a mount-time replay races the
-  // sampleSets fetch.
+  // locally and printing real progress into the sonar band. Used by the "15-second
+  // demo" button, the hero CTA on seed verticals, and shared-link replay on mount —
+  // sampleSlug is resolved fresh from the API rather than component state, since a
+  // mount-time replay races the sampleSets fetch.
   async function runSeedDemo(verticalValue: string, sampleSlugParam: string | null) {
     const vertical = verticalValue;
     const slug = slugify(vertical);
     setDnaFilter(NO_FILTER);
+    setLog([]);
     setState((s) => ({ ...INITIAL, sampleSets: s.sampleSets, vertical, loading: true, loadingStep: "Pulling competitor ads…" }));
+    pushLog(`casting into ${vertical}…`);
     try {
       // 1 — Mine
       const mineRes = await fetch("/api/mine", { method: "POST", headers: jsonHeaders, body: JSON.stringify({ vertical }) });
@@ -558,21 +665,22 @@ export default function Home() {
       if (!mineRes.ok) return setError(mine.error ?? "Demo failed while mining ads");
       const ads: Ad[] = mine.ads ?? [];
       setState((s) => ({ ...s, ads, winnerSummary: mine.winnerSummary ?? null, fromSeed: !!mine.fromSeed, loadingStep: "Extracting creative DNA…" }));
+      if (ads.length) pushLog(`${ads.length} ads hooked · longest runner ${Math.max(...ads.map((a) => a.runDays))} days`);
       await sleep(600);
       scrollToStep("step-ads");
 
       // 2 — Deconstruct
+      pushLog("extracting creative DNA · hooks, angles, formats, offers");
       const dRes = await fetch("/api/deconstruct", {
         method: "POST",
         headers: jsonHeaders,
-        body: JSON.stringify({ vertical, ads: ads.slice(0, 15).map((a) => ({ id: a.id, coverUrl: a.coverUrl || undefined, copy: a.copy || undefined })) }),
+        body: JSON.stringify({ vertical, ads: ads.slice(0, 15).map((a) => ({ id: a.id, coverUrl: a.coverUrl || undefined, copy: a.copy ? trimCopy(a.copy) : undefined })) }),
       });
       const d = await dRes.json();
       if (!dRes.ok) return setError(d.error ?? "Demo failed while extracting DNA");
       const marketDna: { adId: string; dna: CreativeDNA }[] = d.results ?? [];
       setState((s) => ({ ...s, marketDna, loadingStep: "Scoring your ad set…" }));
       await sleep(600);
-      scrollToStep("step-dna");
 
       // 3 — Score a pre-baked sample ad set
       let sampleSlug = sampleSlugParam;
@@ -585,6 +693,7 @@ export default function Home() {
       const setRes = await fetch(`/api/samples?slug=${encodeURIComponent(sampleSlug)}`);
       const sample = await setRes.json();
       if (!setRes.ok) return setError(sample.error ?? "Demo failed while loading the sample set");
+      pushLog(`reading your ad set · ${(sample.ads ?? []).length} ads`);
       const scoreRes = await fetch("/api/score", {
         method: "POST",
         headers: jsonHeaders,
@@ -596,12 +705,13 @@ export default function Home() {
         ...s,
         userAds: sample.ads,
         selectedSample: sampleSlug,
+        sampleLabel: sample.label ?? sampleSlug,
         clustering: score.clustering,
         preflightExamples: sample.preflightExamples ?? [],
         loadingStep: "Generating angle briefs…",
       }));
+      if (score.clustering?.gaps) pushLog(`surfacing angle gaps · ${score.clustering.gaps.length} found`);
       await sleep(600);
-      scrollToStep("step-score");
 
       // 4 — Generate angle briefs
       const gRes = await fetch("/api/generate", {
@@ -614,9 +724,9 @@ export default function Home() {
       const demoBriefs: AngleBrief[] = g.briefs ?? [];
       const demoBriefClustering: ConceptClustering | null = g.briefClustering ?? null;
       setState((s) => ({ ...s, briefs: demoBriefs, briefClustering: demoBriefClustering, loading: false, loadingStep: "" }));
+      doneLog("done — everything below is from the public record");
       if (!demoBriefClustering && demoBriefs.length) void scoreBriefBatch(demoBriefs);
       await sleep(500);
-      scrollToStep("step-briefs");
 
       // Make the report replayable — encode the seed vertical + sample slug in the URL.
       history.replaceState(null, "", `?v=${slug}&s=${sampleSlug}`);
@@ -625,13 +735,28 @@ export default function Home() {
     }
   }
 
-  async function handleRunFullDemo() {
-    return runSeedDemo("weight-loss supplement", null);
+  // Hero CTA: seed verticals get the instant full demo; anything else is a live pull.
+  function handleCast() {
+    const v = state.vertical.trim();
+    if (!v || state.loading) return;
+    const seed = SEED_VERTICALS.find((sv) => slugify(sv.value) === slugify(v));
+    if (seed) void runSeedDemo(seed.value, null);
+    else void handleMine();
   }
 
-  function handleCopyBrief(brief: AngleBrief) {
+  // Nav demo button: re-runs nothing if results already exist — just reels back up.
+  function handleDemoButton() {
+    if (state.loading) return;
+    if (state.ads.length) {
+      scrollToStep("step-ads");
+      return;
+    }
+    void runSeedDemo("weight-loss supplement", null);
+  }
+
+  function copyBriefText(brief: AngleBrief): string {
     const evidence = evidenceAdvertisers(brief.evidenceAdIds, state.ads);
-    const text = [
+    return [
       `Angle: ${brief.angleName}`,
       `Driver: ${brief.emotionalDriver}`,
       `Why now: ${brief.whyNow}`,
@@ -645,7 +770,6 @@ export default function Home() {
     ]
       .filter(Boolean)
       .join("\n");
-    void navigator.clipboard.writeText(text);
   }
 
   function handleExportCSV() {
@@ -670,7 +794,7 @@ export default function Home() {
   function handleExportJSON() {
     const adById = new Map(state.ads.map((a) => [a.id, a] as const));
     const payload = {
-      tool: "creative-strategist",
+      tool: "angler",
       vertical: state.vertical,
       generatedAt: new Date().toISOString(),
       briefs: [...state.briefs]
@@ -720,6 +844,7 @@ export default function Home() {
     setState((s) => ({ ...s, uploadedImages: s.uploadedImages.filter((img) => img.id !== id) }));
   }
 
+  // ── Derived values ─────────────────────────────────────────────────────
   const currentSlug = slugify(state.vertical);
   const relevantSamples = state.sampleSets.filter((s) => s.vertical === currentSlug);
   const samplesToShow = relevantSamples.length ? relevantSamples : state.sampleSets;
@@ -727,828 +852,184 @@ export default function Home() {
   const hasAds = state.ads.length > 0;
   const hasMarketDna = state.marketDna.length > 0;
 
-  // Module 3 derived values — the Entity-ID "collapse" math (Feature A).
-  const clustering = state.clustering;
-  const adById = new Map(state.userAds.map((a) => [a.id, a] as const));
+  const sortedAds = [...state.ads].sort((a, b) => b.runDays - a.runDays);
+  const dnaById = new Map(state.marketDna.map((r) => [r.adId, r.dna] as const));
   const marketAdById = new Map(state.ads.map((a) => [a.id, a] as const));
-  const briefIntegrityRatio =
-    state.briefClustering && state.briefClustering.nAds > 0
-      ? state.briefClustering.kConcepts / state.briefClustering.nAds
-      : 0;
-  const redundant = clustering ? clustering.nAds - clustering.kConcepts : 0;
-  const wastePct = clustering && clustering.nAds > 0 ? Math.round((redundant / clustering.nAds) * 100) : 0;
-  const budgetNum = parseFloat(state.budget);
-  const estWaste = clustering && !isNaN(budgetNum) && budgetNum > 0 ? Math.round((budgetNum * wastePct) / 100) : null;
+  const sourcesLabel = [...new Set(state.ads.map((a) => sourceLabel(a.source)))].join(" + ") || "public ad libraries";
 
-  // Distinct angles proven in the market, by frequency (Feature D).
+  // Distinct angles proven in the market, by frequency.
   const marketAngles = (() => {
     const counts = new Map<string, number>();
     state.marketDna.forEach((r) => counts.set(r.dna.angle, (counts.get(r.dna.angle) ?? 0) + 1));
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   })();
 
-  // Filterable creative-DNA view (Feature B1).
-  const dnaDims: Record<keyof DnaFilter, string[]> = {
-    angle: [...new Set(state.marketDna.map((r) => r.dna.angle))],
-    format: [...new Set(state.marketDna.map((r) => r.dna.format))],
-    hookType: [...new Set(state.marketDna.map((r) => r.dna.hookType))],
-  };
-  const filteredDna = state.marketDna.filter(
-    (r) =>
-      (!dnaFilter.angle || r.dna.angle === dnaFilter.angle) &&
-      (!dnaFilter.format || r.dna.format === dnaFilter.format) &&
-      (!dnaFilter.hookType || r.dna.hookType === dnaFilter.hookType),
-  );
-  const dnaFilterActive = !!(dnaFilter.angle || dnaFilter.format || dnaFilter.hookType);
+  // Only reached client-side (clustering is set by user interaction), so
+  // window/location are safe here.
+  const shareUrl =
+    clustering && state.fromSeed && state.selectedSample
+      ? `${location.origin}${location.pathname}?v=${currentSlug}&s=${state.selectedSample}`
+      : null;
+
+  const navSections = [
+    { label: "1 · The catch", enabled: hasAds, ref: catchRef, id: "step-ads" },
+    { label: "2 · DNA", enabled: hasMarketDna, ref: dnaRef, id: "step-dna" },
+    { label: "3 · Audit", enabled: hasMarketDna, ref: auditRef, id: "step-score" },
+    { label: "4 · Angles", enabled: state.briefs.length > 0, ref: briefsRef, id: "step-briefs" },
+  ].map((s, i) => ({
+    label: s.label,
+    enabled: s.enabled,
+    active: s.enabled && activeNav === i,
+    onClick: () => s.enabled && scrollToStep(s.id),
+  }));
 
   return (
-    <main style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px" }}>
-      <header style={{ marginBottom: 48 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 6 }}>
-          Creative Strategist
-        </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-          Reads what&apos;s winning in your vertical → scores your ad diversity → generates new angles.
-        </p>
-      </header>
+    <>
+      {/* paper grain */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 60,
+          opacity: 0.5,
+          backgroundImage:
+            "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%22240%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/%3E%3CfeColorMatrix values=%220 0 0 0 0.11 0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0.05 0%22/%3E%3C/filter%3E%3Crect width=%22240%22 height=%22240%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')",
+        }}
+      />
 
-      {/* ── Judge tour strip — first-60-seconds guidance (hidden once a run exists) ─ */}
-      {!hasAds && (
-        <div style={{ ...calloutStyle, marginBottom: 32 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>
-            NEW HERE? 60-SECOND TOUR
-          </p>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
-            1. Pick a vertical → 2. Load a sample ad set → 3. See what Meta really thinks of it —
-            then generate the angles you&apos;re missing.
-          </p>
-          <button onClick={handleRunFullDemo} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
-            ▶ Run the full demo (~15 s)
-          </button>
-        </div>
-      )}
+      <Nav sections={navSections} progress={progress} onDemo={handleDemoButton} demoDisabled={state.loading} />
 
-      {/* ── Step 1: Mine ───────────────────────────────────────────────────── */}
-      <section style={{ marginBottom: 40 }}>
-        <Label step="1" text="Enter a vertical or offer" />
-        <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-          {SEED_VERTICALS.map((v) => (
-            <button
-              key={v.value}
-              onClick={() => setState((s) => ({ ...s, vertical: v.value }))}
-              style={chipStyle(state.vertical === v.value)}
-            >
-              {v.label}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            value={state.vertical}
-            onChange={(e) => setState((s) => ({ ...s, vertical: e.target.value }))}
-            onKeyDown={(e) => e.key === "Enter" && !state.loading && state.vertical && handleMine()}
-            placeholder="e.g. weight-loss supplement, debt relief, ED telehealth…"
-            style={inputStyle}
-          />
-          <button onClick={handleMine} disabled={state.loading || !state.vertical.trim()} style={primaryBtnStyle(state.loading)}>
-            {state.loading && state.loadingStep.includes("Pulling") ? "Searching…" : "Find Ads"}
-          </button>
-        </div>
-        <button
-          onClick={handleRunFullDemo}
-          disabled={state.loading}
-          style={{ ...secondaryBtnStyle(state.loading), marginTop: 12 }}
-        >
-          ▶ Run the full demo (weight-loss)
-        </button>
-      </section>
+      <Hero
+        vertical={state.vertical}
+        onVerticalChange={(v) => setState((s) => ({ ...s, vertical: v }))}
+        onCast={handleCast}
+        chips={SEED_VERTICALS.map((v) => ({ label: v.label, value: v.value, active: state.vertical === v.value }))}
+        onChipSelect={(value) => setState((s) => ({ ...s, vertical: value }))}
+        loading={state.loading}
+        log={log}
+        unavailable={state.unavailable}
+      />
 
-      {state.error && <p style={{ color: "#f87171", marginBottom: 24, fontSize: 14 }}>{state.error}</p>}
-      {state.unavailable && (
-        <div style={{ ...calloutStyle, marginBottom: 24, borderColor: "rgba(245,158,11,0.4)", background: "rgba(245,158,11,0.06)" }}>
-          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{state.unavailable}</p>
-        </div>
-      )}
-      {state.loading && <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 24 }}>{state.loadingStep}</p>}
-
-      {/* ── Step 2: Ads + winner summary ────────────────────────────────────── */}
       {hasAds && (
-        <section id="step-ads" style={{ marginBottom: 40 }}>
-          <div style={sectionHeaderStyle}>
-            <Label step="2" text={`${state.ads.length} competitor ads — sorted by run duration`} badge={state.fromSeed ? "instant" : "live"} />
-            <button onClick={handleDeconstruct} disabled={state.loading} style={secondaryBtnStyle(state.loading)}>
-              {state.loading && state.loadingStep.includes("DNA") ? "Analyzing…" : "Extract DNA →"}
-            </button>
-          </div>
-
-          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: -4, marginBottom: 8 }}>
-            {state.fromSeed
-              ? `Real ads from public ad libraries · cached ${SEED_CACHED_DATE}`
-              : "Real ads pulled live from the Meta Ad Library"}
-          </p>
-
-          {state.winnerSummary && (
-            <div style={calloutStyle}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 6 }}>WHAT&apos;S WINNING &amp; WHY</p>
-              <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)" }}>{state.winnerSummary}</p>
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            {state.ads.map((ad) => (
-              <div key={ad.id} style={cardStyle}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>{ad.advertiser}</span>
-                  <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>
-                    {ad.runDays}d running · {sourceLabel(ad.source)}
-                  </span>
-                </div>
-                <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.5 }}>{ad.copy}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── Step 3: Market DNA (filterable) ──────────────────────────────────── */}
-      {hasMarketDna && (
-        <section id="step-dna" style={{ marginBottom: 40 }}>
-          <Label step="3" text="Creative DNA of the market winners" />
-
-          {/* Filter controls — by angle / format / hook type (Feature B1) */}
-          <div style={{ marginBottom: 10 }}>
-            {(["angle", "format", "hookType"] as const).map((dim) => (
-              <div key={dim} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: "var(--text-muted)", minWidth: 64, textTransform: "capitalize" }}>{dim}</span>
-                {dnaDims[dim].map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setDnaFilter((f) => ({ ...f, [dim]: f[dim] === v ? null : v }))}
-                    style={{ ...chipStyle(dnaFilter[dim] === v), padding: "3px 10px", fontSize: 12 }}
-                  >
-                    {v}
-                  </button>
-                ))}
-              </div>
-            ))}
-          </div>
-          <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 10 }}>
-            Showing {filteredDna.length} of {state.marketDna.length}
-            {dnaFilterActive && (
-              <button
-                onClick={() => setDnaFilter(NO_FILTER)}
-                style={{ marginLeft: 8, fontSize: 11, color: "var(--accent)", background: "none", border: "none", cursor: "pointer" }}
-              >
-                clear filters
-              </button>
-            )}
-          </p>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {filteredDna.map((r) => (
-              <div key={r.adId} style={{ ...cardStyle, padding: "8px 12px" }}>
-                <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>{r.dna.angle}</span>
-                <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
-                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{r.dna.format}</span>
-                <span style={{ color: "var(--border)", margin: "0 6px" }}>·</span>
-                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{r.dna.hookType}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── Step 4: Score YOUR ad set ────────────────────────────────────────── */}
-      {hasMarketDna && (
-        <section style={{ marginBottom: 40 }}>
-          <Label step="4" text="Score your own ad set for hidden redundancy" />
-          <p style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 12 }}>
-            Load a sample ad set (or paste your own captions) to see how many concepts Meta&apos;s
-            algorithm really sees — and which proven angles you&apos;re missing.
-          </p>
-
-          {samplesToShow.length > 0 ? (
-            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-              {samplesToShow.map((sample) => (
-                <button
-                  key={sample.slug}
-                  onClick={() => handleScoreSample(sample.slug)}
-                  disabled={state.loading}
-                  style={chipStyle(state.selectedSample === sample.slug)}
-                >
-                  {sample.label}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
-              No sample ad sets available right now — paste your own captions below instead.
-            </p>
-          )}
-
-          <details style={{ marginBottom: 8 }}>
-            <summary style={{ fontSize: 13, color: "var(--text-muted)", cursor: "pointer" }}>
-              …or paste your own ad captions
-            </summary>
-            <textarea
-              value={state.pasteText}
-              onChange={(e) => setState((s) => ({ ...s, pasteText: e.target.value }))}
-              placeholder={"One ad caption per line (min 3)…"}
-              rows={4}
-              style={{ ...inputStyle, width: "100%", marginTop: 8, fontFamily: "inherit", resize: "vertical" }}
-            />
-            <button onClick={handleScorePaste} disabled={state.loading} style={{ ...secondaryBtnStyle(state.loading), marginTop: 8 }}>
-              Score pasted ads →
-            </button>
-          </details>
-
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              void handleFilesSelected(e.dataTransfer.files);
-            }}
-            onClick={() => document.getElementById("upload-input")?.click()}
-            style={{
-              border: "1px dashed var(--border)",
-              borderRadius: 8,
-              padding: 20,
-              textAlign: "center",
-              cursor: "pointer",
-              marginBottom: 8,
-            }}
-          >
-            <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              Drag &amp; drop real ad screenshots here (min 3, max {MAX_UPLOADED_IMAGES}) — or click to browse
-            </p>
-            <input
-              id="upload-input"
-              type="file"
-              accept="image/*"
-              multiple
-              style={{ display: "none" }}
-              onChange={(e) => {
-                if (e.target.files) void handleFilesSelected(e.target.files);
-                e.target.value = "";
-              }}
-            />
-          </div>
-
-          {state.uploadedImages.length > 0 && (
-            <>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-                {state.uploadedImages.map((img) => (
-                  <div key={img.id} style={{ position: "relative" }}>
-                    <img
-                      src={img.previewUrl}
-                      alt={img.fileName}
-                      style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)" }}
-                    />
-                    <button
-                      onClick={() => handleRemoveUploadedImage(img.id)}
-                      style={{
-                        position: "absolute",
-                        top: -6,
-                        right: -6,
-                        width: 18,
-                        height: 18,
-                        borderRadius: "50%",
-                        border: "none",
-                        background: "#f87171",
-                        color: "#fff",
-                        fontSize: 11,
-                        lineHeight: "18px",
-                        cursor: "pointer",
-                        padding: 0,
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={handleScoreUpload}
-                disabled={state.loading || state.uploadedImages.length < 3}
-                style={{ ...secondaryBtnStyle(state.loading), marginBottom: 8 }}
-              >
-                Score uploaded images →
-              </button>
-            </>
-          )}
-
-          {state.userAds.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
-                YOUR AD SET ({state.userAds.length} ads)
-              </p>
-              {state.userAds.map((ad) => (
-                <div key={ad.id} style={{ ...cardStyle, padding: "8px 12px" }}>
-                  {!ad.copy && ad.coverUrl ? (
-                    <img src={ad.coverUrl} alt="" style={{ maxWidth: 120, borderRadius: 6, display: "block" }} />
-                  ) : (
-                    <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{ad.copy}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ── Step 5: Diversity result ─────────────────────────────────────────── */}
-      {clustering && (
-        <section id="step-score" style={{ marginBottom: 40 }}>
-          <div style={sectionHeaderStyle}>
-            <Label step="5" text={`Meta likely sees these ${clustering.nAds} ads as ${clustering.kConcepts} concepts`} />
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              {state.fromSeed && state.selectedSample && (
-                <ShareLinkButton vertical={currentSlug} sample={state.selectedSample} />
-              )}
-              <button onClick={handleGenerate} disabled={state.loading} style={primaryBtnStyle(state.loading)}>
-                {state.loading && state.loadingStep.includes("angle") ? "Generating…" : "Generate Angles →"}
-              </button>
-            </div>
-          </div>
-
-          {/* Waste headline — the Entity-ID collapse, quantified (Feature A1) */}
-          <div style={{ ...calloutStyle, borderColor: "rgba(245,158,11,0.4)", background: "rgba(245,158,11,0.06)", marginBottom: 16 }}>
-            <p style={{ fontSize: 14, lineHeight: 1.6 }}>
-              You&apos;re managing <strong>{clustering.nAds} ads</strong>, but Meta&apos;s Andromeda likely reads them as{" "}
-              <strong>{clustering.kConcepts} distinct concepts</strong> —{" "}
-              <strong style={{ color: "#f59e0b" }}>
-                {redundant} {redundant === 1 ? "is a redundant duplicate" : "are redundant duplicates"}
-              </strong>{" "}
-              (~{wastePct}% of your creative-testing effort is wasted auction entries).
-            </p>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Monthly creative-test budget ($):</span>
-              <input
-                value={state.budget}
-                onChange={(e) => setState((s) => ({ ...s, budget: e.target.value }))}
-                placeholder="e.g. 10000"
-                inputMode="numeric"
-                style={{ ...inputStyle, flex: "none", width: 130, padding: "6px 10px" }}
-              />
-              {estWaste !== null && (
-                <span style={{ fontSize: 13, fontWeight: 600 }}>
-                  ≈ <span style={{ color: "#f59e0b" }}>${estWaste.toLocaleString()}/mo</span> managing redundant creative{" "}
-                  <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(estimated)</span>
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Visual collapse — N ad cards grouping into K concept buckets (Feature A2) */}
-          {clustering.clusters.length === 0 && (
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>
-              No distinct concepts were detected in this ad set.
-            </p>
-          )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {clustering.clusters.map((cluster, i) => {
-              const color = BUCKET_COLORS[i % BUCKET_COLORS.length];
-              return (
-                <div key={i} style={{ ...cardStyle, borderColor: color, borderLeft: `3px solid ${color}` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <p style={{ fontWeight: 600, fontSize: 13, color }}>{cluster.concept}</p>
-                    {cluster.adIds.length > 1 && (
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: color, borderRadius: 9999, padding: "2px 9px", whiteSpace: "nowrap" }}>
-                        {cluster.adIds.length}× collapsed
-                      </span>
-                    )}
-                  </div>
-                  <p style={{ color: "var(--text-muted)", fontSize: 12, marginBottom: 10 }}>{cluster.reason}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {cluster.adIds.map((id) => {
-                      const matchedAd = adById.get(id);
-                      if (matchedAd && !matchedAd.copy && matchedAd.coverUrl) {
-                        return (
-                          <img
-                            key={id}
-                            src={matchedAd.coverUrl}
-                            alt=""
-                            style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)" }}
-                          />
-                        );
-                      }
-                      return (
-                        <div
-                          key={id}
-                          style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.45, padding: "7px 11px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)", width: "100%" }}
-                        >
-                          {matchedAd?.copy ?? id}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Market-vs-you coverage — what's proven vs what you're missing (Feature D) */}
-          {(marketAngles.length > 0 || clustering.gaps.length > 0) && (
-            <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
-              {marketAngles.length > 0 && (
-                <div style={{ ...calloutStyle, flex: "1 1 240px" }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", marginBottom: 10 }}>
-                    PROVEN IN YOUR MARKET
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {marketAngles.map(([angle, count]) => (
-                      <span key={angle} style={{ fontSize: 12, padding: "3px 10px", borderRadius: 9999, border: "1px solid var(--border)", background: "var(--bg)" }}>
-                        {angle} <span style={{ color: "var(--text-muted)" }}>×{count}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {clustering.gaps.length > 0 && (
-                <div style={{ ...calloutStyle, flex: "1 1 240px", borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.06)" }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#f59e0b", marginBottom: 10 }}>
-                    YOU&apos;RE NOT RUNNING — angle gaps
-                  </p>
-                  <ul style={{ paddingLeft: 16, margin: 0 }}>
-                    {clustering.gaps.map((g, i) => (
-                      <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 6 }}>{g}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ── Pre-flight check — test a planned ad before you spend (Feature B) ──── */}
-      {clustering && (
-        <section style={{ marginBottom: 40 }}>
-          <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
-            PRE-FLIGHT CHECK — test a planned ad before you spend
-          </p>
-          <p style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 12 }}>
-            Before you spend on a new creative, check whether Meta would treat it as a new
-            Entity ID — or silently fold it into a concept you&apos;re already running.
-          </p>
-
-          {state.preflightExamples.length > 0 && (
-            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-              {state.preflightExamples.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => handlePreflightSeed(ex.id)}
-                  disabled={state.loading}
-                  style={chipStyle(state.preflight?.candidateAd?.id === ex.id)}
-                >
-                  {ex.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <details style={{ marginBottom: 8 }}>
-            <summary style={{ fontSize: 13, color: "var(--text-muted)", cursor: "pointer" }}>
-              …or test your own planned ad
-            </summary>
-            <textarea
-              value={state.preflightPasteText}
-              onChange={(e) => setState((s) => ({ ...s, preflightPasteText: e.target.value }))}
-              placeholder="Paste your planned ad caption…"
-              rows={3}
-              style={{ ...inputStyle, width: "100%", marginTop: 8, fontFamily: "inherit", resize: "vertical" }}
-            />
-            <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-              <button onClick={handlePreflightPaste} disabled={state.loading} style={secondaryBtnStyle(state.loading)}>
-                Check this ad →
-              </button>
-              <button
-                onClick={() => document.getElementById("preflight-upload-input")?.click()}
-                disabled={state.loading}
-                style={secondaryBtnStyle(state.loading)}
-              >
-                …or upload a screenshot
-              </button>
-              <input
-                id="preflight-upload-input"
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) void handlePreflightImage(file);
-                  e.target.value = "";
-                }}
-              />
-            </div>
-          </details>
-
-          {state.preflight?.verdict && (
-            <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
-              {state.preflight.candidateAd && (
-                <div style={{ ...cardStyle, flex: "0 0 160px", padding: "8px 12px" }}>
-                  {state.preflight.candidateAd.coverUrl && (
-                    <img
-                      src={state.preflight.candidateAd.coverUrl}
-                      alt=""
-                      style={{ width: "100%", borderRadius: 6, display: "block", marginBottom: 8 }}
-                    />
-                  )}
-                  {state.preflight.candidateAd.copy && (
-                    <p style={{ color: "var(--text-muted)", fontSize: 12, lineHeight: 1.5 }}>{state.preflight.candidateAd.copy}</p>
-                  )}
-                </div>
-              )}
-              <div
-                style={{
-                  ...calloutStyle,
-                  flex: "1 1 320px",
-                  borderColor: state.preflight.verdict.verdict === "collapses" ? "rgba(248,113,113,0.4)" : "rgba(16,185,129,0.4)",
-                  background: state.preflight.verdict.verdict === "collapses" ? "rgba(248,113,113,0.06)" : "rgba(16,185,129,0.06)",
-                }}
-              >
-                {state.preflight.verdict.verdict === "collapses" ? (
-                  <>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#f87171", marginBottom: 6 }}>
-                      ⚠ Collapses into &ldquo;{state.preflight.verdict.collidesWith}&rdquo;
-                    </p>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 10 }}>
-                      {state.preflight.verdict.reason} — a wasted auction entry.
-                    </p>
-                    {state.preflight.verdict.fixes.length > 0 && (
-                      <>
-                        <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>To earn a new Entity ID:</p>
-                        <ul style={{ paddingLeft: 16, margin: 0 }}>
-                          {state.preflight.verdict.fixes.map((f, i) => (
-                            <li key={i} style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 6 }}>{f}</li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#10b981", marginBottom: 6 }}>
-                      ✓ Genuinely new concept — safe to produce
-                    </p>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{state.preflight.verdict.reason}</p>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ── Step 6: Angle briefs ─────────────────────────────────────────────── */}
-      {state.briefs.length > 0 && (
-        <section id="step-briefs">
-          <div style={sectionHeaderStyle}>
-            <Label step="6" text={`${state.briefs.length} prioritized angle briefs`} />
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <button onClick={handleExportCSV} style={secondaryBtnStyle(false)}>
-                Export CSV
-              </button>
-              <button onClick={handleExportJSON} style={secondaryBtnStyle(false)}>
-                Export for production (JSON)
-              </button>
-            </div>
-          </div>
-          <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: -6, marginBottom: 12 }}>
-            CSV for bulk sheets · JSON for the video-generation pipeline
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {[...state.briefs].sort((a, b) => a.priority - b.priority).map((brief, i) => (
-              <div key={i} style={cardStyle}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                  <div>
-                    <span style={{ fontWeight: 700, fontSize: 14 }}>{brief.angleName}</span>
-                    <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 10 }}>
-                      #{brief.priority} · {brief.emotionalDriver}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleCopyBrief(brief)}
-                    style={{ fontSize: 11, color: "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}
-                  >
-                    Copy
-                  </button>
-                </div>
-                <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>{brief.whyNow}</p>
-                <p style={{ fontSize: 14, fontStyle: "italic", marginBottom: 10 }}>&ldquo;{brief.hookLine}&rdquo;</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <CopyVariant platform="Meta" copy={brief.variants.meta} />
-                  <CopyVariant platform="TikTok" copy={brief.variants.tiktok} />
-                  <CopyVariant platform="Native" copy={brief.variants.native} />
-                </div>
-                <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
-                  Format: {brief.formatRecommendation} · Persona: {brief.targetPersona}
-                </p>
-                {brief.evidenceAdIds.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginTop: 10 }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-muted)" }}>EVIDENCE</span>
-                    {brief.evidenceAdIds.map((id) => {
-                      const ad = marketAdById.get(id);
-                      return ad ? <EvidenceChip key={id} ad={ad} /> : null;
-                    })}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Batch integrity panel — the brief batch's own diversity (Feature A5) */}
-          {state.briefClustering && (
-            <div
-              style={{
-                ...calloutStyle,
-                marginTop: 16,
-                borderColor: briefIntegrityRatio >= 0.9 ? "rgba(16,185,129,0.4)" : "rgba(245,158,11,0.4)",
-                background: briefIntegrityRatio >= 0.9 ? "rgba(16,185,129,0.06)" : "rgba(245,158,11,0.06)",
-              }}
-            >
-              <p style={{ fontSize: 13, fontWeight: 600 }}>
-                {state.briefClustering.nAds} briefs → {state.briefClustering.kConcepts} distinct concepts
-              </p>
-              {state.clustering && (
-                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
-                  Your current set: {state.clustering.nAds} ads → {state.clustering.kConcepts} concepts.
-                </p>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-    </main>
-  );
-}
-
-// ── Sub-components ─────────────────────────────────────────────────────────────
-
-function Label({ step, text, badge }: { step: string; text: string; badge?: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-      <span style={{ background: "var(--accent)", color: "#fff", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
-        {step}
-      </span>
-      <span style={{ fontWeight: 600, fontSize: 15 }}>{text}</span>
-      {badge && (
-        <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 9999, background: badge === "instant" ? "#10b981" : "#6366f1", color: "#fff", fontWeight: 600 }}>
-          {badge}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function EvidenceChip({ ad }: { ad: Ad }) {
-  const [imgError, setImgError] = useState(false);
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        padding: "3px 9px 3px 3px",
-        borderRadius: 9999,
-        border: "1px solid var(--border)",
-        background: "var(--bg)",
-      }}
-    >
-      {ad.coverUrl && !imgError ? (
-        <img
-          src={ad.coverUrl}
-          alt=""
-          onError={() => setImgError(true)}
-          style={{ width: 32, height: 32, objectFit: "cover", borderRadius: "50%" }}
+        <CatchSection
+          innerRef={catchRef}
+          ads={sortedAds}
+          dnaById={dnaById}
+          selected={state.selectedAd}
+          onSelect={(i) => setState((s) => ({ ...s, selectedAd: i }))}
+          winnerSummary={state.winnerSummary}
+          fromSeed={state.fromSeed}
+          cachedDate={SEED_CACHED_DATE}
+          sourcesLabel={sourcesLabel}
+          extractLabel={
+            hasMarketDna ? "Extract DNA ↓" : state.loading && state.loadingStep.includes("DNA") ? "Analyzing…" : "Extract DNA →"
+          }
+          onExtract={() => (hasMarketDna ? scrollToStep("step-dna") : void handleDeconstruct())}
+          extractDisabled={state.loading}
         />
-      ) : (
-        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--surface)", border: "1px solid var(--border)" }} />
       )}
-      <span style={{ fontSize: 11, color: "var(--text)", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {ad.advertiser}
-      </span>
-      <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#10b981", borderRadius: 9999, padding: "1px 7px", whiteSpace: "nowrap" }}>
-        {ad.runDays}d
-      </span>
-    </div>
+
+      {hasMarketDna && (
+        <DnaSection
+          innerRef={dnaRef}
+          marketDna={state.marketDna}
+          adById={marketAdById}
+          filter={dnaFilter}
+          onToggle={(dim, v) => setDnaFilter((f) => ({ ...f, [dim]: f[dim] === v ? null : v }))}
+          onClear={() => setDnaFilter(NO_FILTER)}
+        />
+      )}
+
+      {hasMarketDna && (
+        <AuditSection
+          innerRef={auditRef}
+          loading={state.loading}
+          loadingStep={state.loadingStep}
+          samples={samplesToShow}
+          selectedSample={state.selectedSample}
+          onScoreSample={(slug) => void handleScoreSample(slug)}
+          pasteText={state.pasteText}
+          onPasteText={(v) => setState((s) => ({ ...s, pasteText: v }))}
+          onScorePaste={() => void handleScorePaste()}
+          uploadedImages={state.uploadedImages}
+          onFilesSelected={handleFilesSelected}
+          onRemoveImage={handleRemoveUploadedImage}
+          onScoreUpload={() => void handleScoreUpload()}
+          maxImages={MAX_UPLOADED_IMAGES}
+          sampleLabel={state.sampleLabel}
+          userAds={state.userAds}
+          clustering={clustering}
+          marksOn={marksOn}
+          countT={countT}
+          budget={state.budget}
+          onBudget={(v) => setState((s) => ({ ...s, budget: v }))}
+          marketAngles={marketAngles}
+          shareUrl={shareUrl}
+          preflightExamples={state.preflightExamples}
+          preflight={state.preflight}
+          onPreflightSeed={(id) => void handlePreflightSeed(id)}
+          preflightPasteText={state.preflightPasteText}
+          onPreflightPasteText={(v) => setState((s) => ({ ...s, preflightPasteText: v }))}
+          onPreflightPaste={() => void handlePreflightPaste()}
+          onPreflightImage={(file) => void handlePreflightImage(file)}
+          onGenerate={() => void handleGenerate()}
+          hasBriefs={state.briefs.length > 0}
+        />
+      )}
+
+      {state.briefs.length > 0 && (
+        <BriefsSection
+          innerRef={briefsRef}
+          briefs={state.briefs}
+          marketAdById={marketAdById}
+          clustering={clustering}
+          briefClustering={state.briefClustering}
+          onExportCSV={handleExportCSV}
+          onExportJSON={handleExportJSON}
+          copyBriefText={copyBriefText}
+        />
+      )}
+
+      {/* status pill: progress + errors for operations run after the initial cast */}
+      {((state.loading && hasAds) || state.error) && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 18,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 70,
+            background: state.error ? C.amberBg : "rgba(28,25,23,0.92)",
+            color: state.error ? C.amber : C.paper,
+            border: state.error ? `1px solid ${C.amberBorder}` : "none",
+            borderRadius: 999,
+            padding: "9px 18px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            boxShadow: "0 8px 24px rgba(28,25,23,0.2)",
+            maxWidth: "min(90vw, 640px)",
+          }}
+        >
+          {state.loading && !state.error && (
+            <span style={{ position: "relative", width: 14, height: 14, flexShrink: 0 }}>
+              <span style={{ position: "absolute", inset: 0, border: `1.5px solid ${C.paper}`, borderRadius: "50%", animation: "ripple 1.6s ease-out infinite" }} />
+              <span style={{ position: "absolute", inset: 5, background: C.paper, borderRadius: "50%" }} />
+            </span>
+          )}
+          <span style={{ ...font(500, 12, state.error ? SANS : MONO) }}>{state.error ?? state.loadingStep}</span>
+          {state.error && (
+            <button
+              onClick={() => setState((s) => ({ ...s, error: null }))}
+              aria-label="Dismiss error"
+              style={{ background: "none", border: "none", color: C.amber, cursor: "pointer", ...font(700, 13, SANS), padding: 0 }}
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
+    </>
   );
 }
-
-function ShareLinkButton({ vertical, sample }: { vertical: string; sample: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    const url = `${location.origin}${location.pathname}?v=${vertical}&s=${sample}`;
-    void navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
-  return (
-    <button onClick={handleCopy} style={secondaryBtnStyle(false)}>
-      {copied ? "✓ Copied" : "Copy share link"}
-    </button>
-  );
-}
-
-function CopyVariant({ platform, copy }: { platform: string; copy: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    void navigator.clipboard.writeText(copy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
-  return (
-    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", minWidth: 44, paddingTop: 1 }}>{platform}</span>
-      <span style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.4, flex: 1 }}>{copy}</span>
-      <button
-        onClick={handleCopy}
-        style={{ fontSize: 11, color: copied ? "#10b981" : "var(--text-muted)", background: "none", border: "1px solid var(--border)", borderRadius: 4, padding: "2px 7px", cursor: "pointer", flexShrink: 0, transition: "color 0.15s" }}
-      >
-        {copied ? "✓" : "Copy"}
-      </button>
-    </div>
-  );
-}
-
-// ── Styles ─────────────────────────────────────────────────────────────────────
-
-// Distinct hues for the concept buckets in Step 5 (cycled by index).
-const BUCKET_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#06b6d4", "#a855f7"];
-
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  padding: "10px 14px",
-  borderRadius: 8,
-  border: "1px solid var(--border)",
-  background: "var(--surface)",
-  color: "var(--text)",
-  fontSize: 14,
-  outline: "none",
-};
-
-function chipStyle(active: boolean): React.CSSProperties {
-  return {
-    padding: "5px 13px",
-    borderRadius: 9999,
-    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-    background: active ? "rgba(99,102,241,0.15)" : "var(--surface)",
-    color: active ? "var(--accent)" : "var(--text-muted)",
-    cursor: "pointer",
-    fontSize: 13,
-    fontWeight: active ? 600 : 400,
-  };
-}
-
-function primaryBtnStyle(loading: boolean): React.CSSProperties {
-  return {
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: loading ? "#4338ca" : "var(--accent)",
-    color: "#fff",
-    fontWeight: 600,
-    cursor: loading ? "not-allowed" : "pointer",
-    fontSize: 14,
-    whiteSpace: "nowrap",
-  };
-}
-
-function secondaryBtnStyle(loading: boolean): React.CSSProperties {
-  return {
-    padding: "7px 14px",
-    borderRadius: 8,
-    border: "1px solid var(--accent)",
-    background: "transparent",
-    color: "var(--accent)",
-    fontWeight: 600,
-    cursor: loading ? "not-allowed" : "pointer",
-    fontSize: 13,
-    whiteSpace: "nowrap",
-  };
-}
-
-const cardStyle: React.CSSProperties = {
-  padding: 16,
-  borderRadius: 8,
-  border: "1px solid var(--border)",
-  background: "var(--surface)",
-};
-
-const calloutStyle: React.CSSProperties = {
-  padding: 16,
-  borderRadius: 8,
-  border: "1px solid rgba(99,102,241,0.3)",
-  background: "rgba(99,102,241,0.06)",
-};
-
-const sectionHeaderStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 12,
-};
