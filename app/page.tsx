@@ -16,7 +16,6 @@ interface AppState {
   ads: Ad[];
   winnerSummary: string | null;
   fromSeed: boolean;
-  unavailable: string | null;
   marketDna: { adId: string; dna: CreativeDNA }[];
   selectedAd: number;
   // Module 3: the user's own ad set
@@ -24,15 +23,12 @@ interface AppState {
   userAds: Ad[];
   selectedSample: string | null;
   sampleLabel: string | null;
-  pasteText: string;
-  uploadedImages: { id: string; fileName: string; previewUrl: string; base64: string }[];
   budget: string;
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
   briefClustering: ConceptClustering | null;
   // Module 3.5: pre-flight check on a planned ad
   preflightExamples: PreflightExampleSummary[];
-  preflightPasteText: string;
   preflight: { candidateAd: Ad | null; verdict: PreflightVerdict | null } | null;
   loading: boolean;
   loadingStep: string;
@@ -67,21 +63,17 @@ const INITIAL: AppState = {
   ads: [],
   winnerSummary: null,
   fromSeed: false,
-  unavailable: null,
   marketDna: [],
   selectedAd: 0,
   sampleSets: [],
   userAds: [],
   selectedSample: null,
   sampleLabel: null,
-  pasteText: "",
-  uploadedImages: [],
   budget: "",
   clustering: null,
   briefs: [],
   briefClustering: null,
   preflightExamples: [],
-  preflightPasteText: "",
   preflight: null,
   loading: false,
   loadingStep: "",
@@ -115,35 +107,6 @@ function scrollToStep(id: string) {
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: "smooth" });
 }
 const jsonHeaders = { "Content-Type": "application/json" };
-
-const MAX_UPLOAD_DIMENSION = 1024;
-const MAX_UPLOADED_IMAGES = 10;
-
-// Resizes/re-encodes an image client-side so upload payloads stay well under
-// Vercel's ~4.5MB Route Handler body limit, regardless of the source file size.
-function compressImage(file: File): Promise<{ base64: string; previewUrl: string }> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error("Failed to load image"));
-      img.onload = () => {
-        const scale = Math.min(1, MAX_UPLOAD_DIMENSION / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return reject(new Error("Canvas not supported"));
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const previewUrl = canvas.toDataURL("image/jpeg", 0.8);
-        resolve({ base64: previewUrl.split(",")[1] ?? "", previewUrl });
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
-}
 
 const NO_FILTER: DnaFilter = { angle: null, format: null, hookType: null };
 
@@ -260,52 +223,6 @@ export default function Home() {
     setLog((l) => (l.length && l.some((x) => x.tone === "current") ? [...l.map((x) => (x.tone === "current" ? { ...x, tone: "past" as const } : x)), { text: error, tone: "error" as const }] : l));
   }
 
-  // ── Module 1: mine a vertical (seed or live) ──────────────────────────
-  async function handleMine() {
-    setLog([]);
-    pushLog(`casting into ${state.vertical.trim()}…`);
-    setLoading("Pulling competitor ads…");
-    try {
-      const res = await fetch("/api/mine", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ vertical: state.vertical }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error ?? "Something went wrong");
-      const ads: Ad[] = data.ads ?? [];
-      setState((s) => ({
-        ...s,
-        ads,
-        winnerSummary: data.winnerSummary ?? null,
-        fromSeed: !!data.fromSeed,
-        unavailable: data.unavailable ? data.message : null,
-        marketDna: [],
-        selectedAd: 0,
-        userAds: [],
-        selectedSample: null,
-        sampleLabel: null,
-        clustering: null,
-        briefs: [],
-        briefClustering: null,
-        preflightExamples: [],
-        preflight: null,
-        loading: false,
-        loadingStep: "",
-        error: null,
-      }));
-      setDnaFilter(NO_FILTER);
-      if (ads.length) {
-        const maxDays = Math.max(...ads.map((a) => a.runDays));
-        pushLog(`${ads.length} ads hooked · longest runner ${maxDays} days`);
-        doneLog("done. extract the DNA below to read why they win");
-        setTimeout(() => scrollToStep("step-ads"), 150);
-      }
-    } catch {
-      setError("Network error. Please try again");
-    }
-  }
-
   // ── Module 2: creative-DNA extraction ─────────────────────────────────
   async function handleDeconstruct() {
     setLoading("Extracting creative DNA…");
@@ -384,119 +301,6 @@ export default function Home() {
     }
   }
 
-  // ── Module 3: score pasted ad copy (live path; needs an AI key) ───────
-  async function handleScorePaste() {
-    const lines = state.pasteText.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (lines.length < 3) return setError("Paste at least 3 ad captions (one per line).");
-    history.replaceState(null, "", location.pathname);
-    setLoading("Analyzing & scoring your ad set…");
-    try {
-      const userAds: Ad[] = lines.map((copy, i) => ({
-        id: `paste_${i}`,
-        source: "uploaded",
-        advertiser: "Your Ad Set",
-        coverUrl: "",
-        copy,
-        firstSeen: "",
-        lastSeen: "",
-        runDays: 0,
-        rawMetrics: {},
-      }));
-
-      const dnaRes = await fetch("/api/deconstruct", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ adKind: "uploaded", ads: userAds.map((a) => ({ id: a.id, copy: trimCopy(a.copy) })) }),
-      });
-      const dnaData = await dnaRes.json();
-      if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
-
-      const res = await fetch("/api/score", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({
-          dna: dnaData.results,
-          marketDNA: state.marketDna.map((r) => r.dna),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error ?? "Failed to score diversity");
-      setState((s) => ({
-        ...s,
-        userAds,
-        selectedSample: null,
-        sampleLabel: "your pasted captions",
-        clustering: data.clustering,
-        briefs: [],
-        briefClustering: null,
-        preflightExamples: [],
-        preflight: null,
-        loading: false,
-        loadingStep: "",
-      }));
-    } catch {
-      setError("Network error. Please try again");
-    }
-  }
-
-  // ── Module 3: score uploaded ad images (live path; needs an AI key + vision) ─
-  async function handleScoreUpload() {
-    const images = state.uploadedImages;
-    if (images.length < 3) return setError("Upload at least 3 ad images.");
-    history.replaceState(null, "", location.pathname);
-    setLoading("Analyzing your ad creative…");
-    try {
-      const userAds: Ad[] = images.map((img, i) => ({
-        id: `upload_${i}`,
-        source: "uploaded",
-        advertiser: "Your Ad Set",
-        coverUrl: img.previewUrl,
-        copy: "",
-        firstSeen: "",
-        lastSeen: "",
-        runDays: 0,
-        rawMetrics: {},
-      }));
-
-      const dnaRes = await fetch("/api/deconstruct", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({
-          adKind: "uploaded",
-          ads: images.map((img, i) => ({ id: `upload_${i}`, imageBase64: img.base64 })),
-        }),
-      });
-      const dnaData = await dnaRes.json();
-      if (!dnaRes.ok) return setError(dnaData.error ?? "Failed to analyze your ads");
-
-      const res = await fetch("/api/score", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({
-          dna: dnaData.results,
-          marketDNA: state.marketDna.map((r) => r.dna),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error ?? "Failed to score diversity");
-      setState((s) => ({
-        ...s,
-        userAds,
-        selectedSample: null,
-        sampleLabel: "your uploaded screenshots",
-        clustering: data.clustering,
-        briefs: [],
-        briefClustering: null,
-        preflightExamples: [],
-        preflight: null,
-        loading: false,
-        loadingStep: "",
-      }));
-    } catch {
-      setError("Network error. Please try again");
-    }
-  }
-
   // Non-blocking "dog food" self-score of a generated brief batch's own
   // diversity, fired after live-path briefs render (seed path already has
   // briefClustering baked in). Failure is silent: never block or error the demo.
@@ -562,85 +366,6 @@ export default function Home() {
         loading: false,
         loadingStep: "",
       }));
-    } catch {
-      setError("Network error. Please try again");
-    }
-  }
-
-  async function handlePreflightPaste() {
-    if (!state.clustering) return;
-    const copy = state.preflightPasteText.trim();
-    if (!copy) return setError("Paste an ad caption to check.");
-    setLoading("Analyzing your planned ad…");
-    try {
-      const candidateId = `preflight_${Date.now()}`;
-      const dnaRes = await fetch("/api/deconstruct", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, copy: trimCopy(copy) }] }),
-      });
-      const dnaData = await dnaRes.json();
-      if (!dnaRes.ok || !dnaData.results?.[0]) return setError(dnaData.error ?? "Failed to analyze your planned ad");
-
-      const res = await fetch("/api/preflight", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ clustering: state.clustering, candidate: dnaData.results[0].dna }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error ?? "Pre-flight check failed");
-
-      const candidateAd: Ad = {
-        id: candidateId,
-        source: "planned",
-        advertiser: "Your planned ad",
-        coverUrl: "",
-        copy,
-        firstSeen: "",
-        lastSeen: "",
-        runDays: 0,
-        rawMetrics: {},
-      };
-      setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
-    } catch {
-      setError("Network error. Please try again");
-    }
-  }
-
-  async function handlePreflightImage(file: File) {
-    if (!state.clustering) return;
-    setLoading("Analyzing your planned ad…");
-    try {
-      const { base64, previewUrl } = await compressImage(file);
-      const candidateId = `preflight_${Date.now()}`;
-      const dnaRes = await fetch("/api/deconstruct", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ adKind: "uploaded", ads: [{ id: candidateId, imageBase64: base64 }] }),
-      });
-      const dnaData = await dnaRes.json();
-      if (!dnaRes.ok || !dnaData.results?.[0]) return setError(dnaData.error ?? "Failed to analyze your planned ad");
-
-      const res = await fetch("/api/preflight", {
-        method: "POST",
-        headers: jsonHeaders,
-        body: JSON.stringify({ clustering: state.clustering, candidate: dnaData.results[0].dna }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error ?? "Pre-flight check failed");
-
-      const candidateAd: Ad = {
-        id: candidateId,
-        source: "planned",
-        advertiser: "Your planned ad",
-        coverUrl: previewUrl,
-        copy: "",
-        firstSeen: "",
-        lastSeen: "",
-        runDays: 0,
-        rawMetrics: {},
-      };
-      setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
     } catch {
       setError("Network error. Please try again");
     }
@@ -735,13 +460,12 @@ export default function Home() {
     }
   }
 
-  // Hero CTA: seed verticals get the instant full demo; anything else is a live pull.
+  // Hero CTA: only seeded verticals can be selected, so this always runs the instant demo.
   function handleCast() {
     const v = state.vertical.trim();
     if (!v || state.loading) return;
     const seed = SEED_VERTICALS.find((sv) => slugify(sv.value) === slugify(v));
     if (seed) void runSeedDemo(seed.value, null);
-    else void handleMine();
   }
 
   // Nav demo button: re-runs nothing if results already exist, just reels back up.
@@ -825,29 +549,9 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
-  async function handleFilesSelected(files: FileList | File[]) {
-    const remaining = MAX_UPLOADED_IMAGES - state.uploadedImages.length;
-    const toProcess = Array.from(files)
-      .filter((f) => f.type.startsWith("image/"))
-      .slice(0, Math.max(0, remaining));
-    if (toProcess.length === 0) return;
-    const compressed = await Promise.all(
-      toProcess.map(async (file) => {
-        const { base64, previewUrl } = await compressImage(file);
-        return { id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, fileName: file.name, previewUrl, base64 };
-      }),
-    );
-    setState((s) => ({ ...s, uploadedImages: [...s.uploadedImages, ...compressed].slice(0, MAX_UPLOADED_IMAGES) }));
-  }
-
-  function handleRemoveUploadedImage(id: string) {
-    setState((s) => ({ ...s, uploadedImages: s.uploadedImages.filter((img) => img.id !== id) }));
-  }
-
   // ── Derived values ─────────────────────────────────────────────────────
   const currentSlug = slugify(state.vertical);
-  const relevantSamples = state.sampleSets.filter((s) => s.vertical === currentSlug);
-  const samplesToShow = relevantSamples.length ? relevantSamples : state.sampleSets;
+  const samplesToShow = state.sampleSets.filter((s) => s.vertical === currentSlug);
 
   const hasAds = state.ads.length > 0;
   const hasMarketDna = state.marketDna.length > 0;
@@ -902,13 +606,11 @@ export default function Home() {
 
       <Hero
         vertical={state.vertical}
-        onVerticalChange={(v) => setState((s) => ({ ...s, vertical: v }))}
         onCast={handleCast}
         chips={SEED_VERTICALS.map((v) => ({ label: v.label, value: v.value, active: state.vertical === v.value }))}
         onChipSelect={(value) => setState((s) => ({ ...s, vertical: value }))}
         loading={state.loading}
         log={log}
-        unavailable={state.unavailable}
       />
 
       {hasAds && (
@@ -949,14 +651,6 @@ export default function Home() {
           samples={samplesToShow}
           selectedSample={state.selectedSample}
           onScoreSample={(slug) => void handleScoreSample(slug)}
-          pasteText={state.pasteText}
-          onPasteText={(v) => setState((s) => ({ ...s, pasteText: v }))}
-          onScorePaste={() => void handleScorePaste()}
-          uploadedImages={state.uploadedImages}
-          onFilesSelected={handleFilesSelected}
-          onRemoveImage={handleRemoveUploadedImage}
-          onScoreUpload={() => void handleScoreUpload()}
-          maxImages={MAX_UPLOADED_IMAGES}
           sampleLabel={state.sampleLabel}
           userAds={state.userAds}
           clustering={clustering}
@@ -969,10 +663,6 @@ export default function Home() {
           preflightExamples={state.preflightExamples}
           preflight={state.preflight}
           onPreflightSeed={(id) => void handlePreflightSeed(id)}
-          preflightPasteText={state.preflightPasteText}
-          onPreflightPasteText={(v) => setState((s) => ({ ...s, preflightPasteText: v }))}
-          onPreflightPaste={() => void handlePreflightPaste()}
-          onPreflightImage={(file) => void handlePreflightImage(file)}
           onGenerate={() => void handleGenerate()}
           hasBriefs={state.briefs.length > 0}
         />
