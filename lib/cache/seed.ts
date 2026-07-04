@@ -43,13 +43,19 @@ interface SampleSetFile {
 const SEED_DIR = join(process.cwd(), "data", "seed");
 const SAMPLE_DIR = join(SEED_DIR, "samples");
 
+// Slugs reach these loaders straight from request bodies / query strings, so they
+// must never be able to escape the seed directory (e.g. "../../secrets").
+const SAFE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
+
 function loadSeedFile(slug: string): SeedFile | null {
+  if (!SAFE_SLUG.test(slug)) return null;
   const filePath = join(SEED_DIR, `${slug}.json`);
   if (!existsSync(filePath)) return null;
   return JSON.parse(readFileSync(filePath, "utf-8")) as SeedFile;
 }
 
 function loadSampleFile(slug: string): SampleSetFile | null {
+  if (!SAFE_SLUG.test(slug)) return null;
   const filePath = join(SAMPLE_DIR, `${slug}.json`);
   if (!existsSync(filePath)) return null;
   return JSON.parse(readFileSync(filePath, "utf-8")) as SampleSetFile;

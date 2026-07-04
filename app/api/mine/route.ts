@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getOrFetchAds, withRetry } from "@/lib/cache";
-import { getSeedWinnerSummary } from "@/lib/cache/seed";
+import { getSeedAds, getSeedWinnerSummary } from "@/lib/cache/seed";
+import { rateLimited } from "@/lib/rate-limit";
 import { fetchTikTokAds } from "@/lib/sources/tiktok-creative-center";
 import { fetchMetaAds } from "@/lib/sources/apify";
 import { sortByRunDays } from "@/lib/sources/normalize";
@@ -33,7 +34,9 @@ async function getOrCreateVertical(slug: string, displayName: string) {
 async function fetchLiveAds(vertical: string): Promise<Ad[]> {
   if (process.env.APIFY_TOKEN) {
     try {
-      const ads = await withRetry(() => fetchMetaAds(vertical));
+      // No withRetry here: each attempt starts a NEW paid actor run, and one
+      // full poll cycle already uses most of the route's 60s budget.
+      const ads = await fetchMetaAds(vertical);
       if (ads.length > 0) return ads;
     } catch (err) {
       console.error("[mine] Apify source failed:", err);
@@ -62,6 +65,15 @@ export async function POST(req: NextRequest) {
 
   const { vertical } = parsed.data;
   const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  if (!slug) {
+    return NextResponse.json({ error: "Enter a vertical with at least one letter or number" }, { status: 400 });
+  }
+
+  // Seed verticals are free to serve; only novel ones (live scrape spend) are metered.
+  if (!getSeedAds(slug)) {
+    const limited = rateLimited(req);
+    if (limited) return limited;
+  }
 
   let ads: Ad[] = [];
   try {

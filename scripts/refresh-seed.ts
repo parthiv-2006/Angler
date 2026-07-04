@@ -155,7 +155,8 @@ async function getRawAds(v: VerticalConfig): Promise<ApifyRawAd[]> {
     return cached;
   }
   console.log(`  [scrape] running Apify for "${v.query}" (count=${SCRAPE_COUNT})…`);
-  const raw = await fetchMetaAdsRaw(v.query, SCRAPE_COUNT);
+  // Offline bake — allow up to 5 minutes of polling (routes default to ~45s).
+  const raw = await fetchMetaAdsRaw(v.query, SCRAPE_COUNT, 60);
   writeJSON(cachePath, raw);
   console.log(`  [scrape] got ${raw.length} raw items → cached`);
   return raw;

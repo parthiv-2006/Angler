@@ -49,6 +49,37 @@ export const winnerSummarySchema = z.object({
   summary: z.string(),
 });
 
+// Request-boundary variants of the schemas above. Model *output* stays
+// unbounded (a valid response must never fail validation on length), but
+// client-supplied input gets sane size caps so a crafted request can't feed
+// megabytes of text into a paid model call.
+const boundedString = z.string().max(1_000);
+
+export const creativeDNAInputSchema = z.object({
+  hookType: boundedString,
+  angle: boundedString,
+  format: boundedString,
+  offerFraming: boundedString,
+  ctaStyle: boundedString,
+  targetPersona: boundedString,
+  oneLineSummary: boundedString,
+});
+
+export const conceptClusteringInputSchema = z.object({
+  clusters: z
+    .array(
+      z.object({
+        concept: boundedString,
+        adIds: z.array(z.string().max(100)).max(100),
+        reason: boundedString,
+      }),
+    )
+    .max(50),
+  nAds: z.number().int().min(0).max(1_000),
+  kConcepts: z.number().int().min(0).max(1_000),
+  gaps: z.array(boundedString).max(50),
+});
+
 export const preflightVerdictSchema = z.object({
   verdict: z.enum(["collapses", "distinct"]),
   collidesWith: z.string().nullable(), // concept name from the existing clustering, or null

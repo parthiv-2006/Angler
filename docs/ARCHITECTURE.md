@@ -190,9 +190,10 @@ competitor_ads (
 -- structured DNA for an ad (Module 2). Works for competitor AND uploaded ads.
 creative_dna (
   id uuid pk,
-  ad_id text,                  -- app-generated id: competitor_ads.id, uploaded_ads.id,
-                                -- or a client string (paste_*/upload_*/preflight_*) —
-                                -- not a uuid, since not every ad has a DB row
+  ad_id text,                  -- cache key: a competitor ad's stable library id (fb_*/
+                                -- tiktok_*), or for uploaded/pasted ads a content hash
+                                -- (upl_<sha256 prefix>) — client ids like paste_0 repeat
+                                -- across users, so they are never used as cache keys
   ad_kind text,                -- "competitor" | "uploaded"
   hook_type text,
   angle text,
@@ -276,6 +277,23 @@ The live URL must never feel flaky (it's a judging criterion by proxy). Required
   `CLAUDE.md`.)
 - Validate and sanitize all user input (vertical strings, uploaded files) at the boundary.
 - Treat uploaded creatives as untrusted: size/type limits, no execution.
+
+Implemented protections (2026-07-04 security audit):
+
+- **Slug validation:** every seed/sample file loader rejects slugs outside
+  `[a-z0-9-]` before touching the filesystem, closing path traversal via
+  `/api/samples?slug=`, `/api/score` `sampleSetId`, and `/api/preflight` `sampleSetId`.
+- **Bounded inputs:** request-side schema variants cap every client-supplied string
+  and array (`creativeDNAInputSchema`, `conceptClusteringInputSchema`, per-ad caps in
+  `/api/deconstruct`) so a crafted request can't feed megabytes into a paid model call.
+- **Rate limiting:** `lib/rate-limit.ts` applies a best-effort in-memory
+  30 req/min/IP window to the five spend routes, after the seed short-circuits so
+  the zero-credential demo is never metered.
+- **Cache keying:** uploaded/pasted ad DNA is cached by content hash, never by the
+  client's reused `paste_0`-style ids (prevents cross-user cache poisoning).
+- **Response headers:** `nosniff`, `X-Frame-Options: DENY`, and a strict referrer
+  policy on all responses (`next.config.ts`).
+- **CSV export** neutralizes spreadsheet formula injection (`=`, `+`, `-`, `@` prefixes).
 
 ---
 

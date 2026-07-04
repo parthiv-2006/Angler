@@ -25,7 +25,6 @@ export class GeminiProvider implements AIProvider {
     metadata?: Record<string, unknown>;
   }): Promise<CreativeDNA> {
     const model = this.client.getGenerativeModel({ model: MODEL_DEFAULT });
-    const parts: Parameters<typeof model.generateContent>[0] extends { contents: infer C } ? C : never[] = [];
 
     const imagePart = input.imageBase64
       ? { inlineData: { mimeType: "image/jpeg" as const, data: input.imageBase64 } }
@@ -39,7 +38,6 @@ export class GeminiProvider implements AIProvider {
       ? [{ role: "user", parts: [imagePart, textPart] }]
       : [{ role: "user", parts: [textPart] }];
 
-    void parts; // unused — Gemini content shape differs from the local type annotation above
     const result = await model.generateContent({ contents: content });
     const text = result.response.text();
     return creativeDNASchema.parse(parseModelJSON(text));

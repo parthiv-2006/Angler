@@ -3,27 +3,19 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
 import { getSeedBriefs, getSeedBriefClustering } from "@/lib/cache/seed";
-import { angleBatchSchema, creativeDNASchema } from "@/lib/ai/schemas";
+import { angleBatchSchema, creativeDNAInputSchema, conceptClusteringInputSchema } from "@/lib/ai/schemas";
 import { GENERATE_ANGLES_SYSTEM, buildGenerateAnglesPrompt } from "@/lib/ai/prompts/generate";
+import { rateLimited } from "@/lib/rate-limit";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 
 // Generating ~10 briefs with platform variants can exceed the 10s default.
 export const maxDuration = 60;
 
 const requestSchema = z.object({
-  vertical: z.string().min(1),
-  winnerSummary: z.string(),
-  marketDNA: z.array(z.object({ adId: z.string(), dna: creativeDNASchema })),
-  clustering: z.object({
-    clusters: z.array(z.object({
-      concept: z.string(),
-      adIds: z.array(z.string()),
-      reason: z.string(),
-    })),
-    nAds: z.number(),
-    kConcepts: z.number(),
-    gaps: z.array(z.string()),
-  }),
+  vertical: z.string().min(1).max(100),
+  winnerSummary: z.string().max(5_000),
+  marketDNA: z.array(z.object({ adId: z.string().max(100), dna: creativeDNAInputSchema })).max(50),
+  clustering: conceptClusteringInputSchema,
 });
 
 export async function POST(req: NextRequest) {
@@ -52,6 +44,9 @@ export async function POST(req: NextRequest) {
       fromSeed: true,
     });
   }
+
+  const limited = rateLimited(req);
+  if (limited) return limited;
 
   const provider = getProvider();
 

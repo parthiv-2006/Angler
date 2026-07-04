@@ -137,6 +137,21 @@
 
 ---
 
+## Security audit — 2026-07-04 ✅
+
+- [x] Path traversal closed: seed/sample loaders reject slugs outside `[a-z0-9-]`
+- [x] Uploaded/pasted DNA cached by content hash (cross-user `paste_0` collision fixed)
+- [x] Input size caps on all strings/arrays reaching paid model calls
+- [x] Best-effort per-IP rate limiting (30/min) on the five spend routes; seed paths unmetered
+- [x] Apify poll fits the 60s route budget; paid runs never retried
+- [x] `withRetry`: no dead sleep after final attempt; non-retryable 4xx fail fast
+- [x] DB races handled (vertical unique-slug race, duplicate DNA rows)
+- [x] CSV formula-injection guard; security headers; postcss override (npm audit clean)
+- [x] `npm test`: 21 unit tests (node:test via tsx); GitHub Actions CI (typecheck/test/build/audit)
+- [x] Zero-credential e2e re-verified on a production build (all routes + MCP + failure paths)
+
+---
+
 ## Submission 🔄
 
 - [x] README written (3 contest questions + cost/limits note + MCP usage section; the live-URL placeholder still needs the real Vercel domain filled in after deploy)
