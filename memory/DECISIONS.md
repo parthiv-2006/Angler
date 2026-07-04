@@ -228,3 +228,43 @@ tool results land in an LLM context window — full fidelity is the web UI's job
 Unknown verticals/sample sets return a helpful text listing of valid slugs instead of a
 JSON-RPC error, so an agent can self-correct in one turn.
 **Files:** `app/api/[transport]/route.ts`, `lib/cache/seed.ts` (`listSeedVerticals`)
+
+---
+
+## Rate limiting is in-memory per-instance, not Redis/Upstash
+
+**Decision:** The five spend routes (`mine` novel-vertical path, `deconstruct`, `score`,
+`generate`, `preflight` live paths) share a naive in-memory sliding-window limiter
+(`lib/rate-limit.ts`, 30 req/min per IP). Seed short-circuits run *before* the check, so the
+judge's zero-credential demo is never metered.
+**Why:** The threat is a naive loop draining the $5 Anthropic budget on a public URL, not a
+distributed attack. Serverless instances don't share memory, so this is best-effort — but
+adding Redis for a demo violates "simplest implementation first" and adds a new failure mode
+to a URL that must never feel flaky. If real protection is ever needed, swap the map for
+Upstash/Vercel KV behind the same `rateLimited(req)` signature.
+**Files:** `lib/rate-limit.ts`, all five route handlers
+
+---
+
+## Request-side bounded schemas are separate from model-output schemas
+
+**Decision:** `lib/ai/schemas.ts` now has `creativeDNAInputSchema` /
+`conceptClusteringInputSchema` (every string/array capped) used only for validating request
+bodies; the original unbounded schemas keep validating model output.
+**Why:** Caps exist to stop a crafted request from feeding megabytes into a paid model call.
+Applying the same caps to model *output* would make a perfectly valid long response fail
+validation and burn the retry budget — the two directions have different failure modes, so
+they get different schemas even though the shapes match.
+**Files:** `lib/ai/schemas.ts`, `app/api/{score,generate,preflight,deconstruct}/route.ts`
+
+---
+
+## Tests run on Node's built-in runner via tsx — no test framework dependency
+
+**Decision:** `npm test` = `tsx --test tests/*.test.ts` (node:test + node:assert). 21 tests
+cover pure logic (JSON parsing, normalization, retry semantics, rate limiter) plus an
+integrity sweep over the committed seed data (every cluster adId must resolve to a real ad —
+the exact class of bug that broke Step 5 rendering earlier).
+**Why:** vitest/jest would add config + dependencies for zero gain at this scale; tsx is
+already a devDependency (used by refresh-seed) and resolves the `@/` tsconfig paths.
+**Files:** `tests/*.test.ts`, `package.json`

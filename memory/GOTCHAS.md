@@ -106,6 +106,17 @@ eyeball `data/seed/<slug>.json` advertisers before shipping — count genuinely 
 winners, don't trust the ad count alone (see [[decisions]] "P4 investing vertical ships on
 the `financial newsletter` query"). Each retry is a paid Apify run, so budget them.
 
+### Pasted/uploaded ad ids repeat across users — never use them as cache keys
+**Symptom:** With Supabase configured, pasting captions returned DNA that didn't match the
+pasted text.
+**Cause:** The client always ids pasted ads `paste_0..n` (uploads `upload_0..n`), and
+`getOrAnalyzeDNA` cached by that id — so the *first* user's analysis was served for every
+later user's `paste_0`, whatever their caption said.
+**Fix (2026-07-04):** `/api/deconstruct` caches uploaded-kind ads under
+`upl_<sha256(content) prefix>` instead (see `cacheKeyFor`). Competitor ads keep their stable
+library ids. Bonus: identical captions now share one cached analysis.
+**File:** `app/api/deconstruct/route.ts`
+
 ---
 
 ## TikTok Creative Center
@@ -114,6 +125,26 @@ the `financial newsletter` query"). Each retry is a paid Apify run, so budget th
 **Symptom:** `fetch` to the TikTok CC API returns 403 or malformed JSON.
 **Fix:** Set `User-Agent`, `Referer`, and `Accept` headers to realistic browser values.
 **File:** `lib/sources/tiktok-creative-center.ts`
+
+### Apify polling must fit the route's `maxDuration` — and never retry a paid run
+**Symptom:** A live `/api/mine` on a novel vertical could be killed by Vercel at 60s
+mid-poll, surfacing a raw function timeout instead of the friendly "try a seed vertical"
+response.
+**Cause:** `pollRunDataset` waited up to 24×5s = 120s, and `fetchLiveAds` wrapped it in
+`withRetry(3)` — which also started a **new paid actor run** per retry.
+**Fix (2026-07-04):** default poll budget is 9×5s ≈ 45s (routes); the offline
+`refresh-seed` baker passes `pollAttempts=60` (5 min). No retry wrapper around Apify runs.
+**Files:** `lib/sources/apify.ts`, `app/api/mine/route.ts`, `scripts/refresh-seed.ts`
+
+---
+
+## Dependencies
+
+### `npm audit` flags postcss via next — fix with an override, not `audit fix --force`
+**Symptom:** 3 moderate advisories: `postcss <8.5.10` (GHSA-qx2v-qp2m-jg93) pulled in by
+`next` (which pins 8.4.31); `npm audit fix --force` wants to downgrade to `next@9` (!).
+**Fix:** `"overrides": { "postcss": "^8.5.10" }` in package.json. Build verified clean on
+postcss 8.5.16. Audit reports 0 vulnerabilities.
 
 ---
 

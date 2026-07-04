@@ -5,6 +5,49 @@
 
 ---
 
+## 2026-07-04 — Full security audit + hardening pass (branch `claude/friendly-bell-lsxnrd`)
+
+**What:** Comprehensive code review and security audit of the whole repo, with fixes shipped
+as atomic commits. Highest-impact findings, all fixed and verified against a production
+build:
+
+1. **Path traversal (security):** `/api/samples?slug=`, `/api/score` `sampleSetId`, and
+   `/api/preflight` `sampleSetId` fed raw request strings into
+   `join(SEED_DIR, slug + ".json")`. All seed/sample loaders now reject slugs outside
+   `[a-z0-9-]`.
+2. **Cross-user DNA cache poisoning (bug):** pasted/uploaded ads reuse ids `paste_0` /
+   `upload_0`; with Supabase configured, user B was served user A's cached DNA for a
+   different caption. Uploaded-kind DNA is now cached under a sha256 content hash.
+3. **Live-mine timeout (reliability):** Apify polling (120s) wrapped in withRetry(3) inside
+   a 60s `maxDuration` route — the function was killed mid-poll AND each retry started a new
+   *paid* actor run. Poll budget now ~45s in routes (5 min in the offline baker via a new
+   param); no retry around paid runs.
+4. **withRetry:** no longer sleeps ~4s after the final failed attempt and no longer retries
+   non-retryable 4xx (except 408/429).
+5. **Input hardening + rate limiting:** size caps on every client-supplied string/array
+   reaching a paid model call; best-effort in-memory 30 req/min/IP limiter on the five
+   spend routes (seed short-circuits run first, so the demo path is never metered).
+6. **Dependency vuln:** `postcss` 8.4.31 (via next) flagged by npm audit (GHSA-qx2v-qp2m-jg93);
+   fixed with an npm override to ^8.5.10 — `npm audit` now clean.
+7. **Smaller fixes:** vertical insert race re-selects on 23505; duplicate DNA rows read as
+   newest-hit instead of error→miss→re-bill; `fb_` id collisions get content-derived ids;
+   CSV export neutralizes formula injection; security headers (nosniff/frame-deny/referrer);
+   dead code removed from the Gemini provider; `/api/score` 400s on an empty dna set.
+
+**Tests:** real `npm test` now exists — 21 unit tests on Node's built-in runner via tsx
+(json parsing, normalization, seed integrity incl. traversal rejection, retry semantics,
+rate limiter). GitHub Actions CI added (`typecheck` → `test` → `build` → `audit`).
+
+**Verification:** typecheck + build clean; all 21 tests pass; production server exercised
+end-to-end with zero credentials — mine/deconstruct/score/generate/preflight seed paths,
+samples, MCP tools, traversal 404s, 400s on bad input, 429 after 30 burst requests,
+graceful degradation on the live path without keys.
+
+**Branch state:** all commits on `claude/friendly-bell-lsxnrd`, PR to `main` opened for
+human review. Vercel deploy + Loom remain the submission blockers.
+
+---
+
 ## 2026-07-03 — Real Anthropic Console API key added; live path now actually runs on Claude
 
 **What:** User replaced the placeholder/OAuth `ANTHROPIC_API_KEY` in `.env.local` with a real
