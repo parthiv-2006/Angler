@@ -1,7 +1,7 @@
-# ARCHITECTURE — Creative Strategist
+# ARCHITECTURE: Creative Strategist
 
 > How it's built. Pairs with `INTEGRATIONS.md` (the practical wiring of each external
-> service). Decisions here are confirmed; flag before deviating.
+> service) and `CODEMAP.md` (the file-level index).
 
 ---
 
@@ -15,38 +15,40 @@
    (no login)            │       │                                       │
                          │       ▼  fetch                                │
                          │  app/api/* route handlers (server-only)       │
-                         │   ├─ /mine        ── lib/sources/*            │──► TikTok Creative
-                         │   ├─ /deconstruct ── lib/ai/provider (vision) │──► Center (public)
-                         │   ├─ /score       ── lib/ai/provider          │──► Apify actors
-                         │   └─ /generate    ── lib/ai/provider          │──► Anthropic API
-                         │       │                  │                    │    (Gemini fallback)
+                         │   ├─ /mine        ── lib/sources/*            │──► Apify actors
+                         │   ├─ /deconstruct ── lib/ai/provider (vision) │    (Meta Ad Library)
+                         │   ├─ /score       ── lib/ai/provider          │──► Anthropic API
+                         │   └─ /generate    ── lib/ai/provider          │    (Gemini fallback)
+                         │       │                  │                    │
                          │       ▼                  ▼                    │
                          │  lib/cache/   ◄────► lib/db (Supabase)        │──► Supabase
                          │  (demo mode)        (typed queries)           │
                          └──────────────────────────────────────────────┘
 ```
 
-**Request lifecycle (typical):** UI calls a route handler → handler checks
-Supabase/cache for this vertical → on miss, pulls from a public source and/or calls the
-LLM provider → writes results back to Supabase (cache) → returns typed JSON → UI renders.
+**Request lifecycle (typical):** UI calls a route handler; the handler checks
+Supabase/cache for this vertical; on miss, it pulls from a public source and/or calls
+the LLM provider, writes results back to Supabase (cache), and returns typed JSON for
+the UI to render.
 
-**Data flow across modules:** `mine` → ads → `deconstruct` → structured DNA → `score`
-(with user uploads) → clusters + gaps → `generate` → angle briefs. Each module's output
-is a stable typed contract consumed by the next.
+**Data flow across modules:** `mine` produces ads; `deconstruct` turns them into
+structured DNA; `score` (with user uploads) produces clusters + gaps; `generate`
+produces angle briefs. Each module's output is a stable typed contract consumed by the
+next.
 
 ---
 
-## Tech stack (confirmed)
+## Tech stack
 
 | Layer | Choice |
 |---|---|
-| Framework | **Next.js (App Router) + React 19 + TypeScript** (mirrors their stack) |
-| Hosting | **Vercel** (free `*.vercel.app`; real domain optional and "cooler") |
+| Framework | **Next.js (App Router) + React 19 + TypeScript** |
+| Hosting | **Vercel** |
 | AI (vision + reasoning + generation) | **Anthropic API** via a provider-agnostic interface; **Gemini free tier** fallback |
-| Diversity engine | **LLM concept-clustering** (MVP); embeddings + cosine = fast-follow |
+| Diversity engine | **LLM concept-clustering**; embeddings + cosine is a documented fast-follow |
 | Persistence / cache | **Supabase** (Postgres) |
-| Competitor data | **TikTok Creative Center** (primary) + **Apify** actors |
-| Input validation | zod (or equivalent) at every route boundary |
+| Competitor data | **Apify actors** (Meta Ad Library); TikTok Creative Center wired as a documented integration |
+| Input validation | zod at every route boundary |
 
 ---
 
@@ -81,11 +83,11 @@ lib/
 data/seed/                  # pre-analyzed verticals + sample ad sets (real cached data)
 ```
 
-Keep `app/page.tsx` thin — push logic into `lib/`. The judge reads this code; module
-boundaries should be obvious.
+`app/page.tsx` stays thin; logic lives in `lib/` so module boundaries are obvious to
+anyone reading the code.
 
 **MCP surface:** `app/api/[transport]/route.ts` (via `mcp-handler`) exposes the seed
-data as five MCP tools at `/api/mcp` — stateless streamable HTTP only (no SSE/Redis),
+data as five MCP tools at `/api/mcp`. Stateless streamable HTTP only (no SSE/Redis),
 no AI calls, payloads trimmed for tokens. Next.js static API routes take precedence
 over the dynamic `[transport]` segment, so the four module routes are unaffected.
 Live pulls stay in the web app; MCP serves the pre-analyzed verticals.
@@ -100,7 +102,7 @@ Swapping providers is one env var (`AI_PROVIDER`).
 ```ts
 // lib/ai/provider.ts  (shape, not final code)
 export interface AIProvider {
-  // Module 2: multimodal — analyze a creative's cover frame + copy → structured DNA
+  // Module 2: multimodal. Analyze a creative's cover frame + copy into structured DNA.
   analyzeCreative(input: {
     imageBase64?: string;
     imageUrl?: string;
@@ -119,14 +121,12 @@ export function getProvider(): AIProvider { /* anthropic | gemini by env */ }
 ```
 
 **Model selection (Anthropic):**
-- **Default workhorse:** `claude-sonnet-4-6` — strong multimodal + reasoning at sensible
-  cost; use for `analyzeCreative`, `clusterConcepts`, and `generateJSON`.
-- **Cheap/fast path:** `claude-haiku-4-5-20251001` — fine for lighter formatting calls
-  (e.g. platform copy reformatting) if you want to trim cost/latency.
-- **Heaviest reasoning (optional):** `claude-opus-4-8` — only if a step clearly needs it;
-  usually unnecessary here.
-- Confirm current model strings/limits via `https://docs.claude.com/en/api/overview`
-  (per the product-self-knowledge guidance — model availability changes).
+- **Default workhorse:** `claude-sonnet-4-6`. Strong multimodal + reasoning at sensible
+  cost; used for `analyzeCreative`, `clusterConcepts`, and `generateJSON`.
+- **Cheap/fast path:** `claude-haiku-4-5-20251001` for lighter formatting calls
+  (e.g. platform copy reformatting) if cost/latency needs trimming.
+- Model availability changes; confirm current model strings and limits at
+  `https://docs.claude.com/en/api/overview`.
 
 **Structured output:** prompt the model to return JSON only and validate with zod before
 use. Never parse free-form prose into app state.
@@ -135,32 +135,30 @@ use. Never parse free-form prose into app state.
 
 ## Diversity engine (the one non-obvious decision)
 
-**MVP = LLM concept-clustering.** Feed the structured DNA of the user's ad set to Claude;
-it returns concept clusters, each ad's cluster assignment, a one-line reason per ad, and
-near-duplicate flags. The UI renders **"N ads → K concepts."**
+**Shipped: LLM concept-clustering.** Feed the structured DNA of the user's ad set to
+Claude; it returns concept clusters, each ad's cluster assignment, a one-line reason per
+ad, and near-duplicate flags. The UI renders **"N ads collapse to K concepts."**
 
-**Why this over embeddings + cosine for the MVP:**
+**Why this over embeddings + cosine:**
 - An *explained* grouping ("these 4 share a fear-of-missing-out hook + testimonial
-  format") is more useful to a buyer than a bare similarity number — and more impressive
-  in a demo.
-- Keeps the visible intelligence on Claude (their stack) with no extra dependency.
+  format") is more useful to a buyer than a bare similarity number.
+- No extra dependency, and the visible intelligence stays on Claude.
 - Avoids running heavy embedding/CLIP models on Vercel serverless (cold starts, bundle
-  size). Anthropic also has **no first-party embeddings endpoint**, so "all-Anthropic
-  embeddings" isn't even an option.
-- Ships faster and is more robust in nine days.
+  size). Anthropic also has no first-party embeddings endpoint, so an all-Anthropic
+  embeddings pipeline isn't an option anyway.
+- Ships faster and is more robust under a deadline.
 
-**Documented fast-follow (put it in the README's "what's next"):** add an
-embeddings-based **quantitative diversity score** (cosine similarity over the structured
-DNA text) for a defensible numeric metric alongside the explained clusters. Embeddings
-provider would be Gemini's free embeddings or Voyage AI (Anthropic-aligned, multimodal) —
-see `INTEGRATIONS.md`. Compute similarity **in memory**; no vector DB needed at this
-scale.
+**Documented fast-follow:** an embeddings-based **quantitative diversity score** (cosine
+similarity over the structured DNA text) for a defensible numeric metric alongside the
+explained clusters. Embeddings provider would be Gemini's free embeddings or Voyage AI
+(Anthropic-aligned, multimodal); see `INTEGRATIONS.md`. Compute similarity **in memory**;
+no vector DB needed at this scale.
 
 ---
 
 ## Data model (Supabase / Postgres)
 
-Tables (columns are indicative — generate types from the live schema):
+Tables (columns are indicative; generate types from the live schema):
 
 ```sql
 -- a searched vertical/offer
@@ -192,8 +190,8 @@ creative_dna (
   id uuid pk,
   ad_id text,                  -- cache key: a competitor ad's stable library id (fb_*/
                                 -- tiktok_*), or for uploaded/pasted ads a content hash
-                                -- (upl_<sha256 prefix>) — client ids like paste_0 repeat
-                                -- across users, so they are never used as cache keys
+                                -- (upl_<sha256 prefix>). Client ids like paste_0 repeat
+                                -- across users, so they are never used as cache keys.
   ad_kind text,                -- "competitor" | "uploaded"
   hook_type text,
   angle text,
@@ -237,31 +235,31 @@ angle_batches (
 **Cache semantics:** `competitor_ads` + `creative_dna` are the cache. A `mine`/`deconstruct`
 request first checks for a fresh row set for the vertical; on hit, return it; on miss, do
 the live work and write through. Seed verticals (`is_seed = true`) are populated from
-`data/seed/` at build/first-run so they never depend on a live call.
+`data/seed/` so they never depend on a live call.
 
-**RLS:** this is a single shared demo with no user accounts. Keep writes server-side via
-the service-role key; do not expose write paths to the client. If you enable RLS, add
-permissive read policies for the demo and keep service-role for writes.
+**RLS:** this is a single shared demo with no user accounts. All writes stay server-side
+via the service-role key; no write paths are exposed to the client. If RLS is enabled,
+add permissive read policies for the demo and keep service-role for writes.
 
 ---
 
 ## Caching, rate limiting, reliability
 
-The live URL must never feel flaky (it's a judging criterion by proxy). Required:
+The live URL must never feel flaky. Required:
 
 - **Demo mode (`DEMO_MODE=true`):** seed verticals + sample ad sets render instantly from
-  cache. The judge's first clicks should be sub-second.
+  cache. First clicks should be sub-second.
 - **Write-through cache:** any live pull or analysis is persisted to Supabase keyed by
   vertical so a repeat is instant.
 - **Retry with exponential backoff + jitter** on every external call (scrapers and model
   calls); cap attempts, then fall back to a cached/sample result rather than erroring.
-- **Concurrency guard:** if multiple judges click simultaneously, prefer cache and
-  serialize/limit live model calls so you don't trip provider rate limits.
+- **Concurrency guard:** if multiple visitors click simultaneously, prefer cache and
+  serialize/limit live model calls to avoid tripping provider rate limits.
 - **Serverless limits:** vision analysis over many ads + scraping can exceed default
-  Vercel function timeouts. Mitigate by (a) analyzing cover frames only, (b) limiting
-  live batch size, (c) streaming partial results to the UI, and/or (d) doing the heavy
+  Vercel function timeouts. Mitigations: (a) analyze cover frames only, (b) limit
+  live batch size, (c) stream partial results to the UI, and (d) do the heavy
   pre-analysis offline into `data/seed/`. See `INTEGRATIONS.md` for limits.
-- **Graceful UI states** everywhere: loading, partial, empty, and error — never a hung
+- **Graceful UI states** everywhere: loading, partial, empty, and error. Never a hung
   spinner or blank screen.
 
 ---
@@ -271,10 +269,9 @@ The live URL must never feel flaky (it's a judging criterion by proxy). Required
 - **All secrets server-side.** API keys live in route handlers / server code only, never
   in client bundles or `NEXT_PUBLIC_*` (except the Supabase anon key, which is designed to
   be public).
-- **Never use a Claude Code subscription / OAuth token to serve app traffic** — it
-  violates Anthropic's usage policy and risks the account. App uses an
-  `ANTHROPIC_API_KEY` from the Console. (See `INTEGRATIONS.md` and the warning in
-  `CLAUDE.md`.)
+- **Never use a Claude Code subscription / OAuth token to serve app traffic.** It
+  violates Anthropic's usage policy and risks the account. The app uses an
+  `ANTHROPIC_API_KEY` from the Console. (See `INTEGRATIONS.md`.)
 - Validate and sanitize all user input (vertical strings, uploaded files) at the boundary.
 - Treat uploaded creatives as untrusted: size/type limits, no execution.
 
@@ -301,11 +298,11 @@ Implemented protections (2026-07-04 security audit):
 
 | Decision | Choice | Why |
 |---|---|---|
-| AI provider | Anthropic API, abstracted; Gemini fallback | Their stack + pitch; abstraction keeps $0 escape hatch |
+| AI provider | Anthropic API, abstracted; Gemini fallback | Provider abstraction keeps a $0 escape hatch and makes swapping one env var |
 | AI auth | Console API key | Subscription tokens can't legally serve app traffic |
-| Diversity method | LLM clustering (MVP) | Explained > numeric; no serverless ML; ships fast |
-| Video analysis | Cover frame + copy + metadata, not full video | ~Same hook/angle signal at a fraction of cost/latency |
-| Storage | Supabase | Their stack; doubles as the cache |
+| Diversity method | LLM clustering | Explained beats numeric for buyers; no serverless ML; ships fast |
+| Video analysis | Cover frame + copy + metadata, not full video | Similar hook/angle signal at a fraction of cost/latency |
+| Storage | Supabase | Doubles as the cache |
 | Similarity compute (when added) | In-memory cosine | Scale is tiny; no vector DB needed |
-| Demo reliability | Seed cache + retry/backoff | Bulletproof live URL is effectively a judging criterion |
-| Data sourcing | TikTok Creative Center + Apify | Free, public, real signal, zero judge credentials |
+| Demo reliability | Seed cache + retry/backoff | The live URL must work first try, every time |
+| Data sourcing | Apify (Meta Ad Library) | Public, real signal, zero visitor credentials |
