@@ -2,7 +2,7 @@
 
 **Reads what's winning in your vertical, scores your own ad set for hidden redundancy, and generates a prioritized batch of new angles to run next.**
 
-Live demo: _[Vercel URL — coming soon]_
+Live demo: **[angler-delta.vercel.app](https://angler-delta.vercel.app)** (no login, no credentials, works in incognito)
 
 ---
 
@@ -83,7 +83,7 @@ The deployed app doubles as an **MCP server** at `/api/mcp`. Add it to Claude Co
 {
   "mcpServers": {
     "creative-strategist": {
-      "url": "https://<prod-domain>/api/mcp"
+      "url": "https://angler-delta.vercel.app/api/mcp"
     }
   }
 }
