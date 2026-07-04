@@ -41,6 +41,16 @@ function bestCopy(snapshot: ApifyRawAd["snapshot"]): string {
   return "";
 }
 
+// Ads missing an archive id would otherwise all collide on the id "fb_",
+// cross-contaminating the DNA cache and React keys. Derive a stable stand-in
+// from the ad's content instead (djb2 over advertiser + copy).
+function contentKey(raw: ApifyRawAd): string {
+  const text = `${raw.page_name ?? ""}|${bestCopy(raw.snapshot)}`;
+  let hash = 5381;
+  for (let i = 0; i < text.length; i++) hash = ((hash * 33) ^ text.charCodeAt(i)) >>> 0;
+  return `noid_${hash.toString(36)}`;
+}
+
 function dateOnly(unixSeconds?: number): string {
   if (!unixSeconds) return "";
   return new Date(unixSeconds * 1000).toISOString().split("T")[0];
@@ -83,7 +93,7 @@ export function normalizeApifyAd(raw: ApifyRawAd): Ad {
 
   const image = raw.snapshot?.images?.[0];
   return {
-    id: `fb_${raw.ad_archive_id ?? ""}`,
+    id: `fb_${raw.ad_archive_id ?? contentKey(raw)}`,
     source: "facebook_ad_library",
     advertiser: raw.page_name ?? "",
     coverUrl: image?.resized_image_url ?? image?.original_image_url ?? "",
