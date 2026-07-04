@@ -22,7 +22,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Angler — Which ads should you make at all?",
+  title: "Angler: Which ads should you make at all?",
   description:
     "Reads the longest-running competitor ads in your vertical, audits your own set for hidden duplicates, and writes the angles you're missing.",
 };

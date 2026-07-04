@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-// Design tokens from the "Angler — Final" handoff (design_handoff_creative_strategist/README.md).
+// Design tokens for the "Angler" paper theme.
 
 export const SERIF = "var(--font-serif), 'Source Serif 4', Georgia, serif";
 export const SANS = "var(--font-sans), 'IBM Plex Sans', sans-serif";

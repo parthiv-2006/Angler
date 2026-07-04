@@ -5,7 +5,7 @@ import type { Ad, CreativeDNA } from "@/lib/types";
 import Section from "./Section";
 import { C, SERIF, SANS, MONO, font, jumpLink, avatarBg, firstLine, hashStr, CREATIVE_BGS, kickerFor } from "./theme";
 
-// Nº1 — The Catch: ranked ledger of the longest-running market ads, a desk-note
+// Nº1 (The Catch): ranked ledger of the longest-running market ads, a desk-note
 // pull quote (winner summary), and a sticky simulated in-feed preview of the
 // clicked row.
 export default function CatchSection({
@@ -45,7 +45,7 @@ export default function CatchSection({
       num="Nº1"
       id="step-ads"
       innerRef={innerRef}
-      title="THE CATCH — MARKET WINNERS"
+      title="THE CATCH: MARKET WINNERS"
       meta={`${ads.length} real ads · ${sourcesLabel} · ranked by days live · ${provenance}`}
       action={
         <button onClick={onExtract} disabled={extractDisabled} className="hover-underline" style={jumpLink}>
@@ -103,7 +103,7 @@ export default function CatchSection({
           {winnerSummary && (
             <div style={{ marginTop: 20, borderLeft: `3px solid ${C.accent}`, padding: "4px 0 4px 18px" }}>
               <div style={{ color: C.accent, ...font(500, 10, MONO, { ls: "0.14em" }), marginBottom: 6 }}>
-                DESK NOTE — WHAT&apos;S WINNING &amp; WHY
+                DESK NOTE: WHAT&apos;S WINNING &amp; WHY
               </div>
               <p style={{ color: C.ink2, ...font(400, 15, SERIF, { lh: 1.65, italic: true }), margin: 0, maxWidth: 640 }}>
                 {winnerSummary}
@@ -174,7 +174,7 @@ export default function CatchSection({
               </div>
             </div>
             <div style={{ display: "flex", gap: 6, marginTop: 10, justifyContent: "center", flexWrap: "wrap" }}>
-              {[`angle: ${selDna?.angle ?? "—"}`, `format: ${selDna?.format ?? "—"}`, `hook: ${selDna?.hookType ?? "—"}`].map((label) => (
+              {[`angle: ${selDna?.angle ?? "-"}`, `format: ${selDna?.format ?? "-"}`, `hook: ${selDna?.hookType ?? "-"}`].map((label) => (
                 <span
                   key={label}
                   style={{ color: C.muted, border: `1px solid ${C.border}`, background: C.card, ...font(500, 10, MONO), borderRadius: 999, padding: "3px 10px" }}

@@ -13,9 +13,9 @@ const DIMS: [keyof DnaFilter, string][] = [
   ["hookType", "HOOK"],
 ];
 
-// Nº2 — Creative DNA: three rows of toggle-pill filters (AND across dimensions)
+// Nº2 (Creative DNA): three rows of toggle-pill filters (AND across dimensions)
 // over a 3-column grid of per-ad DNA cards. The fourth (blue) tag shows the
-// ad's offer framing — the schema's nearest analogue to the design's "emotion".
+// ad's offer framing, the schema's nearest analogue to the design's "emotion".
 export default function DnaSection({
   innerRef,
   marketDna,
@@ -44,7 +44,7 @@ export default function DnaSection({
       num="Nº2"
       id="step-dna"
       innerRef={innerRef}
-      title="CREATIVE DNA — WHY THE WINNERS WIN"
+      title="CREATIVE DNA: WHY THE WINNERS WIN"
       meta="every ad deconstructed: hook · angle · format · offer framing"
       action={
         <span style={{ marginLeft: "auto", color: C.muted, ...font(400, 12, SANS) }}>
@@ -96,7 +96,7 @@ export default function DnaSection({
               >
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                   <span style={{ color: C.ink, ...font(600, 12, SANS), overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {ad?.advertiser ?? "—"}
+                    {ad?.advertiser ?? "-"}
                   </span>
                   <span style={{ marginLeft: "auto", color: days >= 150 ? C.green : C.faint, ...font(600, 11, MONO) }}>
                     {ad ? `${days}d` : ""}

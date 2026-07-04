@@ -24,7 +24,7 @@ export interface UploadedImage {
   base64: string;
 }
 
-// Nº3 — The Entity-ID Audit: load-your-ad-set controls (sample sets, pasted
+// Nº3 (The Entity-ID Audit): load-your-ad-set controls (sample sets, pasted
 // captions, uploaded screenshots), the marginalia N→K headline with hand-drawn
 // SVG annotations, the dark "ink plate" with the count-up + merge diagram and
 // budget-waste estimate, cluster cards beside the sticky gaps list, and the
@@ -79,7 +79,7 @@ export default function AuditSection(props: {
       num="Nº3"
       id="step-score"
       innerRef={props.innerRef}
-      title="THE ENTITY-ID AUDIT — YOUR SET, AS ANDROMEDA SEES IT"
+      title="THE ENTITY-ID AUDIT: YOUR SET, AS ANDROMEDA SEES IT"
       meta={
         clustering && props.sampleLabel
           ? `loaded: ${props.sampleLabel}`
@@ -151,7 +151,7 @@ function Controls(props: {
     >
       <div style={{ color: C.ink, ...font(600, 12, MONO, { ls: "0.12em" }), marginBottom: 4 }}>LOAD YOUR AD SET</div>
       <p style={{ color: C.muted, ...font(400, 12, SANS, { lh: 1.55 }), margin: "0 0 12px" }}>
-        See how many concepts Meta&apos;s algorithm really sees in your ads — and which proven angles you&apos;re missing.
+        See how many concepts Meta&apos;s algorithm really sees in your ads, and which proven angles you&apos;re missing.
       </p>
 
       {props.samples.length > 0 ? (
@@ -171,7 +171,7 @@ function Controls(props: {
         </div>
       ) : (
         <p style={{ color: C.muted, ...font(400, 12, SANS), margin: "0 0 12px" }}>
-          No sample ad sets available right now — paste your own captions or upload screenshots instead.
+          No sample ad sets available right now. Paste your own captions or upload screenshots instead.
         </p>
       )}
 
@@ -228,7 +228,7 @@ function Controls(props: {
             }}
           >
             <p style={{ color: C.muted, ...font(400, 12, SANS, { lh: 1.5 }), margin: 0 }}>
-              Drag &amp; drop real ad screenshots (min 3, max {props.maxImages}) — or click to browse
+              Drag &amp; drop real ad screenshots (min 3, max {props.maxImages}), or click to browse
             </p>
             <input
               id="upload-input"
@@ -457,8 +457,8 @@ function InkPlate({
         </div>
         <p style={{ color: "#A5A1BC", ...font(400, 13, SANS, { lh: 1.65 }), margin: "15px 0 0", maxWidth: 460 }}>
           {collapsedCluster
-            ? `Your ${collapsedCluster.adIds.length} ads on "${collapsedCluster.concept}" share one Entity ID — Meta enters them in the auction as a single creative. The extra ${collapsedCluster.adIds.length - 1 === 1 ? "one is a wasted entry" : "ones are wasted entries"} every day they run.`
-            : "Every ad earns its own Entity ID — no wasted auction entries in this set."}
+            ? `Your ${collapsedCluster.adIds.length} ads on "${collapsedCluster.concept}" share one Entity ID, so Meta enters them in the auction as a single creative. The extra ${collapsedCluster.adIds.length - 1 === 1 ? "one is a wasted entry" : "ones are wasted entries"} every day they run.`
+            : "Every ad earns its own Entity ID. No wasted auction entries in this set."}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 16, flexWrap: "wrap" }}>
           <span style={{ color: "#8B86A8", ...font(400, 11, MONO) }}>MONTHLY TEST BUDGET $</span>
@@ -621,7 +621,7 @@ function ClustersAndGaps({
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {clustering.gaps.length === 0 && (
-            <span style={{ color: C.muted, ...font(400, 12, SANS) }}>No gaps found — this set covers the market&apos;s proven angles.</span>
+            <span style={{ color: C.muted, ...font(400, 12, SANS) }}>No gaps found. This set covers the market&apos;s proven angles.</span>
           )}
           {clustering.gaps.map((g, i) => (
             <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -663,7 +663,7 @@ function Preflight(props: {
   return (
     <div style={{ marginTop: 30, border: "1px dashed #C9C2B2", borderRadius: 12, padding: "20px 24px", background: "rgba(255,254,250,0.6)" }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
-        <span style={{ color: C.ink, ...font(600, 12, MONO, { ls: "0.12em" }) }}>PRE-FLIGHT — TEST A PLANNED AD BEFORE YOU SPEND</span>
+        <span style={{ color: C.ink, ...font(600, 12, MONO, { ls: "0.12em" }) }}>PRE-FLIGHT: TEST A PLANNED AD BEFORE YOU SPEND</span>
         <span style={{ color: C.muted, ...font(400, 12, SANS) }}>
           would Meta give it a new Entity ID, or fold it into something you already run?
         </span>
@@ -759,7 +759,7 @@ function Preflight(props: {
             }}
           >
             <div style={{ color: collapses ? C.amber : C.green, ...font(700, 14, SANS), marginBottom: 5 }}>
-              {collapses ? `⚠ Collapses into "${verdict.collidesWith}"` : "✓ Genuinely new concept — safe to produce"}
+              {collapses ? `⚠ Collapses into "${verdict.collidesWith}"` : "✓ Genuinely new concept, safe to produce"}
             </div>
             <p style={{ color: C.body, ...font(400, 13, SANS, { lh: 1.55 }), margin: 0 }}>{verdict.reason}</p>
             {collapses && verdict.fixes.length > 0 && (

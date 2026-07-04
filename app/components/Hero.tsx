@@ -64,7 +64,7 @@ export default function Hero({
       >
         <div>
           <div style={{ color: C.accent, ...font(500, 11, MONO, { ls: "0.15em" }), marginBottom: 16, animation: "rise 0.6s ease both" }}>
-            CREATIVE STRATEGY, FROM EVIDENCE — NOT VIBES
+            CREATIVE STRATEGY, FROM EVIDENCE. NOT VIBES.
           </div>
           <h1
             style={{
@@ -185,7 +185,7 @@ export default function Hero({
 }
 
 // Collage of rotated, overlapping simulated in-feed ad cards. Copy is drawn from
-// real seed-data ads (see handoff README §Assets) — decorative, not fabricated metrics.
+// real seed-data ads; decorative, not fabricated metrics.
 function CardWall() {
   return (
     <div style={{ position: "relative", height: 356, animation: "fadein 0.9s ease 0.2s both" }}>

@@ -13,7 +13,7 @@ const PLATFORMS = [
 
 type Platform = (typeof PLATFORMS)[number][0];
 
-// Nº4 — Next Angles to Run: 2-column grid of brutalist-shadow brief cards with
+// Nº4 (Next Angles to Run): 2-column grid of brutalist-shadow brief cards with
 // per-card platform tabs, copy buttons, and evidence chips citing the real ads
 // that justify each angle; the integrity-check strip holds the tool to its own
 // duplication test; footer credits the public data sources.
@@ -54,7 +54,7 @@ export default function BriefsSection({
       num="Nº4"
       id="step-briefs"
       innerRef={innerRef}
-      title={`NEXT ANGLES TO RUN — ${briefs.length} PRIORITIZED BRIEFS`}
+      title={`NEXT ANGLES TO RUN: ${briefs.length} PRIORITIZED BRIEFS`}
       meta="every brief cites the live ad that proves it · CSV for bulk sheets · JSON for the production pipeline"
       action={
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>

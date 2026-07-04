@@ -19,7 +19,7 @@ interface AppState {
   unavailable: string | null;
   marketDna: { adId: string; dna: CreativeDNA }[];
   selectedAd: number;
-  // Module 3 — the user's own ad set
+  // Module 3: the user's own ad set
   sampleSets: SampleSummary[];
   userAds: Ad[];
   selectedSample: string | null;
@@ -30,7 +30,7 @@ interface AppState {
   clustering: ConceptClustering | null;
   briefs: AngleBrief[];
   briefClustering: ConceptClustering | null;
-  // Module 3.5 — pre-flight check on a planned ad
+  // Module 3.5: pre-flight check on a planned ad
   preflightExamples: PreflightExampleSummary[];
   preflightPasteText: string;
   preflight: { candidateAd: Ad | null; verdict: PreflightVerdict | null } | null;
@@ -46,8 +46,8 @@ const SEED_VERTICALS = [
   { label: "investing newsletter", value: "investing newsletter" },
 ];
 
-// Date the seed verticals were last refreshed from the live ad libraries. Shown to
-// the judge so cached real data is never mistaken for a live fetch.
+// Date the seed verticals were last refreshed from the live ad libraries. Shown in
+// the UI so cached real data is never mistaken for a live fetch.
 const SEED_CACHED_DATE = "June 2026";
 
 // Clean display names for the truthful `ad.source` provenance tag.
@@ -93,7 +93,7 @@ function slugify(s: string): string {
 }
 
 // Resolves a brief's evidenceAdIds to advertiser names for export/copy (ids not
-// found in the current ad set — e.g. a stale reference — are skipped silently).
+// found in the current ad set, e.g. a stale reference, are skipped silently).
 function evidenceAdvertisers(evidenceAdIds: string[], ads: Ad[]): string {
   const byId = new Map(ads.map((a) => [a.id, a] as const));
   return evidenceAdIds
@@ -104,7 +104,7 @@ function evidenceAdvertisers(evidenceAdIds: string[], ads: Ad[]): string {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// /api/deconstruct caps `copy` at 10k chars (security bound) — some real
+// /api/deconstruct caps `copy` at 10k chars (security bound); some real
 // library ads carry longer stories, so trim before sending or the batch 400s.
 const MAX_COPY_CHARS = 10_000;
 const trimCopy = (copy: string) => copy.slice(0, MAX_COPY_CHARS);
@@ -178,7 +178,7 @@ export default function Home() {
         setState((s) => ({ ...s, sampleSets: samples }));
 
         // Replay a shared seed-report link (?v=<slug>&s=<sampleSlug>). Unknown
-        // values are ignored entirely — a URL param must never trigger a live scrape.
+        // values are ignored entirely; a URL param must never trigger a live scrape.
         const params = new URLSearchParams(window.location.search);
         const vParam = params.get("v");
         if (!vParam) return;
@@ -298,11 +298,11 @@ export default function Home() {
       if (ads.length) {
         const maxDays = Math.max(...ads.map((a) => a.runDays));
         pushLog(`${ads.length} ads hooked · longest runner ${maxDays} days`);
-        doneLog("done — extract the DNA below to read why they win");
+        doneLog("done. extract the DNA below to read why they win");
         setTimeout(() => scrollToStep("step-ads"), 150);
       }
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -327,7 +327,7 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Failed to analyze creatives");
       if (!data.results || data.results.length === 0) {
-        return setError("Couldn't extract creative DNA from these ads — try again or pick a different vertical.");
+        return setError("Couldn't extract creative DNA from these ads. Try again or pick a different vertical.");
       }
       setState((s) => ({
         ...s,
@@ -343,7 +343,7 @@ export default function Home() {
       }));
       setTimeout(() => scrollToStep("step-dna"), 150);
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -380,7 +380,7 @@ export default function Home() {
         loadingStep: "",
       }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -435,7 +435,7 @@ export default function Home() {
         loadingStep: "",
       }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -493,12 +493,12 @@ export default function Home() {
         loadingStep: "",
       }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
   // Non-blocking "dog food" self-score of a generated brief batch's own
-  // diversity — fired after live-path briefs render (seed path already has
+  // diversity, fired after live-path briefs render (seed path already has
   // briefClustering baked in). Failure is silent: never block or error the demo.
   async function scoreBriefBatch(briefs: AngleBrief[]) {
     try {
@@ -511,7 +511,7 @@ export default function Home() {
       const data = await res.json();
       if (data.clustering) setState((s) => ({ ...s, briefClustering: data.clustering }));
     } catch {
-      // silent — the integrity panel just doesn't render
+      // silent: the integrity panel just doesn't render
     }
   }
 
@@ -533,14 +533,14 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) return setError(data.error ?? "Failed to generate angle briefs");
       if (!data.briefs || data.briefs.length === 0) {
-        return setError("No angle briefs were generated — please try again.");
+        return setError("No angle briefs were generated. Please try again.");
       }
       const briefClustering: ConceptClustering | null = data.briefClustering ?? null;
       setState((s) => ({ ...s, briefs: data.briefs, briefClustering, loading: false, loadingStep: "" }));
       if (!briefClustering) void scoreBriefBatch(data.briefs);
       setTimeout(() => scrollToStep("step-briefs"), 150);
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -563,7 +563,7 @@ export default function Home() {
         loadingStep: "",
       }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -603,7 +603,7 @@ export default function Home() {
       };
       setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -642,13 +642,13 @@ export default function Home() {
       };
       setState((s) => ({ ...s, preflight: { candidateAd, verdict: data.verdict }, loading: false, loadingStep: "" }));
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
   // Runs all four modules on a seed vertical, threading each step's result forward
   // locally and printing real progress into the sonar band. Used by the "15-second
-  // demo" button, the hero CTA on seed verticals, and shared-link replay on mount —
+  // demo" button, the hero CTA on seed verticals, and shared-link replay on mount.
   // sampleSlug is resolved fresh from the API rather than component state, since a
   // mount-time replay races the sampleSets fetch.
   async function runSeedDemo(verticalValue: string, sampleSlugParam: string | null) {
@@ -659,7 +659,7 @@ export default function Home() {
     setState((s) => ({ ...INITIAL, sampleSets: s.sampleSets, vertical, loading: true, loadingStep: "Pulling competitor ads…" }));
     pushLog(`casting into ${vertical}…`);
     try {
-      // 1 — Mine
+      // 1. Mine
       const mineRes = await fetch("/api/mine", { method: "POST", headers: jsonHeaders, body: JSON.stringify({ vertical }) });
       const mine = await mineRes.json();
       if (!mineRes.ok) return setError(mine.error ?? "Demo failed while mining ads");
@@ -669,7 +669,7 @@ export default function Home() {
       await sleep(600);
       scrollToStep("step-ads");
 
-      // 2 — Deconstruct
+      // 2. Deconstruct
       pushLog("extracting creative DNA · hooks, angles, formats, offers");
       const dRes = await fetch("/api/deconstruct", {
         method: "POST",
@@ -682,7 +682,7 @@ export default function Home() {
       setState((s) => ({ ...s, marketDna, loadingStep: "Scoring your ad set…" }));
       await sleep(600);
 
-      // 3 — Score a pre-baked sample ad set
+      // 3. Score a pre-baked sample ad set
       let sampleSlug = sampleSlugParam;
       if (!sampleSlug) {
         const samplesRes = await fetch("/api/samples");
@@ -713,7 +713,7 @@ export default function Home() {
       if (score.clustering?.gaps) pushLog(`surfacing angle gaps · ${score.clustering.gaps.length} found`);
       await sleep(600);
 
-      // 4 — Generate angle briefs
+      // 4. Generate angle briefs
       const gRes = await fetch("/api/generate", {
         method: "POST",
         headers: jsonHeaders,
@@ -724,14 +724,14 @@ export default function Home() {
       const demoBriefs: AngleBrief[] = g.briefs ?? [];
       const demoBriefClustering: ConceptClustering | null = g.briefClustering ?? null;
       setState((s) => ({ ...s, briefs: demoBriefs, briefClustering: demoBriefClustering, loading: false, loadingStep: "" }));
-      doneLog("done — everything below is from the public record");
+      doneLog("done. everything below is from the public record");
       if (!demoBriefClustering && demoBriefs.length) void scoreBriefBatch(demoBriefs);
       await sleep(500);
 
-      // Make the report replayable — encode the seed vertical + sample slug in the URL.
+      // Make the report replayable: encode the seed vertical + sample slug in the URL.
       history.replaceState(null, "", `?v=${slug}&s=${sampleSlug}`);
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again");
     }
   }
 
@@ -744,7 +744,7 @@ export default function Home() {
     else void handleMine();
   }
 
-  // Nav demo button: re-runs nothing if results already exist — just reels back up.
+  // Nav demo button: re-runs nothing if results already exist, just reels back up.
   function handleDemoButton() {
     if (state.loading) return;
     if (state.ads.length) {
@@ -773,7 +773,7 @@ export default function Home() {
   }
 
   function handleExportCSV() {
-    // Quote-escape, and neutralize spreadsheet formula injection — model-generated
+    // Quote-escape, and neutralize spreadsheet formula injection: model-generated
     // copy starting with = + - @ would otherwise execute when opened in Excel.
     const esc = (v: string) => `"${(/^[=+\-@\t\r]/.test(v) ? `'${v}` : v).replace(/"/g, '""')}"`;
     const headers = ["Priority", "Angle Name", "Emotional Driver", "Why Now", "Hook Line", "Format", "Persona", "Meta Copy", "TikTok Copy", "Native Copy", "Evidence"];
