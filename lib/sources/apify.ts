@@ -75,7 +75,14 @@ async function pollRunDataset(
     const statusRes = await fetch(`${APIFY_BASE}/actor-runs/${runId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!statusRes.ok) continue;
+    if (!statusRes.ok) {
+      // 4xx (bad/expired token, deleted run) is permanent — fail with the real
+      // cause instead of burning the poll budget and reporting a fake timeout.
+      if (statusRes.status < 500 && statusRes.status !== 429) {
+        throw new Error(`Apify run status check failed: HTTP ${statusRes.status}`);
+      }
+      continue;
+    }
     const { data: run } = (await statusRes.json()) as {
       data: { status: string; defaultDatasetId: string };
     };

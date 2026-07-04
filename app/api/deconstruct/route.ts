@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
 import { getOrAnalyzeDNA, withRetry } from "@/lib/cache";
 import { winnerSummarySchema } from "@/lib/ai/schemas";
+import { getSeedDNA } from "@/lib/cache/seed";
 import { rateLimited } from "@/lib/rate-limit";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 
@@ -32,13 +33,14 @@ const requestSchema = z.object({
 
 // Uploaded/pasted ads reuse client-side ids like "paste_0" across users, so caching
 // their DNA by ad id would serve one user's analysis for another user's caption.
-// Key those by a hash of the actual content instead; competitor ads keep their
-// stable library ids.
+// Key those by a hash of the actual content instead — all provided fields, delimited,
+// so e.g. two ads with identical copy but different images can't collide. Competitor
+// ads keep their stable library ids.
 type AdInput = z.infer<typeof adInputSchema>;
 
 function cacheKeyFor(ad: AdInput, adKind: "competitor" | "uploaded"): string {
   if (adKind !== "uploaded") return ad.id;
-  const content = ad.copy ?? ad.imageBase64 ?? ad.coverUrl ?? ad.id;
+  const content = JSON.stringify([ad.copy ?? "", ad.imageBase64 ?? "", ad.coverUrl ?? ""]);
   return `upl_${createHash("sha256").update(content).digest("hex").slice(0, 24)}`;
 }
 
@@ -50,11 +52,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request", issues: parsed.error.issues }, { status: 400 });
   }
 
-  const limited = rateLimited(req);
-  if (limited) return limited;
-
   const { ads, vertical = "", generateSummary = false, adKind } = parsed.data;
   const slug = vertical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  // A request fully answerable from committed seed DNA costs nothing — keep the
+  // judge's demo path unmetered and only rate-limit requests that can reach a
+  // paid model call.
+  const seedDNA = adKind === "competitor" && !generateSummary ? getSeedDNA(slug) : null;
+  const fullySeeded = !!seedDNA && ads.every((ad) => seedDNA.has(ad.id));
+  if (!fullySeeded) {
+    const limited = rateLimited(req);
+    if (limited) return limited;
+  }
+
   const provider = getProvider();
 
   try {

@@ -117,7 +117,7 @@ export async function withRetry<T>(
       const status = (err as { status?: number }).status;
       const retryable =
         status === undefined || status === 408 || status === 429 || status >= 500;
-      if (!retryable || attempt === maxAttempts - 1) throw err;
+      if (!retryable || attempt === maxAttempts - 1) break;
 
       const delayMs = Math.min(1000 * 2 ** attempt + Math.random() * 200, 10_000);
       await new Promise((r) => setTimeout(r, delayMs));
