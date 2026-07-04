@@ -649,7 +649,9 @@ export default function Home() {
   }
 
   function handleExportCSV() {
-    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    // Quote-escape, and neutralize spreadsheet formula injection — model-generated
+    // copy starting with = + - @ would otherwise execute when opened in Excel.
+    const esc = (v: string) => `"${(/^[=+\-@\t\r]/.test(v) ? `'${v}` : v).replace(/"/g, '""')}"`;
     const headers = ["Priority", "Angle Name", "Emotional Driver", "Why Now", "Hook Line", "Format", "Persona", "Meta Copy", "TikTok Copy", "Native Copy", "Evidence"];
     const rows = [...state.briefs]
       .sort((a, b) => a.priority - b.priority)
