@@ -34,7 +34,9 @@ async function getOrCreateVertical(slug: string, displayName: string) {
 async function fetchLiveAds(vertical: string): Promise<Ad[]> {
   if (process.env.APIFY_TOKEN) {
     try {
-      const ads = await withRetry(() => fetchMetaAds(vertical));
+      // No withRetry here: each attempt starts a NEW paid actor run, and one
+      // full poll cycle already uses most of the route's 60s budget.
+      const ads = await fetchMetaAds(vertical);
       if (ads.length > 0) return ads;
     } catch (err) {
       console.error("[mine] Apify source failed:", err);

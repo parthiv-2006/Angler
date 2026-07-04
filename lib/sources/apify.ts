@@ -27,6 +27,7 @@ function buildAdLibraryUrl(vertical: string): string {
 export async function fetchMetaAdsRaw(
   vertical: string,
   count = 30,
+  pollAttempts?: number,
 ): Promise<ApifyRawAd[]> {
   const token = process.env.APIFY_TOKEN;
   if (!token) throw new Error("APIFY_TOKEN is not set");
@@ -50,7 +51,7 @@ export async function fetchMetaAdsRaw(
   }
 
   const { data: run } = (await runRes.json()) as { data: { id: string } };
-  return pollRunDataset(run.id, token);
+  return pollRunDataset(run.id, token, pollAttempts);
 }
 
 export async function fetchMetaAds(vertical: string, count = 30): Promise<Ad[]> {
@@ -58,8 +59,14 @@ export async function fetchMetaAds(vertical: string, count = 30): Promise<Ad[]> 
   return raw.map(normalizeApifyAd);
 }
 
-async function pollRunDataset(runId: string, token: string): Promise<ApifyRawAd[]> {
-  const maxAttempts = 24;
+// Route handlers cap at maxDuration=60s, so the default poll budget stays well
+// under that (~45s) — a slow run fails gracefully instead of being killed. The
+// offline seed-refresh script passes a larger budget.
+async function pollRunDataset(
+  runId: string,
+  token: string,
+  maxAttempts = 9,
+): Promise<ApifyRawAd[]> {
   const delayMs = 5_000;
 
   for (let i = 0; i < maxAttempts; i++) {
@@ -68,6 +75,7 @@ async function pollRunDataset(runId: string, token: string): Promise<ApifyRawAd[
     const statusRes = await fetch(`${APIFY_BASE}/actor-runs/${runId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    if (!statusRes.ok) continue;
     const { data: run } = (await statusRes.json()) as {
       data: { status: string; defaultDatasetId: string };
     };
