@@ -7,7 +7,7 @@
 >
 > For *why* the system is shaped this way, read `docs/ARCHITECTURE.md`.
 
-Last verified against the tree: **2026-07-04**.
+Last verified against the tree: **2026-07-04** (post live-input removal).
 
 ---
 
@@ -68,7 +68,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | `components/Section.tsx` | Shared numbered-watermark section shell with header rule. |
 | `components/CatchSection.tsx` | No.1: ranked ledger, desk note, sticky in-feed preview. |
 | `components/DnaSection.tsx` | No.2: filter pills + 3-col DNA card grid (4th tag = offerFraming). |
-| `components/AuditSection.tsx` | No.3: load-your-set controls (samples/paste/upload), marginalia + SVG marks, ink plate + merge diagram, clusters + gaps, pre-flight, generate CTA. |
+| `components/AuditSection.tsx` | No.3: load-your-set controls (seed sample pills only — paste/upload live inputs removed), marginalia + SVG marks, ink plate + merge diagram, clusters + gaps, pre-flight (seed examples only), generate CTA. |
 | `components/BriefsSection.tsx` | No.4: brief cards (platform tabs, copy, evidence chips), integrity strip, footer. |
 | `api/mine/route.ts` | **Module 1** Competitive Angle Miner. Ranked market ads + winner summary. `fromSeed` flag. |
 | `api/deconstruct/route.ts` | **Module 2** Creative-DNA extraction (vision). Hot path. |
@@ -123,7 +123,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | Path | Contents |
 |---|---|
 | `weight-loss-supplement.json`, `debt-relief.json`, `ed-telehealth.json`, `investing-newsletter.json` | 4 pre-analyzed verticals (15 real market ads each). |
-| `samples/*-redundant.json` | Deliberately low-diversity sample ad sets for the score demo. |
+| `samples/weight-loss-redundant.json`, `samples/debt-relief-redundant.json`, `samples/ed-telehealth-redundant.json`, `samples/investing-newsletter-redundant.json` | Deliberately low-diversity sample ad sets for the score demo, one per seed vertical. |
 
 ### `supabase/migrations/`
 | File | Contents |
