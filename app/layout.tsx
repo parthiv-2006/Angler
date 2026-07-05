@@ -25,6 +25,21 @@ export const metadata: Metadata = {
   title: "Angler: Which ads should you make at all?",
   description:
     "Reads the longest-running competitor ads in your vertical, audits your own set for hidden duplicates, and writes the angles you're missing.",
+  metadataBase: new URL("https://www.angler.software"),
+  openGraph: {
+    title: "Angler: Which ads should you make at all?",
+    description:
+      "Creative strategy from evidence, not vibes. Reads market winners, audits your ad set for hidden duplicates, and writes the angles you're missing.",
+    url: "https://www.angler.software",
+    siteName: "Angler",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Angler: Which ads should you make at all?",
+    description:
+      "Creative strategy from evidence, not vibes. Reads market winners, audits your ad set for hidden duplicates, and writes the angles you're missing.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

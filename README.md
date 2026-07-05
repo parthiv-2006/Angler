@@ -14,6 +14,10 @@
 <h3 align="center">🎣 Live demo: <a href="https://www.angler.software"><b>angler.software</b></a></h3>
 <p align="center"><i>No login. No credentials. Works in an incognito window, first click.</i></p>
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="Angler — pick a vertical, see every module run" width="90%" />
+</p>
+
 ---
 
 ## What does it do?
