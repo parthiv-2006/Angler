@@ -1,6 +1,6 @@
 "use client";
 
-import { C, SERIF, SANS, MONO, font, primaryBtn, pillChip } from "./theme";
+import { C, SERIF, SANS, MONO, font, primaryBtn, paperInput } from "./theme";
 
 export interface LogLine {
   text: string;
@@ -25,18 +25,22 @@ const LOG_COLORS: Record<LogLine["tone"], string> = {
 // prints real pipeline progress while a run is in flight.
 export default function Hero({
   vertical,
+  onVerticalChange,
   onCast,
   chips,
   onChipSelect,
   loading,
   log,
+  unavailable,
 }: {
   vertical: string;
+  onVerticalChange: (v: string) => void;
   onCast: () => void;
   chips: VerticalChip[];
   onChipSelect: (value: string) => void;
   loading: boolean;
   log: LogLine[];
+  unavailable: string | null;
 }) {
   const showBand = log.length > 0;
   const done = !loading && log.some((l) => l.tone === "done");
@@ -79,36 +83,46 @@ export default function Hero({
             The market already ran your creative test. Angler reads the longest-running competitor ads in your vertical,
             audits your own set for hidden duplicates, and writes the angles you&apos;re missing.
           </p>
-          <div style={{ animation: "rise 0.6s ease 0.24s both" }}>
-            <div style={{ color: C.faint, ...font(500, 11, MONO, { ls: "0.14em" }), marginBottom: 12 }}>
-              PICK A VERTICAL
-            </div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 18, maxWidth: 550 }}>
-              {chips.map((chip) => (
-                <button
-                  key={chip.value}
-                  onClick={() => onChipSelect(chip.value)}
-                  disabled={loading}
-                  className="hover-border-accent"
-                  style={pillChip(chip.active)}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, maxWidth: 550, animation: "rise 0.6s ease 0.24s both" }}>
+            <input
+              value={vertical}
+              onChange={(e) => onVerticalChange(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !loading && vertical.trim() && onCast()}
+              placeholder="e.g. weight-loss supplement, debt relief, ED telehealth…"
+              className="input-paper"
+              style={{ ...paperInput, flex: 1 }}
+            />
+            <button
+              onClick={onCast}
+              disabled={loading || !vertical.trim()}
+              className="btn-primary"
+              style={primaryBtn(loading || !vertical.trim())}
+            >
+              Cast the line →
+            </button>
+          </div>
+          <div style={{ display: "flex", gap: 16, marginTop: 13, flexWrap: "wrap", animation: "rise 0.6s ease 0.3s both" }}>
+            {chips.map((chip) => (
               <button
-                onClick={onCast}
-                disabled={loading || !vertical.trim()}
-                className="btn-primary"
-                style={primaryBtn(loading || !vertical.trim())}
+                key={chip.value}
+                onClick={() => onChipSelect(chip.value)}
+                className="hover-accent"
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  color: chip.active ? C.ink : C.muted,
+                  ...font(chip.active ? 500 : 400, 12, SANS),
+                  textDecoration: chip.active ? "underline" : "none",
+                  textUnderlineOffset: 3,
+                  textDecorationColor: C.accent,
+                }}
               >
-                Cast the line →
+                {chip.label}
               </button>
-              <span style={{ color: C.faint, ...font(400, 12, SANS) }}>
-                · 4 verticals, pre-analysed on the public ad record
-              </span>
-            </div>
+            ))}
+            <span style={{ color: C.faint, ...font(400, 12, SANS) }}>· 4 seeded, live pull for anything else</span>
           </div>
         </div>
 
@@ -149,6 +163,20 @@ export default function Hero({
               ))}
               {loading && <div style={{ color: C.accent, ...font(600, 12, MONO), animation: "blink 0.9s step-end infinite" }}>▌</div>}
             </div>
+          </div>
+        )}
+        {unavailable && (
+          <div
+            style={{
+              border: `1px solid ${C.amberBorder}`,
+              background: C.amberBg,
+              borderRadius: 10,
+              padding: "12px 18px",
+              maxWidth: 760,
+              marginTop: 10,
+            }}
+          >
+            <p style={{ color: C.amber, ...font(400, 13, SANS, { lh: 1.55 }), margin: 0 }}>{unavailable}</p>
           </div>
         )}
       </div>

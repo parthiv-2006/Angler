@@ -3,7 +3,7 @@
 import { useState, type Ref } from "react";
 import type { Ad, ConceptClustering, PreflightVerdict } from "@/lib/types";
 import Section from "./Section";
-import { C, SERIF, SANS, MONO, font, pillChip, primaryBtn, firstLine } from "./theme";
+import { C, SERIF, SANS, MONO, font, pillChip, primaryBtn, outlineBtn, firstLine } from "./theme";
 
 export interface SampleSummary {
   slug: string;
@@ -17,10 +17,18 @@ export interface PreflightExampleSummary {
   label: string;
 }
 
-// Nº3 (The Entity-ID Audit): load-your-ad-set controls (seed sample sets), the
-// marginalia N→K headline with hand-drawn SVG annotations, the dark "ink
-// plate" with the count-up + merge diagram and budget-waste estimate, cluster
-// cards beside the sticky gaps list, and the pre-flight check for a planned ad.
+export interface UploadedImage {
+  id: string;
+  fileName: string;
+  previewUrl: string;
+  base64: string;
+}
+
+// Nº3 (The Entity-ID Audit): load-your-ad-set controls (sample sets, pasted
+// captions, uploaded screenshots), the marginalia N→K headline with hand-drawn
+// SVG annotations, the dark "ink plate" with the count-up + merge diagram and
+// budget-waste estimate, cluster cards beside the sticky gaps list, and the
+// pre-flight check for a planned ad.
 export default function AuditSection(props: {
   innerRef: Ref<HTMLElement>;
   loading: boolean;
@@ -29,6 +37,14 @@ export default function AuditSection(props: {
   samples: SampleSummary[];
   selectedSample: string | null;
   onScoreSample: (slug: string) => void;
+  pasteText: string;
+  onPasteText: (v: string) => void;
+  onScorePaste: () => void;
+  uploadedImages: UploadedImage[];
+  onFilesSelected: (files: FileList | File[]) => void;
+  onRemoveImage: (id: string) => void;
+  onScoreUpload: () => void;
+  maxImages: number;
   // results
   sampleLabel: string | null;
   userAds: Ad[];
@@ -43,6 +59,10 @@ export default function AuditSection(props: {
   preflightExamples: PreflightExampleSummary[];
   preflight: { candidateAd: Ad | null; verdict: PreflightVerdict | null } | null;
   onPreflightSeed: (id: string) => void;
+  preflightPasteText: string;
+  onPreflightPasteText: (v: string) => void;
+  onPreflightPaste: () => void;
+  onPreflightImage: (file: File) => void;
   // generate
   onGenerate: () => void;
   hasBriefs: boolean;
@@ -63,7 +83,7 @@ export default function AuditSection(props: {
       meta={
         clustering && props.sampleLabel
           ? `loaded: ${props.sampleLabel}`
-          : "load a sample ad set below"
+          : "load a sample, paste captions, or upload screenshots"
       }
       action={props.shareUrl ? <ShareLinkButton url={props.shareUrl} /> : undefined}
       padding="30px 32px 54px"
@@ -109,6 +129,14 @@ function Controls(props: {
   samples: SampleSummary[];
   selectedSample: string | null;
   onScoreSample: (slug: string) => void;
+  pasteText: string;
+  onPasteText: (v: string) => void;
+  onScorePaste: () => void;
+  uploadedImages: UploadedImage[];
+  onFilesSelected: (files: FileList | File[]) => void;
+  onRemoveImage: (id: string) => void;
+  onScoreUpload: () => void;
+  maxImages: number;
 }) {
   const { loading } = props;
   return (
@@ -127,7 +155,7 @@ function Controls(props: {
       </p>
 
       {props.samples.length > 0 ? (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
           {props.samples.map((s) => (
             <button
               key={s.slug}
@@ -139,12 +167,128 @@ function Controls(props: {
               {s.label}
             </button>
           ))}
+          <span style={{ color: C.faint, ...font(400, 12, SANS), alignSelf: "center" }}>…or bring your own ↓</span>
         </div>
       ) : (
-        <p style={{ color: C.muted, ...font(400, 12, SANS), margin: 0 }}>
-          No sample ad set is loaded for this vertical yet.
+        <p style={{ color: C.muted, ...font(400, 12, SANS), margin: "0 0 12px" }}>
+          No sample ad sets available right now. Paste your own captions or upload screenshots instead.
         </p>
       )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
+        {/* paste captions */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <textarea
+            value={props.pasteText}
+            onChange={(e) => props.onPasteText(e.target.value)}
+            placeholder="One ad caption per line (min 3)…"
+            rows={4}
+            className="input-paper"
+            style={{
+              border: `1px solid ${C.border}`,
+              borderRadius: 8,
+              background: C.card,
+              color: C.ink,
+              ...font(400, 13, SANS, { lh: 1.5 }),
+              padding: "10px 13px",
+              outline: "none",
+              resize: "vertical",
+            }}
+          />
+          <button
+            onClick={props.onScorePaste}
+            disabled={loading}
+            className="btn-outline"
+            style={{ ...outlineBtn(loading), alignSelf: "flex-start" }}
+          >
+            Score pasted captions →
+          </button>
+        </div>
+
+        {/* upload screenshots */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              void props.onFilesSelected(e.dataTransfer.files);
+            }}
+            onClick={() => document.getElementById("upload-input")?.click()}
+            style={{
+              border: `1px dashed ${C.border}`,
+              borderRadius: 8,
+              padding: "16px 14px",
+              textAlign: "center",
+              cursor: "pointer",
+              background: C.card,
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <p style={{ color: C.muted, ...font(400, 12, SANS, { lh: 1.5 }), margin: 0 }}>
+              Drag &amp; drop real ad screenshots (min 3, max {props.maxImages}), or click to browse
+            </p>
+            <input
+              id="upload-input"
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files) void props.onFilesSelected(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </div>
+          {props.uploadedImages.length > 0 && (
+            <>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {props.uploadedImages.map((img) => (
+                  <div key={img.id} style={{ position: "relative" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.previewUrl}
+                      alt={img.fileName}
+                      style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 6, border: `1px solid ${C.border2}` }}
+                    />
+                    <button
+                      onClick={() => props.onRemoveImage(img.id)}
+                      aria-label={`Remove ${img.fileName}`}
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -6,
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        border: "none",
+                        background: C.amber,
+                        color: "#fff",
+                        fontSize: 11,
+                        lineHeight: "18px",
+                        cursor: "pointer",
+                        padding: 0,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={props.onScoreUpload}
+                disabled={loading || props.uploadedImages.length < 3}
+                className="btn-outline"
+                style={{ ...outlineBtn(loading || props.uploadedImages.length < 3), alignSelf: "flex-start" }}
+              >
+                Score uploaded images →
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -507,6 +651,10 @@ function Preflight(props: {
   preflightExamples: PreflightExampleSummary[];
   preflight: { candidateAd: Ad | null; verdict: PreflightVerdict | null } | null;
   onPreflightSeed: (id: string) => void;
+  preflightPasteText: string;
+  onPreflightPasteText: (v: string) => void;
+  onPreflightPaste: () => void;
+  onPreflightImage: (file: File) => void;
 }) {
   const verdict = props.preflight?.verdict ?? null;
   const candidate = props.preflight?.candidateAd ?? null;
@@ -514,13 +662,13 @@ function Preflight(props: {
 
   return (
     <div style={{ marginTop: 30, border: "1px dashed #C9C2B2", borderRadius: 12, padding: "20px 24px", background: "rgba(255,254,250,0.6)" }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginBottom: verdict ? 16 : 0 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
         <span style={{ color: C.ink, ...font(600, 12, MONO, { ls: "0.12em" }) }}>PRE-FLIGHT: TEST A PLANNED AD BEFORE YOU SPEND</span>
         <span style={{ color: C.muted, ...font(400, 12, SANS) }}>
           would Meta give it a new Entity ID, or fold it into something you already run?
         </span>
       </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: verdict ? 16 : 0 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
         {props.preflightExamples.map((ex) => (
           <button
             key={ex.id}
@@ -532,6 +680,52 @@ function Preflight(props: {
             {ex.label}
           </button>
         ))}
+        <span style={{ color: C.faint, ...font(400, 12, SANS), alignSelf: "center" }}>…or paste your own caption</span>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: verdict ? 16 : 0 }}>
+        <textarea
+          value={props.preflightPasteText}
+          onChange={(e) => props.onPreflightPasteText(e.target.value)}
+          placeholder="Paste your planned ad caption…"
+          rows={2}
+          className="input-paper"
+          style={{
+            flex: "1 1 320px",
+            border: `1px solid ${C.border}`,
+            borderRadius: 8,
+            background: C.card,
+            color: C.ink,
+            ...font(400, 13, SANS, { lh: 1.5 }),
+            padding: "9px 13px",
+            outline: "none",
+            resize: "vertical",
+          }}
+        />
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+          <button onClick={props.onPreflightPaste} disabled={props.loading} className="btn-outline" style={outlineBtn(props.loading)}>
+            Check this ad →
+          </button>
+          <button
+            onClick={() => document.getElementById("preflight-upload-input")?.click()}
+            disabled={props.loading}
+            className="btn-outline"
+            style={outlineBtn(props.loading)}
+          >
+            …or upload a screenshot
+          </button>
+          <input
+            id="preflight-upload-input"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void props.onPreflightImage(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
       </div>
 
       {verdict && (
