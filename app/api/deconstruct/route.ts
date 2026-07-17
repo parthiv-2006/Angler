@@ -5,6 +5,7 @@ import { getProvider } from "@/lib/ai/provider";
 import { getOrAnalyzeDNA, withRetry } from "@/lib/cache";
 import { winnerSummarySchema } from "@/lib/ai/schemas";
 import { getSeedDNA } from "@/lib/cache/seed";
+import { budgetExceeded, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
   if (!fullySeeded) {
     const limited = rateLimited(req);
     if (limited) return limited;
+    if (!(await underDailyCap())) return budgetExceeded();
   }
 
   const provider = getProvider();

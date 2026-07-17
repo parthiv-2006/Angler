@@ -5,6 +5,7 @@ import { withRetry } from "@/lib/cache";
 import { getPreflightExample } from "@/lib/cache/seed";
 import { preflightVerdictSchema, creativeDNAInputSchema, conceptClusteringInputSchema } from "@/lib/ai/schemas";
 import { PREFLIGHT_SYSTEM, buildPreflightPrompt } from "@/lib/ai/prompts/preflight";
+import { budgetExceeded, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import type { ConceptClustering, CreativeDNA } from "@/lib/types";
 
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
 
   const limited = rateLimited(req);
   if (limited) return limited;
+  if (!(await underDailyCap())) return budgetExceeded();
 
   const provider = getProvider();
 

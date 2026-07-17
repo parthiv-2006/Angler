@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getOrFetchAds, withRetry } from "@/lib/cache";
 import { getSeedAds, getSeedWinnerSummary } from "@/lib/cache/seed";
+import { BUDGET_MESSAGE, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import { fetchTikTokAds } from "@/lib/sources/tiktok-creative-center";
 import { fetchMetaAds } from "@/lib/sources/apify";
@@ -73,6 +74,16 @@ export async function POST(req: NextRequest) {
   if (!getSeedAds(slug)) {
     const limited = rateLimited(req);
     if (limited) return limited;
+    if (!(await underDailyCap())) {
+      // Same graceful shape as the live-source outage below: steer to seeds, no raw error.
+      return NextResponse.json({
+        ads: [],
+        winnerSummary: null,
+        fromSeed: false,
+        unavailable: true,
+        message: BUDGET_MESSAGE,
+      });
+    }
   }
 
   let ads: Ad[] = [];
@@ -93,7 +104,7 @@ export async function POST(req: NextRequest) {
       fromSeed: false,
       unavailable: true,
       message:
-        "Live sources didn't return results for this vertical right now. Try one of the instant demo verticals (Weight-Loss, Debt Relief, ED Telehealth).",
+        "Live sources didn't return results for this vertical right now. Try one of the instant demo verticals (Weight-Loss, Debt Relief, ED Telehealth, Investing Newsletter).",
     });
   }
 

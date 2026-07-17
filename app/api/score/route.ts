@@ -4,6 +4,7 @@ import { getProvider } from "@/lib/ai/provider";
 import { withRetry } from "@/lib/cache";
 import { getSampleClustering } from "@/lib/cache/seed";
 import { creativeDNAInputSchema } from "@/lib/ai/schemas";
+import { budgetExceeded, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import type { CreativeDNA } from "@/lib/types";
 
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
 
   const limited = rateLimited(req);
   if (limited) return limited;
+  if (!(await underDailyCap())) return budgetExceeded();
 
   const provider = getProvider();
 
