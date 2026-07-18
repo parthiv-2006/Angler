@@ -20,14 +20,14 @@ export class GeminiProvider implements AIProvider {
 
   async analyzeCreative(input: {
     imageBase64?: string;
-    imageUrl?: string;
+    imageMediaType?: string;
     copy?: string;
     metadata?: Record<string, unknown>;
   }): Promise<CreativeDNA> {
     const model = this.client.getGenerativeModel({ model: MODEL_DEFAULT });
 
     const imagePart = input.imageBase64
-      ? { inlineData: { mimeType: "image/jpeg" as const, data: input.imageBase64 } }
+      ? { inlineData: { mimeType: input.imageMediaType ?? "image/jpeg", data: input.imageBase64 } }
       : null;
 
     const textPart = {

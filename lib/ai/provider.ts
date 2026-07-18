@@ -2,9 +2,11 @@ import type { ZodType } from "zod";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 
 export interface AIProvider {
+  // Images are always passed inline: providers that fetch URLs themselves get
+  // 403'd by ad-library CDNs (see lib/ai/image.ts, which resolves URLs upstream).
   analyzeCreative(input: {
     imageBase64?: string;
-    imageUrl?: string;
+    imageMediaType?: string; // defaults to image/jpeg
     copy?: string;
     metadata?: Record<string, unknown>;
   }): Promise<CreativeDNA>;

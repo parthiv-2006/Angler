@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getProvider } from "@/lib/ai/provider";
+import { fetchImageAsBase64 } from "@/lib/ai/image";
 import { getOrAnalyzeDNA, withRetry } from "@/lib/cache";
 import { winnerSummarySchema } from "@/lib/ai/schemas";
 import { getSeedDNA } from "@/lib/cache/seed";
@@ -70,26 +71,49 @@ export async function POST(req: NextRequest) {
   const provider = getProvider();
 
   try {
-    const results = await Promise.all(
+    // Per-ad isolation: one unanalyzable ad (expired/blocked image, model
+    // hiccup) degrades to a smaller result set instead of failing the batch.
+    const settled = await Promise.all(
       ads.map(async (ad) => {
-        const dna = await getOrAnalyzeDNA(
-          cacheKeyFor(ad, adKind),
-          slug,
-          adKind,
-          () =>
-            withRetry(() =>
-              provider.analyzeCreative({
-                imageUrl: ad.coverUrl,
-                imageBase64: ad.imageBase64,
-                copy: ad.copy,
-                metadata: ad.metadata,
-              }),
-            ),
-          process.env.AI_PROVIDER ?? "anthropic",
-        );
-        return { adId: ad.id, dna };
+        try {
+          const dna = await getOrAnalyzeDNA(
+            cacheKeyFor(ad, adKind),
+            slug,
+            adKind,
+            async () => {
+              // Resolve the cover URL to inline bytes only on a cache miss;
+              // CDNs 403 non-browser fetchers, so providers can't fetch it.
+              const image = ad.imageBase64
+                ? { base64: ad.imageBase64, mediaType: "image/jpeg" }
+                : ad.coverUrl
+                  ? await fetchImageAsBase64(ad.coverUrl)
+                  : null;
+              if (!image && !ad.copy) {
+                throw new Error("no analyzable content (image unreachable, no copy)");
+              }
+              return withRetry(() =>
+                provider.analyzeCreative({
+                  imageBase64: image?.base64,
+                  imageMediaType: image?.mediaType,
+                  copy: ad.copy,
+                  metadata: ad.metadata,
+                }),
+              );
+            },
+            process.env.AI_PROVIDER ?? "anthropic",
+          );
+          return { adId: ad.id, dna };
+        } catch (err) {
+          console.error(`[deconstruct] ad ${ad.id} failed:`, err);
+          return null;
+        }
       }),
     );
+    const results = settled.filter((r): r is NonNullable<typeof r> => r !== null);
+
+    if (results.length === 0) {
+      return NextResponse.json({ error: "Failed to analyze creatives" }, { status: 500 });
+    }
 
     // For novel verticals (no seed winner summary), synthesize one from the DNA.
     // Gated by the caller so the seed path never triggers an AI call.

@@ -18,23 +18,19 @@ export class AnthropicProvider implements AIProvider {
 
   async analyzeCreative(input: {
     imageBase64?: string;
-    imageUrl?: string;
+    imageMediaType?: string;
     copy?: string;
     metadata?: Record<string, unknown>;
   }): Promise<CreativeDNA> {
     const content: Anthropic.MessageParam["content"] = [];
 
-    if (input.imageUrl) {
-      content.push({
-        type: "image",
-        source: { type: "url", url: input.imageUrl },
-      });
-    } else if (input.imageBase64) {
+    if (input.imageBase64) {
       content.push({
         type: "image",
         source: {
           type: "base64",
-          media_type: "image/jpeg",
+          media_type: (input.imageMediaType ??
+            "image/jpeg") as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
           data: input.imageBase64,
         },
       });
