@@ -9,6 +9,18 @@ import { CLUSTER_CONCEPTS_SYSTEM, buildClusterConceptsPrompt } from "./prompts/c
 
 const MODEL_DEFAULT = "claude-sonnet-4-6";
 
+// A response cut off at the max_tokens ceiling is truncated JSON that will
+// never parse; retrying is deterministic waste. status 400 makes withRetry
+// fail fast instead of burning two more full generations.
+function assertNotTruncated(message: Anthropic.Message): void {
+  if (message.stop_reason === "max_tokens") {
+    throw Object.assign(
+      new Error(`Anthropic response truncated at max_tokens (model ${message.model})`),
+      { status: 400 },
+    );
+  }
+}
+
 export class AnthropicProvider implements AIProvider {
   private client: Anthropic;
 
@@ -48,6 +60,7 @@ export class AnthropicProvider implements AIProvider {
       messages: [{ role: "user", content }],
     });
 
+    assertNotTruncated(message);
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
     return creativeDNASchema.parse(parseModelJSON(text));
   }
@@ -58,13 +71,15 @@ export class AnthropicProvider implements AIProvider {
   ): Promise<ConceptClustering> {
     const message = await this.client.messages.create({
       model: MODEL_DEFAULT,
-      max_tokens: 2048,
+      // Ceiling, not a target: clustering a full 20-ad set must not truncate.
+      max_tokens: 8192,
       system: CLUSTER_CONCEPTS_SYSTEM,
       messages: [
         { role: "user", content: buildClusterConceptsPrompt(dna, marketDNA) },
       ],
     });
 
+    assertNotTruncated(message);
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
     return conceptClusteringSchema.parse(parseModelJSON(text));
   }
@@ -76,11 +91,15 @@ export class AnthropicProvider implements AIProvider {
   }): Promise<T> {
     const message = await this.client.messages.create({
       model: MODEL_DEFAULT,
-      max_tokens: 4096,
+      // Ceiling, not a target: a 10-brief batch with 3 platform variants each
+      // overflows 4096 tokens, truncating the JSON so parsing fails on every
+      // withRetry attempt and the route 500s.
+      max_tokens: 16384,
       system: args.system,
       messages: [{ role: "user", content: args.prompt }],
     });
 
+    assertNotTruncated(message);
     const text = message.content.find((b) => b.type === "text")?.text ?? "{}";
     return args.schema.parse(parseModelJSON(text));
   }
