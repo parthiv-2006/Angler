@@ -307,7 +307,25 @@ export default function Home() {
   }
 
   // ── Module 2: creative-DNA extraction ─────────────────────────────────
+  // Live-mined ads can be video-only (no copy, no cover image); the server
+  // rejects any batch containing an ad with nothing to analyze, so keep only
+  // analyzable ads before taking the top 15.
+  function analyzableAds(ads: Ad[]) {
+    return ads
+      .filter((ad) => ad.copy || ad.coverUrl)
+      .slice(0, 15)
+      .map((ad) => ({
+        id: ad.id,
+        coverUrl: ad.coverUrl || undefined,
+        copy: ad.copy ? trimCopy(ad.copy) : undefined,
+      }));
+  }
+
   async function handleDeconstruct() {
+    const ads = analyzableAds(state.ads);
+    if (ads.length === 0) {
+      return setError("These ads have no copy or images to analyze. Try a different vertical.");
+    }
     setLoading("Extracting creative DNA…");
     try {
       const res = await fetch("/api/deconstruct", {
@@ -317,11 +335,7 @@ export default function Home() {
           vertical: state.vertical,
           // Synthesize a summary only when we don't already have a seed one (novel verticals).
           generateSummary: state.winnerSummary === null,
-          ads: state.ads.slice(0, 15).map((ad) => ({
-            id: ad.id,
-            coverUrl: ad.coverUrl || undefined,
-            copy: ad.copy ? trimCopy(ad.copy) : undefined,
-          })),
+          ads,
         }),
       });
       const data = await res.json();
@@ -674,7 +688,7 @@ export default function Home() {
       const dRes = await fetch("/api/deconstruct", {
         method: "POST",
         headers: jsonHeaders,
-        body: JSON.stringify({ vertical, ads: ads.slice(0, 15).map((a) => ({ id: a.id, coverUrl: a.coverUrl || undefined, copy: a.copy ? trimCopy(a.copy) : undefined })) }),
+        body: JSON.stringify({ vertical, ads: analyzableAds(ads) }),
       });
       const d = await dRes.json();
       if (!dRes.ok) return setError(d.error ?? "Demo failed while extracting DNA");
