@@ -10,8 +10,9 @@ import { budgetExceeded, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import { WINNER_SUMMARY_SYSTEM, buildWinnerSummaryPrompt } from "@/lib/ai/prompts/summary";
 
-// Live vision analysis over a batch of ads can exceed the 10s default.
-export const maxDuration = 60;
+// Live vision analysis over a batch of ads plus the winner summary runs
+// ~40s on the live path; give it headroom under Fluid compute's 300s ceiling.
+export const maxDuration = 120;
 
 const adInputSchema = z
   .object({

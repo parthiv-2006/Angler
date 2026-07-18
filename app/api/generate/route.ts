@@ -9,8 +9,10 @@ import { budgetExceeded, underDailyCap } from "@/lib/budget";
 import { rateLimited } from "@/lib/rate-limit";
 import type { CreativeDNA, ConceptClustering } from "@/lib/types";
 
-// Generating ~10 briefs with platform variants can exceed the 10s default.
-export const maxDuration = 60;
+// Generating ~10 briefs with 3 platform variants each is the app's longest
+// model call; 60s 504'd mid-generation on the live path. The project runs
+// Fluid compute (300s ceiling), so give this route the full budget.
+export const maxDuration = 300;
 
 const requestSchema = z.object({
   vertical: z.string().min(1).max(100),
