@@ -7,7 +7,8 @@
 >
 > For *why* the system is shaped this way, read `docs/ARCHITECTURE.md`.
 
-Last verified against the tree: **2026-07-04** (post live-input removal, README rewrite).
+Last verified against the tree: **2026-07-18** (live path re-enabled: free-text search,
+paste, upload, pre-flight paste restored; global daily spend cap added).
 
 ---
 
@@ -47,6 +48,8 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | Add/fix a competitor data source | `lib/sources/*` + `lib/sources/normalize.ts` |
 | Touch seed-loading / demo-mode | `lib/cache/seed.ts`, `lib/cache/index.ts` |
 | Touch Supabase reads/writes | `lib/db/queries.ts` (client in `client.ts`, row types in `types.ts`) |
+| Tune the global daily live-spend cap | `lib/budget.ts` (`LIVE_DAILY_CAP` env; RPC in migration `003`) |
+| Fix cover-image fetching for vision analysis | `lib/ai/image.ts` (CDNs 403 non-browser fetchers) |
 | Change the DB schema | `supabase/migrations/*.sql` (new numbered file; never edit an applied one) |
 | Add/refresh a seed vertical | `data/seed/*.json` via `scripts/refresh-seed.ts` |
 | Adjust rate limiting | `lib/rate-limit.ts` |
@@ -68,7 +71,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | `components/Section.tsx` | Shared numbered-watermark section shell with header rule. |
 | `components/CatchSection.tsx` | No.1: ranked ledger, desk note, sticky in-feed preview. |
 | `components/DnaSection.tsx` | No.2: filter pills + 3-col DNA card grid (4th tag = offerFraming). |
-| `components/AuditSection.tsx` | No.3: load-your-set controls (seed sample pills only — paste/upload live inputs removed), marginalia + SVG marks, ink plate + merge diagram, clusters + gaps, pre-flight (seed examples only), generate CTA. |
+| `components/AuditSection.tsx` | No.3: load-your-set controls (seed sample pills + paste captions + screenshot upload), marginalia + SVG marks, ink plate + merge diagram, clusters + gaps, pre-flight (seed examples, paste, or screenshot), generate CTA. |
 | `components/BriefsSection.tsx` | No.4: brief cards (platform tabs, copy, evidence chips), integrity strip, footer. |
 | `api/mine/route.ts` | **Module 1** Competitive Angle Miner. Ranked market ads + winner summary. `fromSeed` flag. |
 | `api/deconstruct/route.ts` | **Module 2** Creative-DNA extraction (vision). Hot path. |
@@ -81,7 +84,8 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 ### `lib/ai/`: provider-agnostic AI layer
 | File | Responsibility |
 |---|---|
-| `provider.ts` | The interface + factory. Selects impl by `AI_PROVIDER`. **Feature code imports only this.** |
+| `provider.ts` | The interface + factory. Selects impl by `AI_PROVIDER`. **Feature code imports only this.** Images are always inline base64 (no URL sources). |
+| `image.ts` | `fetchImageAsBase64`: resolves ad cover URLs server-side with browser-like headers (fbcdn 403s provider-side fetchers); best-effort, null on failure. |
 | `anthropic.ts` | Anthropic impl (`claude-sonnet-4-6`). |
 | `gemini.ts` | Gemini fallback impl (`gemini-2.5-flash`). |
 | `schemas.ts` | Zod schemas for every AI input/output (DNA, clustering, briefs, winner summary, preflight). |
@@ -118,6 +122,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 |---|---|
 | `types.ts` | Domain types: `Ad`, `CreativeDNA`, `ConceptCluster(ing)`, `AngleBrief`, `PreflightVerdict`. |
 | `rate-limit.ts` | `rateLimited(req)`: per-IP limiter returning a 429 `NextResponse` or `null`. |
+| `budget.ts` | Global daily cap on metered live requests (`underDailyCap` via Supabase RPC, in-memory fallback); all five spend routes check it after `rateLimited`. |
 
 ### `data/seed/`: real cached data (never fabricated)
 | Path | Contents |
@@ -130,6 +135,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 |---|---|
 | `001_initial_schema.sql` | Initial schema. |
 | `002_creative_dna_ad_id_text.sql` | Retype `creative_dna.ad_id` uuid to text (app ad ids like `fb_*` and `upl_*` are not UUIDs). |
+| `003_live_usage.sql` | `live_usage` day counter + atomic `increment_live_usage(cap)` RPC backing the global daily spend cap. |
 
 ### `scripts/` & `tests/`
 | Path | Purpose |
