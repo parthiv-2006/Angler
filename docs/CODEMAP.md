@@ -7,8 +7,9 @@
 >
 > For *why* the system is shaped this way, read `docs/ARCHITECTURE.md`.
 
-Last verified against the tree: **2026-07-18** (live path re-enabled: free-text search,
-paste, upload, pre-flight paste restored; global daily spend cap added).
+Last verified against the tree: **2026-09-23** (diversity engine v2 in progress:
+embeddings layer, deterministic clustering, eval harness + labelling tool; not yet wired
+into `/api/score`. Plan: `docs/DIVERSITY_ENGINE.md`).
 
 ---
 
@@ -54,6 +55,9 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | Add/refresh a seed vertical | `data/seed/*.json` via `scripts/refresh-seed.ts` |
 | Adjust rate limiting | `lib/rate-limit.ts` |
 | Change MCP tools | `app/api/[transport]/route.ts` |
+| Tune deterministic clustering / eval metrics | `lib/diversity/*` (`cluster.ts`, `metrics.ts`, `evaluate.ts`) |
+| Swap the embeddings provider or change what text is embedded | `lib/embeddings/provider.ts`, `voyage.ts`, `input.ts` |
+| Label ground truth / run the eval | `npm run label` → `data/eval/labels/`; `npm run eval` → `data/eval/results.json` |
 
 ---
 
@@ -97,6 +101,21 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | `prompts/preflight.ts` | Preflight-verdict prompt. |
 | `prompts/summary.ts` | Winner-summary prompt. |
 
+### `lib/embeddings/`: embeddings layer (diversity engine v2)
+| File | Responsibility |
+|---|---|
+| `provider.ts` | `EmbeddingProvider` interface + `getEmbeddingProvider()` (null without `VOYAGE_API_KEY`, so callers fall back). |
+| `voyage.ts` | Voyage `voyage-multimodal-3.5` client, 512 dims, batched, order-preserving, retried on transient errors only. |
+| `input.ts` | `EMBEDDING_VIEWS` (`copy`, `dna`, `copy+dna`) + `buildEmbeddingText`: what text represents an ad. |
+
+### `lib/diversity/`: deterministic clustering + evaluation
+| File | Responsibility |
+|---|---|
+| `cluster.ts` | `cosineSimilarity`, `similarityMatrix`, `clusterBySimilarity` (average-linkage agglomerative, threshold τ). |
+| `metrics.ts` | Partition agreement: pairwise P/R/F1, Adjusted Rand Index. |
+| `evaluate.ts` | LLM-output repair into partitions, τ tuning, leave-one-set-out scoring, run-to-run stability. |
+| `labels.ts` | Human label file schema + loader (`data/eval/labels/*.json`). |
+
 ### `lib/sources/`: competitor data ingestion
 | File | Responsibility |
 |---|---|
@@ -107,7 +126,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 ### `lib/cache/`: demo-mode / seed-first
 | File | Responsibility |
 |---|---|
-| `seed.ts` | Reads `data/seed/*`: `getSeedAds/DNA/WinnerSummary/Briefs`, `listSeedVerticals`, sample-set + preflight-example getters. |
+| `seed.ts` | Reads `data/seed/*`: `getSeedAds/DNA/WinnerSummary/Briefs`, `listSeedVerticals`, sample-set + preflight-example getters, `listClusterableSets` (every vertical + sample as one shape), `getSeedEmbeddings`. |
 | `index.ts` | Cache orchestration + `withRetry` exponential backoff. |
 
 ### `lib/db/`: Supabase
@@ -128,6 +147,7 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | Path | Contents |
 |---|---|
 | `weight-loss-supplement.json`, `debt-relief.json`, `ed-telehealth.json`, `investing-newsletter.json` | 4 pre-analyzed verticals (15 real market ads each). |
+| `embeddings/<slug>.json` | Precomputed Voyage vectors per ad per view (`npm run embed-seed`). Not yet generated. |
 | `samples/weight-loss-redundant.json`, `samples/debt-relief-redundant.json`, `samples/ed-telehealth-redundant.json`, `samples/investing-newsletter-redundant.json` | Deliberately low-diversity sample ad sets for the score demo, one per seed vertical. |
 
 ### `supabase/migrations/`
@@ -141,8 +161,11 @@ that exposes the seed verticals as read-only tools, with no AI calls.
 | Path | Purpose |
 |---|---|
 | `scripts/refresh-seed.ts` | Regenerate seed verticals from live scrapes (offline pre-compute). |
+| `scripts/embed-seed.ts` | `npm run embed-seed`: precompute Voyage vectors for every seed set into `data/seed/embeddings/` (text-only; seed cover URLs have expired). |
+| `scripts/label.ts` | `npm run label`: local blind labelling page (localhost:4455) writing human ground truth to `data/eval/labels/`. |
+| `scripts/eval-diversity.ts` | `npm run eval`: scores LLM-only vs embedding clustering against labels; writes `data/eval/results.json` (incl. the production view + τ). |
 | `scripts/.cache/` | Local scratch from seed refreshes, not part of the app. |
-| `tests/*.test.ts` | Unit tests: `json`, `normalize`, `rate-limit`, `retry`, `seed`. |
+| `tests/*.test.ts` | Unit tests: `json`, `normalize`, `rate-limit`, `retry`, `seed`, `cluster`, `metrics`, `evaluate`, `labels`, `embeddings`. |
 
 ### Repo root
 | Path | Purpose |

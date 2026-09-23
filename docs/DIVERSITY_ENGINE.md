@@ -23,16 +23,18 @@ user ads ──► embed (Voyage voyage-multimodal-3.5: copy + DNA text + image 
 - **Membership is math, explanation is LLM.** The model can no longer move an ad between
   clusters, so the score is reproducible for a given input and τ.
 - **Voyage** is Anthropic's recommended embeddings partner; multimodal means uploaded
-  screenshots are embedded as images, not just their extracted text.
+  screenshots are embedded as images, not just their extracted text. Seed vectors are
+  text-only: the seed ads' signed fbcdn cover URLs expired in June 2026 (0 of 53 load).
 - **pgvector** (Supabase) caches embeddings by content hash, so re-scoring is free.
 - **Seed path stays zero-credential:** seed/sample embeddings are precomputed offline into
   `data/seed/embeddings/*.json`, so the demo still needs no keys.
 
 ## Evaluation (the point of the whole feature)
 
-- **Ground truth = human partitions.** For each of the 4 seed verticals (15 market ads) and
-  4 sample sets (8 ads), a human groups ads into "same concept to Meta" buckets
-  (`data/eval/labels/*.json`). ~92 ads → ~530 labelled pairs. Labels are written by a human
+- **Ground truth = human partitions.** For each of the 4 seed verticals (10–15 market ads)
+  and 4 sample sets (8 ads), a human groups ads into "same concept to Meta" buckets
+  (`data/eval/labels/*.json`). 85 ads → 445 labelled pairs. Labelling is blind: the tool
+  shows copy and format only, never the model's clusters. Labels are written by a human
   only; LLM output is never used as ground truth (hard rule 2: no fabricated data).
 - **Systems compared:** LLM-only (current), embeddings-only for each text view
   (`copy`, `dna`, `copy+dna`), and hybrid.
