@@ -9,7 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "refresh-seed": "tsx scripts/refresh-seed.ts",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "embed-seed": "tsx scripts/embed-seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.51.0",

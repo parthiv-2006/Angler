@@ -2,6 +2,7 @@ import type { EmbeddingInput } from "./input";
 
 export interface EmbeddingProvider {
   readonly model: string;
+  readonly dimensions: number;
   // Returns one vector per input, in input order.
   embed(inputs: EmbeddingInput[]): Promise<number[][]>;
 }

@@ -1,6 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { getSeedAds, getSampleSet, listSeedVerticals, listSampleSets } from "@/lib/cache/seed";
+import {
+  getSeedAds,
+  getSampleSet,
+  getSeedEmbeddings,
+  listClusterableSets,
+  listSeedVerticals,
+  listSampleSets,
+} from "@/lib/cache/seed";
 
 // These run against the real committed seed data, the same files the demo serves.
 
@@ -35,4 +42,19 @@ test("every listed seed vertical has ads and every listed sample has clustering 
       }
     }
   }
+});
+
+test("clusterable sets cover every vertical and sample, with copy attached to each DNA record", () => {
+  const sets = listClusterableSets();
+  assert.equal(sets.filter((s) => s.kind === "market").length, listSeedVerticals().length);
+  assert.equal(sets.filter((s) => s.kind === "sample").length, listSampleSets().length);
+  assert.equal(new Set(sets.map((s) => s.slug)).size, sets.length, "slugs must be unique");
+  for (const s of sets) {
+    assert.ok(s.items.length > 0, `${s.slug} is empty`);
+    assert.ok(s.items.every((i) => i.copy.length > 0), `${s.slug} has an item with no copy`);
+  }
+});
+
+test("seed embedding lookups reject unsafe slugs", () => {
+  assert.equal(getSeedEmbeddings("../package"), null);
 });

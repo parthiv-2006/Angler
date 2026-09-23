@@ -8,6 +8,9 @@ import type { EmbeddingProvider } from "./provider";
 // Docs: https://docs.voyageai.com/reference/multimodal-embeddings-api
 const ENDPOINT = "https://api.voyageai.com/v1/multimodalembeddings";
 export const VOYAGE_MODEL = "voyage-multimodal-3.5";
+// Matryoshka-truncated: half the storage of the 1024 default, so seed vectors stay small
+// in the repo and in pgvector, at a negligible cost in retrieval quality.
+export const VOYAGE_DIMENSIONS = 512;
 
 // Well under the API's 1,000-input / 320k-token request caps even with images.
 const BATCH_SIZE = 32;
@@ -30,6 +33,7 @@ export function toVoyageContent(input: EmbeddingInput): ContentItem[] {
 
 export class VoyageProvider implements EmbeddingProvider {
   readonly model = VOYAGE_MODEL;
+  readonly dimensions = VOYAGE_DIMENSIONS;
 
   constructor(private readonly apiKey: string) {}
 
@@ -49,6 +53,7 @@ export class VoyageProvider implements EmbeddingProvider {
       body: JSON.stringify({
         model: this.model,
         input_type: "document",
+        output_dimension: this.dimensions,
         inputs: batch.map((input) => ({ content: toVoyageContent(input) })),
       }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),

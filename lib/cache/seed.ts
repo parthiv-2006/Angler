@@ -150,3 +150,49 @@ export function listSampleSets(): SampleSetSummary[] {
       preflightExamples: (s.preflightExamples ?? []).map((e) => ({ id: e.id, label: e.label })),
     }));
 }
+
+// ── Embeddings (diversity engine) ───────────────────────────────────────────────
+
+// One clusterable ad set: a seed vertical's market ads or a sample "own" set.
+// Vertical and sample slugs never collide, so the slug alone identifies the set.
+export interface ClusterableSet {
+  slug: string;
+  kind: "market" | "sample";
+  items: { adId: string; copy: string; dna: CreativeDNA }[];
+}
+
+function toItems(ads: Ad[], dna: { adId: string; dna: CreativeDNA }[]): ClusterableSet["items"] {
+  const copyById = new Map(ads.map((ad) => [ad.id, ad.copy]));
+  return dna.map((entry) => ({ adId: entry.adId, copy: copyById.get(entry.adId) ?? "", dna: entry.dna }));
+}
+
+export function listClusterableSets(): ClusterableSet[] {
+  const market = listSeedSlugs()
+    .map((slug) => loadSeedFile(slug))
+    .filter((seed): seed is SeedFile => seed !== null)
+    .map((seed) => ({ slug: seed.vertical.slug, kind: "market" as const, items: toItems(seed.ads, seed.dna) }));
+  const samples = listSampleSets()
+    .map((s) => loadSampleFile(s.slug)!)
+    .map((s) => ({ slug: s.slug, kind: "sample" as const, items: toItems(s.ads, s.dna) }));
+  return [...market, ...samples];
+}
+
+export interface SeedEmbeddingsFile {
+  model: string;
+  dimensions: number;
+  // view → adId → vector
+  views: Record<string, Record<string, number[]>>;
+}
+
+const EMBEDDINGS_DIR = join(SEED_DIR, "embeddings");
+
+export function seedEmbeddingsPath(slug: string): string {
+  return join(EMBEDDINGS_DIR, `${slug}.json`);
+}
+
+export function getSeedEmbeddings(slug: string): SeedEmbeddingsFile | null {
+  if (!SAFE_SLUG.test(slug)) return null;
+  const filePath = seedEmbeddingsPath(slug);
+  if (!existsSync(filePath)) return null;
+  return JSON.parse(readFileSync(filePath, "utf-8")) as SeedEmbeddingsFile;
+}
