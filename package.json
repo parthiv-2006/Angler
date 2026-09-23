@@ -11,7 +11,8 @@
     "refresh-seed": "tsx scripts/refresh-seed.ts",
     "test": "tsx --test tests/*.test.ts",
     "embed-seed": "tsx scripts/embed-seed.ts",
-    "label": "tsx scripts/label.ts"
+    "label": "tsx scripts/label.ts",
+    "eval": "tsx scripts/eval-diversity.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.51.0",
